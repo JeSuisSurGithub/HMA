@@ -401,7 +401,7 @@ void guidedInterface()
 {
     // Get server
     printf("Welcome to HI3 manga C downloader!(The C version of HMPD)\n\n");
-    printf("Get more help or report issues at https://github.com/JeComtempleDuCodeSource/HMPD\n");
+    printf("Get more help or report issues at https://github.com/JeComtempleDuCodeSource/HMCD\n");
     unsigned int serverInt = 0;
     printf("Type 1 to download from global server.And Type 2 to download from CN server: ");
     scanf("%i", &serverInt);

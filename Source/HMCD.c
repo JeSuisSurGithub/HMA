@@ -371,7 +371,7 @@ void downloadChinaBook(Book cnBook, unsigned int startRange, unsigned int endRan
     clock_t End = clock();
     End = clock();
     float elapsedSeconds = ((float)(End - Start)) / CLOCKS_PER_SEC;
-    printf(u8"Finished downloading book %s on Global server(chapter %i to %i) in %f (seconds) (%i/s)\n", cnBook.Name, startRange, endRange, elapsedSeconds);
+    printf(u8"Finished downloading book %s on Global server(chapter %i to %i) in %f (seconds\n", cnBook.Name, startRange, endRange, elapsedSeconds);
 }
 
 // Gets range from input

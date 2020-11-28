@@ -1,5 +1,5 @@
 # HI3-Manga-~~PHP~~C-Downloader
-C port of [HMPD](https://github.com/JeComtempleDuCodeSource/HMPD) that uses libcURL to download books(manhua if you prefer) from the official HI3 COMIC, CN site (https://comic.bh3.com/) and GLOBAL site (https://manga.honkaiimpact3.com/).
+C port of [HMPD](https://github.com/JeComtempleDuCodeSource/HMPD) that uses libcURL(see LIBCURL.COPYING.txt) to download books(manhua if you prefer) from the official HI3 COMIC, CN site (https://comic.bh3.com/) and GLOBAL site (https://manga.honkaiimpact3.com/).
 
 ## Why?
 I wanted it to be easier to run and written in a more familiar and popular language and not mess with PHP(don't get me wrong it is a very good language but this is not a web site and i have no plans for it).

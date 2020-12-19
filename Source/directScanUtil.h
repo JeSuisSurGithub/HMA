@@ -18,9 +18,6 @@ int isRegularFile(const char* Path);
 // Return file size
 unsigned int getFileSize(char* fileName);
 
-// Prints all file of a given directory
-void printScanDirectory(char* Path);
-
 // Get number of files(not directory) of a given directory
 unsigned int getFileCount(char* Path);
 
@@ -38,5 +35,11 @@ void getAllDirectoryPathRecursion(char* Path, unsigned int* directoryCount, char
 
 // Return all directory paths of a given directory
 char** getAllDirectoryPaths(char* Path, unsigned int* directoryCount);
+
+// Return element count of a directory
+unsigned int getSurfaceElementCount(char* Path);
+
+// Scan only given directory no recursion
+char** getAllSurfaceElements(char* Path, unsigned int* elementCount);
 
 #endif /* DIRECTSCANUTIL_H */

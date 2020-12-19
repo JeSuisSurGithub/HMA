@@ -75,31 +75,32 @@ static const unsigned int cnSecondKey      = 1021;
 static const unsigned int cnEmpyreanBlade  = 1022;
 static const unsigned int cnAlienSpace     = 1023;
 
-    // Allow cURL to write to files
-    size_t writeData(void* Data, unsigned int long long Size, unsigned int long long Count, void* File);
+// Allow cURL to write to files
+size_t writeData(void* Data, unsigned int long long Size, unsigned int long long Count, void* File);
 
-    // Return book
-    Book constructBook(unsigned int ID, char* Name);
+// Return book
+Book constructBook(unsigned int ID, char* Name);
 
-    // Get all books
-    Book* getGlobalBooks();
+// Get all books
+Book* getGlobalBooks();
 
-    // Get folder size
-    unsigned long long int getFolderSize(char* folderName);
+// Get folder size
+unsigned long long int getFolderSize(char* folderName);
 
-    // Get chapter count
-    unsigned int getChapterCountASCII(Book bookToScan);
+// Get chapter count
+unsigned int getChapterCountASCII(Book bookToScan);
 
-    // Download book
-    void downloadASCIIBook(Book globalBook, unsigned int startRange, unsigned int endRange);
+// Download book
+void downloadASCIIBook(Book globalBook, unsigned int startRange, unsigned int endRange);
 
-    // Get range from user input
-    void getRange(unsigned int* Start, unsigned int* End, unsigned int chapterCount);
+// Get range from user input
+void getRange(unsigned int* Start, unsigned int* End, unsigned int chapterCount);
 
-    // Guided interface
-    void guidedInterface();
+// Guided interface
+void guidedInterface();
 
-    // Argument
-    void commandLineInterface(unsigned int serverID, unsigned int bookID, unsigned int startRange, unsigned int endRange);
+// Argument
+void commandLineInterface(unsigned int serverID, unsigned int bookID, unsigned int startRange, unsigned int endRange);
+
 
 #endif /* HMCD_H */

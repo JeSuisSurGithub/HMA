@@ -371,7 +371,7 @@ void downloadChinaBook(Book cnBook, unsigned int startRange, unsigned int endRan
     clock_t End = clock();
     End = clock();
     float elapsedSeconds = ((float)(End - Start)) / CLOCKS_PER_SEC;
-    printf(u8"Finished downloading book %s on Global server(chapter %i to %i) in %f (seconds\n", cnBook.Name, startRange, endRange, elapsedSeconds);
+    printf(u8"Finished downloading book %s on Global server(chapter %i to %i) in %f (seconds)\n", cnBook.Name, startRange, endRange, elapsedSeconds);
 }
 
 // Gets range from input
@@ -465,7 +465,7 @@ void guidedInterface()
     else 
         printf("Not a valid choice\n");
 
-    printf("Press any key to exit...");
+    printf("Press any key to exit...\n");
     fflush(stdin);   
     getchar();
 }
@@ -535,7 +535,7 @@ void commandLineInterface(unsigned int serverID, unsigned int bookID, unsigned i
         printf("First value is invalid, GLOBAL = 1, CN = 2\n");
         exit(-1);
     }
-    printf("Press any key to exit...");
+    printf("Press any key to exit...\n");
     fflush(stdin);   
     getchar();
 }

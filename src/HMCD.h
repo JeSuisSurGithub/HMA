@@ -11,6 +11,7 @@
 #ifdef _WIN32
     #include <windows.h>
 #endif
+
 #include "directScanUtil.h"
 
 #define GB_CHAPTER_COUNT 21

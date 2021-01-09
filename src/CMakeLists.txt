@@ -1,7 +1,7 @@
 cmake_minimum_required(VERSION 3.10)
 
 # Set the project name and version
-project(HMCD VERSION 1.0)
+project(HMCD VERSION 1.0.0)
 
 # Source files
 add_executable(HMCD 

@@ -13,22 +13,12 @@ add_executable(HMCD
 # Includes
 target_include_directories(HMCD PUBLIC
                           "${CMAKE_CURRENT_LIST_DIR}"
-                          "${LIBCURL_DIR}/include"
 )
 
 # Libraries
-# if Windows
-if (WIN32)
-link_directories("${LIBCURL_DIR}/lib")
 target_link_libraries(HMCD 
-			"${LIBCURL_DIR}/lib/libcurl.dll.a"
+			"curl"
 )
-# If not
-else()
-target_link_libraries(HMCD
-			"libcurl.so"
-)
-endif()
 
 # Flags
 target_compile_options(HMCD PUBLIC "-Wall" "-O2")

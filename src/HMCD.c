@@ -39,6 +39,7 @@ Book* getGlobalBooks()
     bookInfo[18] = constructBook(gbCWV,            "Cooking With Valkyries");
     bookInfo[19] = constructBook(gbEmpyreanBlade,  "Empyrean Blade"        );
     bookInfo[20] = constructBook(gbAlienSpace,     "Alien Space"           );
+    bookInfo[21] = constructBook(gbSpringFestival, "Spring Festival Trip"  );
     return bookInfo;
 }
 
@@ -67,6 +68,7 @@ Book* getChinaBook()
     bookInfo[19] = constructBook(cnSecondKey,      u8"传承");  
     bookInfo[20] = constructBook(cnEmpyreanBlade,  u8"云墨剑心");  
     bookInfo[21] = constructBook(cnAlienSpace,     u8"异乡"); 
+    bookInfo[22] = constructBook(cnSpringFestival, u8"新春旅行"); 
     return bookInfo;
 }
 
@@ -80,9 +82,9 @@ void setCA(CURL* curlHandle, char* certificatePath)
     }
     else
     {
-        printf("Certificate does not exists downloading from https://curl.haxx.se/ca/cacert.pem...\n");
+        printf("Certificate does not exists downloading from https://curl.se/ca/cacert.pem...\n");
         CURL* getCert = curl_easy_init();
-        curl_easy_setopt(getCert, CURLOPT_URL, "https://curl.haxx.se/ca/cacert.pem");
+        curl_easy_setopt(getCert, CURLOPT_URL, "https://curl.se/ca/cacert.pem");
         curl_easy_setopt(getCert, CURLOPT_SSL_VERIFYPEER, 0L);
         curl_easy_setopt(getCert, CURLOPT_NOBODY, 0L);
         curl_easy_setopt(getCert, CURLOPT_VERBOSE, 0L);
@@ -95,7 +97,7 @@ void setCA(CURL* curlHandle, char* certificatePath)
 
         fclose(Page);
         curl_easy_cleanup(getCert);
-        printf("Certificate downloaded from https://curl.haxx.se/ca/cacert.pem...\n");
+        printf("Certificate downloaded from https://curl.se/ca/cacert.pem...\n");
     }
 }
 
@@ -371,7 +373,7 @@ void downloadChinaBook(Book cnBook, unsigned int startRange, unsigned int endRan
     clock_t End = clock();
     End = clock();
     float elapsedSeconds = ((float)(End - Start)) / CLOCKS_PER_SEC;
-    printf(u8"Finished downloading book %s on Global server(chapter %i to %i) in %f (seconds)\n", cnBook.Name, startRange, endRange, elapsedSeconds);
+    printf(u8"Finished downloading book %s on China server(chapter %i to %i) in %f (seconds)\n", cnBook.Name, startRange, endRange, elapsedSeconds);
 }
 
 // Gets range from input

@@ -14,8 +14,8 @@
 
 #include "directScanUtil.h"
 
-#define GB_CHAPTER_COUNT 21
-#define CN_CHAPTER_COUNT 22
+#define GB_CHAPTER_COUNT 22
+#define CN_CHAPTER_COUNT 23
 
 typedef struct _BOOK
 {
@@ -51,6 +51,7 @@ static const unsigned int gbDivineKey      = 1018;
 static const unsigned int gbCWV            = 1019;
 static const unsigned int gbEmpyreanBlade  = 1020;
 static const unsigned int gbAlienSpace     = 1021;
+static const unsigned int gbSpringFestival = 1022;
 
 // CN Manga IDs
 static const unsigned int cnNagazora       = 1001;
@@ -75,6 +76,7 @@ static const unsigned int cnELF            = 1020;
 static const unsigned int cnSecondKey      = 1021;
 static const unsigned int cnEmpyreanBlade  = 1022;
 static const unsigned int cnAlienSpace     = 1023;
+static const unsigned int cnSpringFestival = 1024;
 
 // Allow cURL to write to files
 size_t writeData(void* Data, unsigned int long long Size, unsigned int long long Count, void* File);

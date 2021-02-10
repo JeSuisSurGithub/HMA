@@ -1,8 +1,10 @@
 #include "HMCD.h"
+#include "HMCDVersion.h"
 
 int main(int argc, char* argv[])
 {
     curl_global_init(CURL_GLOBAL_ALL);
+    printf("HMCD Version: %i.%i.%i\n", HMCD_VERSION_MAJOR, HMCD_VERSION_MINOR, HMCD_VERSION_PATCH);
     if (argc == 5)
     {
         printf("Ensure that you have internet connection!\n");

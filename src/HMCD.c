@@ -468,7 +468,6 @@ void guidedInterface()
         printf("Not a valid choice\n");
 
     printf("Press any key to exit...\n");
-    fflush(stdin);   
     getchar();
 }
 
@@ -538,6 +537,5 @@ void commandLineInterface(unsigned int serverID, unsigned int bookID, unsigned i
         exit(-1);
     }
     printf("Press any key to exit...\n");
-    fflush(stdin);   
     getchar();
 }

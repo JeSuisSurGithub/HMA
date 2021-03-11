@@ -83,20 +83,20 @@ void setCA(CURL* curlHandle, char* certificatePath)
     else
     {
         printf("Certificate does not exists downloading from https://curl.se/ca/cacert.pem...\n");
-        CURL* getCert = curl_easy_init();
-        curl_easy_setopt(getCert, CURLOPT_URL, "https://curl.se/ca/cacert.pem");
-        curl_easy_setopt(getCert, CURLOPT_SSL_VERIFYPEER, 0L);
-        curl_easy_setopt(getCert, CURLOPT_NOBODY, 0L);
-        curl_easy_setopt(getCert, CURLOPT_VERBOSE, 0L);
-        curl_easy_setopt(getCert, CURLOPT_NOPROGRESS, 1L);
-        curl_easy_setopt(getCert, CURLOPT_WRITEFUNCTION, writeData);
+        CURL* certHandle = curl_easy_init();
+        curl_easy_setopt(certHandle, CURLOPT_URL, "https://curl.se/ca/cacert.pem");
+        curl_easy_setopt(certHandle, CURLOPT_SSL_VERIFYPEER, 0L);
+        curl_easy_setopt(certHandle, CURLOPT_NOBODY, 0L);
+        curl_easy_setopt(certHandle, CURLOPT_VERBOSE, 0L);
+        curl_easy_setopt(certHandle, CURLOPT_NOPROGRESS, 1L);
+        curl_easy_setopt(certHandle, CURLOPT_WRITEFUNCTION, writeData);
 	    FILE* Page = fopen(certificatePath, "wb+");
-        curl_easy_setopt(getCert, CURLOPT_WRITEDATA, Page);
-        curl_easy_perform(getCert);
+        curl_easy_setopt(certHandle, CURLOPT_WRITEDATA, Page);
+        curl_easy_perform(certHandle);
         curl_easy_setopt(curlHandle, CURLOPT_CAINFO, certificatePath);
 
         fclose(Page);
-        curl_easy_cleanup(getCert);
+        curl_easy_cleanup(certHandle);
         printf("Certificate downloaded from https://curl.se/ca/cacert.pem...\n");
     }
 }

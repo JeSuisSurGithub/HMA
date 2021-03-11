@@ -1,4 +1,3 @@
-#pragma once
 #ifndef DIRECTSCANUTIL_H
 #define DIRECTSCANUTIL_H
 

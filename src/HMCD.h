@@ -1,4 +1,3 @@
-#pragma once
 #ifndef HMCD_H
 #define HMCD_H
 

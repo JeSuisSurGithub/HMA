@@ -8,5 +8,8 @@ Today everything needs internet and that is pretty annoying one my biggest compl
 Sooo i wrote a script to download HI3 Manhuas and download them on whatever device that supports libCURL you want Windows, GNU-Linux or Android through Termux.\
 So that we can at least keep this part of HI3!
 
+## How to get it
+Just got [there](https://github.com/JeComtempleDuCodeSource/HMCD/releases).
+
 ## Build
 To build you'll need git, cmake, libcURL and a C compiler and then just run the bash/batch scripts.

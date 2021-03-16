@@ -1,11 +1,5 @@
 #include "HMCD.h"
 
-size_t writeData(void* Data, unsigned int long long Size, unsigned int long long Count, void* File)
-{
-	size_t Written = fwrite(Data, Size, Count, (FILE*)File);
-	return Written;
-}
-
 Book constructBook(unsigned int ID, char* Name)
 {
     Book _Book;
@@ -89,7 +83,7 @@ void setCA(CURL* curlHandle, char* certificatePath)
         curl_easy_setopt(certHandle, CURLOPT_NOBODY, 0L);
         curl_easy_setopt(certHandle, CURLOPT_VERBOSE, 0L);
         curl_easy_setopt(certHandle, CURLOPT_NOPROGRESS, 1L);
-        curl_easy_setopt(certHandle, CURLOPT_WRITEFUNCTION, writeData);
+        curl_easy_setopt(certHandle, CURLOPT_WRITEFUNCTION, fwrite);
 	    FILE* Page = fopen(certificatePath, "wb+");
         curl_easy_setopt(certHandle, CURLOPT_WRITEDATA, Page);
         curl_easy_perform(certHandle);
@@ -185,17 +179,14 @@ unsigned int getChapterCountChina(Book bookToScan)
 void downloadGlobalBook(Book globalBook, unsigned int startRange, unsigned int endRange)
 {
     clock_t Start = clock();
+    char* lv0dirName = malloc(8 + 4 + 1);
+    sprintf(lv0dirName, "./GBBook%i", globalBook.ID);
 #ifdef _WIN32
-    char* lv0dirName = malloc(8 + 4 + 1);
-    sprintf(lv0dirName, "./GBBook%i", globalBook.ID);
     mkdir(lv0dirName);
-    free(lv0dirName);
 #else
-    char* lv0dirName = malloc(8 + 4 + 1);
-    sprintf(lv0dirName, "./GBBook%i", globalBook.ID);
     mkdir(lv0dirName, 0777);
-    free(lv0dirName);
 #endif
+    free(lv0dirName);
     // For all chapter in the range
     CURL* curlCheck = curl_easy_init();
     setCA(curlCheck, "./cacert.pem");
@@ -251,7 +242,7 @@ void downloadGlobalBook(Book globalBook, unsigned int startRange, unsigned int e
                 curl_easy_setopt(curlDownload, CURLOPT_URL, lv2concatURL);
                 curl_easy_setopt(curlDownload, CURLOPT_VERBOSE, 0L);
 	            curl_easy_setopt(curlDownload, CURLOPT_NOPROGRESS, 1L);
-                curl_easy_setopt(curlDownload, CURLOPT_WRITEFUNCTION, writeData);
+                curl_easy_setopt(curlDownload, CURLOPT_WRITEFUNCTION, fwrite);
                 FILE* Page = fopen(lv1localFileName, "wb+");
 	            curl_easy_setopt(curlDownload, CURLOPT_WRITEDATA, Page);
 	            curl_easy_perform(curlDownload);
@@ -282,17 +273,14 @@ void downloadGlobalBook(Book globalBook, unsigned int startRange, unsigned int e
 void downloadChinaBook(Book cnBook, unsigned int startRange, unsigned int endRange)
 {
     clock_t Start = clock();
+    char* lv0dirName = malloc(8 + 4 + 1);
+    sprintf(lv0dirName, "./CNBook%i", cnBook.ID);
 #ifdef _WIN32
-    char* lv0dirName = malloc(8 + 4 + 1);
-    sprintf(lv0dirName, "./CNBook%i", cnBook.ID);
     mkdir(lv0dirName);
-    free(lv0dirName);
 #else
-    char* lv0dirName = malloc(8 + 4 + 1);
-    sprintf(lv0dirName, "./CNBook%i", cnBook.ID);
     mkdir(lv0dirName, 0777);
-    free(lv0dirName);
 #endif
+    free(lv0dirName);
     // For all chapter in the range
     CURL* curlCheck = curl_easy_init();
     setCA(curlCheck, "./cacert.pem");
@@ -348,7 +336,7 @@ void downloadChinaBook(Book cnBook, unsigned int startRange, unsigned int endRan
                 curl_easy_setopt(curlDownload, CURLOPT_URL, lv2concatURL);
                 curl_easy_setopt(curlDownload, CURLOPT_VERBOSE, 0L);
 	            curl_easy_setopt(curlDownload, CURLOPT_NOPROGRESS, 1L);
-                curl_easy_setopt(curlDownload, CURLOPT_WRITEFUNCTION, writeData);
+                curl_easy_setopt(curlDownload, CURLOPT_WRITEFUNCTION, fwrite);
                 FILE* Page = fopen(lv1localFileName, "wb+");
 	            curl_easy_setopt(curlDownload, CURLOPT_WRITEDATA, Page);
 	            curl_easy_perform(curlDownload);
@@ -405,7 +393,7 @@ void guidedInterface()
     printf("Welcome to HI3 manga C downloader!(The C version of HMPD)\n\n");
     printf("Get more help or report issues at https://github.com/JeComtempleDuCodeSource/HMCD\n");
     unsigned int serverInt = 0;
-    printf("Type 1 to download from global server.And Type 2 to download from CN server: ");
+    printf("Type 1 to download from global server\nType 2 to download from CN server\nType the corresponding number: ");
     scanf("%i", &serverInt);
     putchar('\n');
     // Show available books and get range from user input

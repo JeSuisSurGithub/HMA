@@ -77,23 +77,32 @@ static const unsigned int cnEmpyreanBlade  = 1022;
 static const unsigned int cnAlienSpace     = 1023;
 static const unsigned int cnSpringFestival = 1024;
 
-// Allow cURL to write to files
-size_t writeData(void* Data, unsigned int long long Size, unsigned int long long Count, void* File);
-
 // Return book
 Book constructBook(unsigned int ID, char* Name);
 
 // Get all books
 Book* getGlobalBooks();
 
+// Get all CN books
+Book* getChinaBook();
+
+// Check that certificate for https is here
+void setCA(CURL* curlHandle, char* certificatePath);
+
 // Get folder size
 unsigned long long int getFolderSize(char* folderName);
 
 // Get chapter count
-unsigned int getChapterCountASCII(Book bookToScan);
+unsigned int getChapterCountGlobal(Book bookToScan);
+
+// Get CN chapter count
+unsigned int getChapterCountChina(Book bookToScan);
 
 // Download book
-void downloadASCIIBook(Book globalBook, unsigned int startRange, unsigned int endRange);
+void downloadGlobalBook(Book globalBook, unsigned int startRange, unsigned int endRange);
+
+// Download CN book
+void downloadChinaBook(Book cnBook, unsigned int startRange, unsigned int endRange);
 
 // Get range from user input
 void getRange(unsigned int* Start, unsigned int* End, unsigned int chapterCount);

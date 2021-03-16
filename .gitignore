@@ -4,3 +4,5 @@
 /HMCD-Linux-install.sh
 /HMCD-Termux-install.sh
 /src/HMCDVersion.h
+/hmcd-auto-setup-gcc.sh
+/hmcd-auto-setup-mingw.cmd

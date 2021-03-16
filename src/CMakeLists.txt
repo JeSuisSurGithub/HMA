@@ -19,9 +19,7 @@ target_include_directories(HMCD PUBLIC
 )
 
 # Libraries
-target_link_libraries(HMCD 
-			"curl"
-)
+target_link_libraries(HMCD "curl")
 
 # Flags
 target_compile_options(HMCD PUBLIC "-Wall" "-O2")

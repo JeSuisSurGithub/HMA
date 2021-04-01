@@ -1,6 +1,6 @@
 #include "HMCD.h"
 
-Book constructBook(unsigned int ID, char* Name)
+Book constructBook(unsigned int ID, const char* Name)
 {
     Book _Book;
     _Book.ID = ID;
@@ -11,7 +11,7 @@ Book constructBook(unsigned int ID, char* Name)
 
 Book* getGlobalBooks()
 {
-    Book* bookInfo = malloc(sizeof(Book) * 21);
+    Book* bookInfo = malloc(sizeof(Book) * GB_CHAPTER_COUNT );
     bookInfo[0]  = constructBook(gbaichanFacts,    "Ai-Chan Facts"         );
     bookInfo[1]  = constructBook(gbGratitude,      "Gratitude Arc"         );
     bookInfo[2]  = constructBook(gbAEInvasion,     "AE Invasion"           );
@@ -39,7 +39,7 @@ Book* getGlobalBooks()
 
 Book* getChinaBook()
 {
-    Book* bookInfo = malloc(sizeof(Book) * 22);
+    Book* bookInfo = malloc(sizeof(Book) * CN_CHAPTER_COUNT);
     bookInfo[0]  = constructBook(cnNagazora,       u8"逃离长空篇");
     bookInfo[1]  = constructBook(cnHI3,            u8"樱花追忆篇");
     bookInfo[2]  = constructBook(cnBohai,          u8"绀海篇");
@@ -66,10 +66,10 @@ Book* getChinaBook()
     return bookInfo;
 }
 
-void setCA(CURL* curlHandle, char* certificatePath)
+void setCA(CURL* curlHandle, const char* certificatePath)
 {
     FILE* Certificate;
-    if((Certificate = fopen(certificatePath, "r+")) != NULL)
+    if ((Certificate = fopen(certificatePath, "r+")) != NULL)
     {
         printf("Certificate exists!\n");
         curl_easy_setopt(curlHandle, CURLOPT_CAINFO, certificatePath);
@@ -84,34 +84,35 @@ void setCA(CURL* curlHandle, char* certificatePath)
         curl_easy_setopt(certHandle, CURLOPT_VERBOSE, 0L);
         curl_easy_setopt(certHandle, CURLOPT_NOPROGRESS, 1L);
         curl_easy_setopt(certHandle, CURLOPT_WRITEFUNCTION, fwrite);
-	    FILE* Page = fopen(certificatePath, "wb+");
-        curl_easy_setopt(certHandle, CURLOPT_WRITEDATA, Page);
+
+	    FILE* Certificate = fopen(certificatePath, "wb+");
+        curl_easy_setopt(certHandle, CURLOPT_WRITEDATA, Certificate);
         curl_easy_perform(certHandle);
         curl_easy_setopt(curlHandle, CURLOPT_CAINFO, certificatePath);
+        fclose(Certificate);
 
-        fclose(Page);
         curl_easy_cleanup(certHandle);
         printf("Certificate downloaded from https://curl.se/ca/cacert.pem...\n");
     }
 }
 
-unsigned long long int getFolderSize(char* folderName)
+unsigned long long int getFolderSize(const char* folderName)
 {
     unsigned int fileCount = 0;
     char** filePaths = getAllFilePaths(folderName, &fileCount);
     unsigned long long int totalFolderSize = 0;
     for (unsigned int Index = 0; Index < fileCount; Index++)
-    {
         totalFolderSize += getFileSize(filePaths[Index]);
-    }
+
     for (unsigned int Index = 0; Index < fileCount; Index++)
         free(filePaths[Index]);
     free(filePaths);
     return totalFolderSize;
 }
 
-unsigned int getChapterCountGlobal(Book bookToScan)
+unsigned int getChapterCount(Book bookToScan, SERVER Target)
 {
+    const char* targetBaseURL = (Target == CHINA) ? chinaBaseURL : globalBaseURL;
     printf("Getting chapter count...\n");
     CURL* curlCheck = curl_easy_init();
     setCA(curlCheck, "./cacert.pem");
@@ -120,8 +121,8 @@ unsigned int getChapterCountGlobal(Book bookToScan)
     for (chapterCount = 1; chapterCount <= 100; chapterCount++)
     {
         char* bookURL = (chapterCount >= 10) ?
-        malloc(strlen(globalBaseURL) + 1 + 4 + 1 + 2 + 9 + 1) : malloc(strlen(globalBaseURL) + 1 + 4 + 1 + 1 + 9 + 1);
-        sprintf(bookURL, "%s/%i/%i/0001.jpg", globalBaseURL, bookToScan.ID, chapterCount);
+            malloc(strlen(targetBaseURL) + 1 + 4 + 1 + 2 + 9 + 1) : malloc(strlen(targetBaseURL) + 1 + 4 + 1 + 1 + 9 + 1);
+        sprintf(bookURL, "%s/%i/%i/0001.jpg", targetBaseURL, bookToScan.ID, chapterCount);
         curl_easy_setopt(curlCheck, CURLOPT_URL, bookURL);
         curl_easy_perform(curlCheck);
         long httpCode = 0;
@@ -143,50 +144,18 @@ unsigned int getChapterCountGlobal(Book bookToScan)
     return chapterCount;
 }
 
-unsigned int getChapterCountChina(Book bookToScan)
+void downloadBook(Book _Book, unsigned int startRange, unsigned int endRange, SERVER Target)
 {
-    printf("Getting chapter count...\n");
-    CURL* curlCheck = curl_easy_init();
-    setCA(curlCheck, "./cacert.pem");
-    curl_easy_setopt(curlCheck, CURLOPT_NOBODY, 1L);
-    unsigned int chapterCount = 0;
-    for (chapterCount = 1; chapterCount <= 100; chapterCount++)
-    {
-        char* bookURL = (chapterCount >= 10) ?
-        malloc(strlen(chinaBaseURL) + 1 + 4 + 1 + 2 + 9 + 1) : malloc(strlen(chinaBaseURL) + 1 + 4 + 1 + 1 + 9 + 1);
-        sprintf(bookURL, "%s/%i/%i/0001.jpg", chinaBaseURL, bookToScan.ID, chapterCount);
-        curl_easy_setopt(curlCheck, CURLOPT_URL, bookURL);
-        curl_easy_perform(curlCheck);
-        long httpCode = 0;
-        curl_easy_getinfo(curlCheck, CURLINFO_RESPONSE_CODE, &httpCode);
-        if (httpCode != 200)
-        {
-            printf("Chapter %i does not exists\n", chapterCount);
-            printf("Chapter count is %i\n", (chapterCount - 1));
-            curl_easy_cleanup(curlCheck);
-            free(bookURL);
-            return chapterCount;
-        }
-        else 
-        {
-            printf("Chapter %i exists\n", chapterCount);
-        }
-        free(bookURL);
-    }
-    return chapterCount;
-}
-
-void downloadGlobalBook(Book globalBook, unsigned int startRange, unsigned int endRange)
-{
+    const char* targetBaseURL = (Target == CHINA) ? chinaBaseURL : globalBaseURL;
+    const char* targetOutput = (Target == CHINA) ? chinaOutput : globalOutput;
     clock_t Start = clock();
-    char* lv0dirName = malloc(8 + 4 + 1);
-    sprintf(lv0dirName, "./GBBook%i", globalBook.ID);
+    char* bookDirName = malloc(strlen(targetOutput) + 4 + 1);
+    sprintf(bookDirName, "%s%i", targetOutput, _Book.ID);
 #ifdef _WIN32
-    mkdir(lv0dirName);
+    mkdir(bookDirName);
 #else
-    mkdir(lv0dirName, 0777);
+    mkdir(bookDirName, 0777);
 #endif
-    free(lv0dirName);
     // For all chapter in the range
     CURL* curlCheck = curl_easy_init();
     setCA(curlCheck, "./cacert.pem");
@@ -198,176 +167,80 @@ void downloadGlobalBook(Book globalBook, unsigned int startRange, unsigned int e
 
     for (unsigned int chapterCount = startRange; chapterCount <= endRange; chapterCount++)
     {
-        char* lv1concatURL = (chapterCount >= 10) ?
-        malloc(strlen(globalBaseURL) + 1 + 4 + 1 + 2 + 1 + 1) : malloc(strlen(globalBaseURL) + 1 + 4 + 1 + 1 + 1 + 1);
-        sprintf(lv1concatURL, "%s/%i/%i/", globalBaseURL, globalBook.ID, chapterCount);
-        char* lv1dirName = malloc(strlen("./GBBook") + 4 + strlen("/Chapter") + 2 + 1);
+        char* chapterURL = (chapterCount >= 10) ?
+            malloc(strlen(targetBaseURL) + 1 + 4 + 1 + 2 + 1 + 1) : malloc(strlen(targetBaseURL) + 1 + 4 + 1 + 1 + 1 + 1);
+        sprintf(chapterURL, "%s/%i/%i/", targetBaseURL, _Book.ID, chapterCount);
+        char* chapterDirName = malloc(strlen(bookDirName) + strlen("/Chapter") + 2 + 1);
         (chapterCount >= 10) ?
-        sprintf(lv1dirName, "./GBBook%i/Chapter%i", globalBook.ID, chapterCount) : sprintf(lv1dirName, "./GBBook%i/Chapter0%i", globalBook.ID, chapterCount);
+            sprintf(chapterDirName, "%s/Chapter%i", bookDirName, chapterCount) : 
+            sprintf(chapterDirName, "%s/Chapter0%i", bookDirName, chapterCount);
 #ifdef _WIN32
-        mkdir(lv1dirName);
+        mkdir(chapterDirName);
 #else
-        mkdir(lv1dirName, 0777);
+        mkdir(chapterDirName, 0777);
 #endif
         printf("Downloading chapter %i\n", chapterCount);
         unsigned int pageCount = 0;
-        for (pageCount = 1; pageCount <= 100; pageCount++)
+        for (pageCount = 1; pageCount <= 100; pageCount++) // Arbitrary great number
         {
-            char* lv2concatURL = malloc(strlen(lv1concatURL) + 8 + 1);
+            char* pageURL = malloc(strlen(chapterURL) + 8 + 1);
             (pageCount >= 10) ?
-            sprintf(lv2concatURL, "%s00%i.jpg", lv1concatURL, pageCount) : sprintf(lv2concatURL, "%s000%i.jpg", lv1concatURL, pageCount);
-            char* lv1localFileName = malloc(strlen("./GBBook") + 4 + 8 + 2 + 1 + 2 + 2 + 4 + 1);;
-            if (chapterCount < 10)
-            {
-                if (pageCount < 10)
-                    sprintf(lv1localFileName, "./GBBook%i/Chapter0%i/0%i0%i.jpg", globalBook.ID, chapterCount, chapterCount, pageCount);
-                
-                else 
-                    sprintf(lv1localFileName, "./GBBook%i/Chapter0%i/0%i%i.jpg", globalBook.ID, chapterCount, chapterCount, pageCount);
-            }
-            else 
-            {
-                if (pageCount < 10)
-                    sprintf(lv1localFileName, "./GBBook%i/Chapter0%i/%i0%i.jpg", globalBook.ID, chapterCount, chapterCount, pageCount);
+                sprintf(pageURL, "%s00%i.jpg", chapterURL, pageCount) : sprintf(pageURL, "%s000%i.jpg", chapterURL, pageCount);
+            char* pageName = malloc(strlen(targetOutput) + 4 + 8 + 2 + 1 + 2 + 2 + 4 + 1);;
 
-                else 
-                    sprintf(lv1localFileName, "./GBBook%i/Chapter0%i/%i%i.jpg", globalBook.ID, chapterCount, chapterCount, pageCount);
-            }
-            curl_easy_setopt(curlCheck, CURLOPT_URL, lv2concatURL);
+            if (pageCount < 10)
+                sprintf(pageName, "%s/0%i0%i.jpg", chapterDirName, chapterCount, pageCount);
+            
+            else 
+                sprintf(pageName, "%s/0%i%i.jpg", chapterDirName, chapterCount, pageCount);
+
+            curl_easy_setopt(curlCheck, CURLOPT_URL, pageURL);
             curl_easy_perform(curlCheck);
             long httpCode = 0;
             curl_easy_getinfo(curlCheck, CURLINFO_HTTP_CODE, &httpCode);
             if (httpCode == 200)
             {
-                curl_easy_setopt(curlDownload, CURLOPT_URL, lv2concatURL);
+                curl_easy_setopt(curlDownload, CURLOPT_URL, pageURL);
                 curl_easy_setopt(curlDownload, CURLOPT_VERBOSE, 0L);
 	            curl_easy_setopt(curlDownload, CURLOPT_NOPROGRESS, 1L);
                 curl_easy_setopt(curlDownload, CURLOPT_WRITEFUNCTION, fwrite);
-                FILE* Page = fopen(lv1localFileName, "wb+");
+                FILE* Page = fopen(pageName, "wb+");
 	            curl_easy_setopt(curlDownload, CURLOPT_WRITEDATA, Page);
 	            curl_easy_perform(curlDownload);
 	            fclose(Page);
-                printf("%s => %s\n", lv2concatURL, lv1localFileName);
-                free(lv2concatURL);
-                free(lv1localFileName);
+                printf("%s => %s\n", pageURL, pageName);
+                free(pageURL);
+                free(pageName);
             }
             else 
             {
                 printf("Can't download page %i of chapter %i\n", pageCount, chapterCount);
-                free(lv2concatURL);
-                free(lv1localFileName);
+                free(pageURL);
+                free(pageName);
                 break;
             }
         }
-        free(lv1dirName);
-        free(lv1concatURL);
+        free(chapterDirName);
+        free(chapterURL);
     }
+    free(bookDirName);
     curl_easy_cleanup(curlCheck);
     curl_easy_cleanup(curlDownload);
     clock_t End = clock();
     End = clock();
     float elapsedSeconds = ((float)(End - Start)) / CLOCKS_PER_SEC;
-    printf("Finished downloading book %s on Global server(chapter %i to %i) in %f (seconds)\n", globalBook.Name, startRange, endRange, elapsedSeconds);
-}
-
-void downloadChinaBook(Book cnBook, unsigned int startRange, unsigned int endRange)
-{
-    clock_t Start = clock();
-    char* lv0dirName = malloc(8 + 4 + 1);
-    sprintf(lv0dirName, "./CNBook%i", cnBook.ID);
-#ifdef _WIN32
-    mkdir(lv0dirName);
-#else
-    mkdir(lv0dirName, 0777);
-#endif
-    free(lv0dirName);
-    // For all chapter in the range
-    CURL* curlCheck = curl_easy_init();
-    setCA(curlCheck, "./cacert.pem");
-    curl_easy_setopt(curlCheck, CURLOPT_NOBODY, 1L);
-    
-    CURL* curlDownload = curl_easy_init();
-    setCA(curlDownload, "./cacert.pem");;
-    curl_easy_setopt(curlDownload, CURLOPT_HEADER, 0L);
-
-    for (unsigned int chapterCount = startRange; chapterCount <= endRange; chapterCount++)
-    {
-        char* lv1concatURL = (chapterCount >= 10) ?
-        malloc(strlen(chinaBaseURL) + 1 + 4 + 1 + 2 + 1 + 1) : malloc(strlen(chinaBaseURL) + 1 + 4 + 1 + 1 + 1 + 1);
-        sprintf(lv1concatURL, "%s/%i/%i/", chinaBaseURL, cnBook.ID, chapterCount);
-        char* lv1dirName = malloc(strlen("./CNBook") + 4 + strlen("/Chapter") + 2 + 1);
-        (chapterCount >= 10) ?
-        sprintf(lv1dirName, "./CNBook%i/Chapter%i", cnBook.ID, chapterCount) : sprintf(lv1dirName, "./CNBook%i/Chapter0%i", cnBook.ID, chapterCount);
-#ifdef _WIN32
-	mkdir(lv1dirName);
-#else
-	mkdir(lv1dirName, 0777);
-#endif
-	printf("Downloading chapter %i\n", chapterCount);
-        unsigned int pageCount = 0;
-        for (pageCount = 1; pageCount <= 100; pageCount++)
-        {
-            char* lv2concatURL = malloc(strlen(lv1concatURL) + 8 + 1);
-            (pageCount >= 10) ?
-            sprintf(lv2concatURL, "%s00%i.jpg", lv1concatURL, pageCount) : sprintf(lv2concatURL, "%s000%i.jpg", lv1concatURL, pageCount);
-            char* lv1localFileName = malloc(strlen("./CNBook") + 4 + 8 + 2 + 1 + 2 + 2 + 4 + 1);;
-            if (chapterCount < 10)
-            {
-                if (pageCount < 10)
-                    sprintf(lv1localFileName, "./CNBook%i/Chapter0%i/0%i0%i.jpg", cnBook.ID, chapterCount, chapterCount, pageCount);
-                
-                else 
-                    sprintf(lv1localFileName, "./CNBook%i/Chapter0%i/0%i%i.jpg", cnBook.ID, chapterCount, chapterCount, pageCount);
-            }
-            else 
-            {
-                if (pageCount < 10)
-                    sprintf(lv1localFileName, "./CNBook%i/Chapter0%i/%i0%i.jpg", cnBook.ID, chapterCount, chapterCount, pageCount);
-
-                else 
-                    sprintf(lv1localFileName, "./CNBook%i/Chapter0%i/%i%i.jpg", cnBook.ID, chapterCount, chapterCount, pageCount);
-            }
-            curl_easy_setopt(curlCheck, CURLOPT_URL, lv2concatURL);
-            curl_easy_perform(curlCheck);
-            long httpCode = 0;
-            curl_easy_getinfo(curlCheck, CURLINFO_HTTP_CODE, &httpCode);
-            if (httpCode == 200)
-            {
-                curl_easy_setopt(curlDownload, CURLOPT_URL, lv2concatURL);
-                curl_easy_setopt(curlDownload, CURLOPT_VERBOSE, 0L);
-	            curl_easy_setopt(curlDownload, CURLOPT_NOPROGRESS, 1L);
-                curl_easy_setopt(curlDownload, CURLOPT_WRITEFUNCTION, fwrite);
-                FILE* Page = fopen(lv1localFileName, "wb+");
-	            curl_easy_setopt(curlDownload, CURLOPT_WRITEDATA, Page);
-	            curl_easy_perform(curlDownload);
-	            fclose(Page);
-                printf("%s => %s\n", lv2concatURL, lv1localFileName);
-                free(lv2concatURL);
-                free(lv1localFileName);
-            }
-            else 
-            {
-                printf("Can't download page %i of chapter %i (%s)\n", pageCount, chapterCount, lv2concatURL);
-                free(lv2concatURL);
-                free(lv1localFileName);
-                break;
-            }
-        }
-        free(lv1dirName);
-        free(lv1concatURL);
-    }
-    curl_easy_cleanup(curlCheck);
-    curl_easy_cleanup(curlDownload);
-    clock_t End = clock();
-    End = clock();
-    float elapsedSeconds = ((float)(End - Start)) / CLOCKS_PER_SEC;
-    printf(u8"Finished downloading book %s on China server(chapter %i to %i) in %f (seconds)\n", cnBook.Name, startRange, endRange, elapsedSeconds);
+    printf("Finished downloading book %s on %s server(chapter %i to %i) in %f (seconds)\n", 
+        _Book.Name, 
+        (Target == CHINA) ? "china" : "global", 
+        startRange, 
+        endRange, 
+        elapsedSeconds);
 }
 
 // Gets range from input
 void getRange(unsigned int* Start, unsigned int* End, unsigned int chapterCount)
 {
-    while(true)
+    while (true)
     {
         printf("The max range is 1-%i\n", (chapterCount - 1));
         printf("Please type the chapter from where to start from(including it): ");
@@ -415,12 +288,12 @@ void guidedInterface()
 
         unsigned int Start = 0;
         unsigned int End = 0;
-        unsigned int chapterCount = getChapterCountGlobal(bookInfo[bookIndex]);
+        unsigned int chapterCount = getChapterCount(bookInfo[bookIndex], GLOBAL);
         getRange(&Start, &End, chapterCount);
-        downloadGlobalBook(bookInfo[bookIndex], Start, End);
+        downloadBook(bookInfo[bookIndex], Start, End, GLOBAL);
         char* folderName = malloc(8 + 4 + 1 + 1);
-        sprintf(folderName, "./GBBook%i/", bookInfo[bookIndex].ID);
-        printf("Total diskspace taken by \"./GBBook%i\": %llu (bytes)\n", bookInfo[bookIndex].ID, getFolderSize(folderName));
+        sprintf(folderName, "%s%i/", globalOutput, bookInfo[bookIndex].ID);
+        printf("Total diskspace taken by \"%s%i\": %llu (bytes)\n", globalOutput, bookInfo[bookIndex].ID, getFolderSize(folderName));
         free(bookInfo);
     }
     else if (serverInt == 2)
@@ -444,12 +317,12 @@ void guidedInterface()
         }
         unsigned int Start = 0;
         unsigned int End = 0;
-        unsigned int chapterCount = getChapterCountChina(bookInfo[bookIndex]);
+        unsigned int chapterCount = getChapterCount(bookInfo[bookIndex], CHINA);
         getRange(&Start, &End, chapterCount);
-        downloadChinaBook(bookInfo[bookIndex], Start, End);
+        downloadBook(bookInfo[bookIndex], Start, End, CHINA);
         char* folderName = malloc(8 + 4 + 1 + 1);
-        sprintf(folderName, "./CNBook%i/", bookInfo[bookIndex].ID);
-        printf("Total diskspace taken by \"./CNBook%i\": %llu (bytes)\n", bookInfo[bookIndex].ID, getFolderSize(folderName));
+        sprintf(folderName, "%s%i/", chinaOutput, bookInfo[bookIndex].ID);
+        printf("Total diskspace taken by \"%s%i\": %llu (bytes)\n", chinaOutput, bookInfo[bookIndex].ID, getFolderSize(folderName));
         free(bookInfo);
     }
     else 
@@ -480,9 +353,9 @@ void commandLineInterface(unsigned int serverID, unsigned int bookID, unsigned i
             printf("Invalid book ID");
             return;
         }
-        unsigned int chapterCount = getChapterCountGlobal(bookInfo[bookIndex]);
+        unsigned int chapterCount = getChapterCount(bookInfo[bookIndex], GLOBAL);
         if ((startRange <= endRange) && (endRange <= (chapterCount - 1) && endRange >= 1) && (startRange >= 1 || startRange <= (chapterCount - 1)))
-            downloadGlobalBook(bookInfo[bookIndex], startRange, endRange);
+            downloadBook(bookInfo[bookIndex], startRange, endRange, GLOBAL);
         else
         {
             printf("Invalid range\n");
@@ -510,9 +383,9 @@ void commandLineInterface(unsigned int serverID, unsigned int bookID, unsigned i
             printf("Invalid book ID");
             return;
         }
-        unsigned int chapterCount = getChapterCountChina(bookInfo[bookIndex]);
+        unsigned int chapterCount = getChapterCount(bookInfo[bookIndex], CHINA);
         if ((startRange <= endRange) && (endRange <= (chapterCount - 1) && endRange >= 1) && (startRange >= 1 || startRange <= (chapterCount - 1)))
-            downloadChinaBook(bookInfo[bookIndex], startRange, endRange);
+            downloadBook(bookInfo[bookIndex], startRange, endRange, CHINA);
         else
         {
             printf("Invalid range\n");

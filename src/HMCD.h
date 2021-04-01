@@ -11,7 +11,7 @@
     #include <windows.h>
 #endif
 
-#include "directScanUtil.h"
+#include "DirScanUtil.h"
 
 #define GB_CHAPTER_COUNT 22
 #define CN_CHAPTER_COUNT 23
@@ -22,11 +22,23 @@ typedef struct _BOOK
     char* Name;
 }Book;
 
+typedef enum _SERVER
+{
+    CHINA = 0,
+    GLOBAL = 1
+}SERVER;
+
 // Global Base URL
 static const char* globalBaseURL = "https://d2tpbmzklky1cl.cloudfront.net/manga/static/comic/book";
 
 // China Base URL 
 static const char* chinaBaseURL = "https://comicstatic.bh3.com/new_static_v2/comic/book";
+
+// Global output directory
+static const char* globalOutput = "./GBBook";
+
+// China output directory
+static const char* chinaOutput = "./CNBook";
 
 // GLOBAL Manga IDs
 static const unsigned int gbaichanFacts    = 1001;
@@ -78,7 +90,7 @@ static const unsigned int cnAlienSpace     = 1023;
 static const unsigned int cnSpringFestival = 1024;
 
 // Return book
-Book constructBook(unsigned int ID, char* Name);
+Book constructBook(unsigned int ID, const char* Name);
 
 // Get all books
 Book* getGlobalBooks();
@@ -87,22 +99,16 @@ Book* getGlobalBooks();
 Book* getChinaBook();
 
 // Check that certificate for https is here
-void setCA(CURL* curlHandle, char* certificatePath);
+void setCA(CURL* curlHandle, const char* certificatePath);
 
 // Get folder size
-unsigned long long int getFolderSize(char* folderName);
+unsigned long long int getFolderSize(const char* folderName);
 
 // Get chapter count
-unsigned int getChapterCountGlobal(Book bookToScan);
-
-// Get CN chapter count
-unsigned int getChapterCountChina(Book bookToScan);
+unsigned int getChapterCount(Book bookToScan, SERVER Target);
 
 // Download book
-void downloadGlobalBook(Book globalBook, unsigned int startRange, unsigned int endRange);
-
-// Download CN book
-void downloadChinaBook(Book cnBook, unsigned int startRange, unsigned int endRange);
+void downloadBook(Book _Book, unsigned int startRange, unsigned int endRange, SERVER Target);
 
 // Get range from user input
 void getRange(unsigned int* Start, unsigned int* End, unsigned int chapterCount);

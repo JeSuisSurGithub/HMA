@@ -10,7 +10,7 @@ configure_file("${CMAKE_CURRENT_LIST_DIR}/HMCDVersion.h.in" "${CMAKE_CURRENT_LIS
 add_executable(HMCD 
                 "${CMAKE_CURRENT_LIST_DIR}/main.c" 
                 "${CMAKE_CURRENT_LIST_DIR}/HMCD.c" 
-                "${CMAKE_CURRENT_LIST_DIR}/directScanUtil.c" 
+                "${CMAKE_CURRENT_LIST_DIR}/DirScanUtil.c" 
 )
 
 # Includes

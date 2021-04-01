@@ -1,6 +1,6 @@
 zlib License
 
-Copyright (C) 2020 JeComtempleDuCodeSource
+Copyright (C) 2020 JeFaitDesSpaghettis
 
 This software is provided 'as-is', without any express or implied
 warranty.  In no event will the authors be held liable for any damages

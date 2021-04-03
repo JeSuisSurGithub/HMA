@@ -9,7 +9,7 @@ Sooo i wrote a script to download HI3 Manhuas and download them on whatever devi
 So that we can at least keep this part of HI3!
 
 ## How to get it
-Just go [there](https://github.com/JeComtempleDuCodeSource/HMCD/releases).
+Just go [there](https://github.com/JeFaitDesSpaghettis/HMCD/releases).
 
 ## Build
 To build you'll need git, cmake, libcURL and a C compiler and then just run the bash/batch scripts.

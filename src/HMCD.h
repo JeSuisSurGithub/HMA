@@ -110,14 +110,4 @@ unsigned int getChapterCount(Book bookToScan, SERVER Target);
 // Download book
 void downloadBook(Book _Book, unsigned int startRange, unsigned int endRange, SERVER Target);
 
-// Get range from user input
-void getRange(unsigned int* Start, unsigned int* End, unsigned int chapterCount);
-
-// Guided interface
-void guidedInterface();
-
-// Argument
-void commandLineInterface(unsigned int serverID, unsigned int bookID, unsigned int startRange, unsigned int endRange);
-
-
 #endif /* HMCD_H */

@@ -92,6 +92,8 @@ void guidedInterface()
     else 
         printf("Not a valid choice\n");
 
+    char currentChar;
+    while ((currentChar = getchar()) != '\n' && currentChar != EOF);
     printf("Press any key to exit...\n");
     getchar();
 }

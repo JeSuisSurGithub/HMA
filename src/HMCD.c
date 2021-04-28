@@ -171,9 +171,9 @@ void downloadBook(Book _Book, unsigned int startRange, unsigned int endRange, SE
             malloc(strlen(targetBaseURL) + 1 + 4 + 1 + 2 + 1 + 1) : malloc(strlen(targetBaseURL) + 1 + 4 + 1 + 1 + 1 + 1);
         sprintf(chapterURL, "%s/%i/%i/", targetBaseURL, _Book.ID, chapterCount);
         char* chapterDirName = malloc(strlen(bookDirName) + strlen("/Chapter") + 2 + 1);
-        (chapterCount >= 10) ?
-            sprintf(chapterDirName, "%s/Chapter%i", bookDirName, chapterCount) : 
-            sprintf(chapterDirName, "%s/Chapter0%i", bookDirName, chapterCount);
+        (chapterCount < 10) ?
+            sprintf(chapterDirName, "%s/Chapter0%i", bookDirName, chapterCount) : 
+            sprintf(chapterDirName, "%s/Chapter%i", bookDirName, chapterCount);
 #ifdef _WIN32
         mkdir(chapterDirName);
 #else
@@ -181,18 +181,35 @@ void downloadBook(Book _Book, unsigned int startRange, unsigned int endRange, SE
 #endif
         printf("Downloading chapter %i\n", chapterCount);
         unsigned int pageCount = 0;
-        for (pageCount = 1; pageCount <= 100; pageCount++) // Arbitrary great number
+        for (pageCount = 1; ; pageCount++)
         {
             char* pageURL = malloc(strlen(chapterURL) + 8 + 1);
             (pageCount >= 10) ?
                 sprintf(pageURL, "%s00%i.jpg", chapterURL, pageCount) : sprintf(pageURL, "%s000%i.jpg", chapterURL, pageCount);
             char* pageName = malloc(strlen(targetOutput) + 4 + 8 + 2 + 1 + 2 + 2 + 4 + 1);;
 
-            if (pageCount < 10)
-                sprintf(pageName, "%s/0%i0%i.jpg", chapterDirName, chapterCount, pageCount);
-            
-            else 
-                sprintf(pageName, "%s/0%i%i.jpg", chapterDirName, chapterCount, pageCount);
+            if (chapterCount < 10)
+            {
+                if (pageCount < 10)
+                {
+                    sprintf(pageName, "%s/0%i0%i.jpg", chapterDirName, chapterCount, pageCount);
+                }
+                else 
+                {
+                    sprintf(pageName, "%s/0%i%i.jpg", chapterDirName, chapterCount, pageCount);
+                }
+            }
+            else
+            {
+                if (pageCount < 10)
+                {
+                    sprintf(pageName, "%s/%i0%i.jpg", chapterDirName, chapterCount, pageCount);
+                }
+                else 
+                {
+                    sprintf(pageName, "%s/%i%i.jpg", chapterDirName, chapterCount, pageCount);
+                }
+            }
 
             curl_easy_setopt(curlCheck, CURLOPT_URL, pageURL);
             curl_easy_perform(curlCheck);

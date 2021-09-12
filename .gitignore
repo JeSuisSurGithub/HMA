@@ -4,7 +4,8 @@
 /Wrapper.sh
 /HMCD-Linux-install.sh
 /HMCD-Termux-install.sh
-/src/HMCDVersion.h
+/src/HMCD/HMCDVersion.h
+/include/HMCDCore/HMCDCoreVersion.h
 /hmcd-auto-setup-gcc.sh
 /hmcd-auto-setup-mingw.cmd
 /build-win-release.sh

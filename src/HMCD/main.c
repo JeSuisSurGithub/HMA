@@ -34,6 +34,7 @@ void guided_ui()
     printf("Type 1 to download from global server\nType 2 to download from CN server\nType the corresponding number: ");
     scanf("%i", &target_server);
     putchar('\n');
+
     // Show available books and get range from user input
     if (target_server == 1)
     {
@@ -103,6 +104,7 @@ void cmd_args_ui(unsigned int server_id, unsigned int book_id, unsigned int firs
 {
     if (server_id == 1)
     {
+        printf("Target server: GLOBAL\n");
         hmcd_book* book_list = hmcd_get_glb_books();
         bool book_id_is_valid = false;
         unsigned int book_index = 0;
@@ -121,8 +123,12 @@ void cmd_args_ui(unsigned int server_id, unsigned int book_id, unsigned int firs
             return;
         }
         unsigned int chap_count = hmcd_get_chap_cnt(book_list[book_index], GLOBAL);
-        if ((first_chap <= last_chap) && (last_chap <= (chap_count - 1) && last_chap >= 1) && (first_chap >= 1 || first_chap <= (chap_count - 1)))
+        if ((first_chap <= last_chap) && (last_chap <= (chap_count - 1)
+            && last_chap >= 1) && (first_chap >= 1 || first_chap <= (chap_count - 1)))
+        {
+            printf("Range: %i-%i\n", first_chap, last_chap);
             hmcd_dl_book(book_list[book_index], first_chap, last_chap, GLOBAL);
+        }
         else
         {
             printf("Invalid range\n");
@@ -133,6 +139,7 @@ void cmd_args_ui(unsigned int server_id, unsigned int book_id, unsigned int firs
 #ifdef _WIN32
         SetConsoleOutputCP(CP_UTF8);
 #endif
+        printf("Target server: CHINA\n");
         hmcd_book* book_list = hmcd_get_cn_books();
         bool book_id_is_valid = false;
         unsigned int book_index = 0;
@@ -141,7 +148,7 @@ void cmd_args_ui(unsigned int server_id, unsigned int book_id, unsigned int firs
             if (book_id == book_list[book_index].book_id)
             {
                 book_id_is_valid = true;
-                printf(u8"target_server book: %s\n", book_list[book_index].book_name);
+                printf(u8"Target book: %s\n", book_list[book_index].book_name);
                 break;
             }
         }
@@ -152,7 +159,10 @@ void cmd_args_ui(unsigned int server_id, unsigned int book_id, unsigned int firs
         }
         unsigned int chap_count = hmcd_get_chap_cnt(book_list[book_index], CHINA);
         if ((first_chap <= last_chap) && (last_chap <= (chap_count - 1) && last_chap >= 1) && (first_chap >= 1 || first_chap <= (chap_count - 1)))
+        {
+            printf("Range: %i-%i\n", first_chap, last_chap);
             hmcd_dl_book(book_list[book_index], first_chap, last_chap, CHINA);
+        }
         else
         {
             printf("Invalid range\n");
@@ -202,23 +212,18 @@ int main(int argc, char* argv[])
             switch(opt)
             {
                 case 'h':
-                    printf("%s\n", optarg);
                     help_flag = 1;
                     break;
                 case 's':
-                    printf("%s\n", optarg);
                     server_id = atoi(optarg);
                     break;
                 case 'b':
-                    printf("%s\n", optarg);
                     book_id = atoi(optarg);
                     break;
                 case 'f':
-                    printf("%s\n", optarg);
                     first_chap = atoi(optarg);
                     break;
                 case 'l':
-                    printf("%s\n", optarg);
                     last_chap = atoi(optarg);
                     break;
                 case '?':

@@ -15,7 +15,7 @@ int dsu_is_directory(const char* path);
 int dsu_is_regfile(const char* path);
 
 // Return file size
-unsigned int dsu_get_filesize(const char* filename);
+unsigned int dsu_get_filesize(const char* filepath);
 
 // Get number of files(not directory) of a given directory
 unsigned int dsu_get_file_cnt(const char* path);

@@ -53,7 +53,7 @@ static const unsigned int glb_kiana_plays_hi3   = 1008;
 static const unsigned int glb_london_holiday    = 1009;
 static const unsigned int glb_moon_shadow       = 1010;
 static const unsigned int glb_elan_palatinus    = 1011;
-static const unsigned int glb_springfest         = 1012;
+static const unsigned int glb_springfest        = 1012;
 static const unsigned int glb_elf               = 1013;
 static const unsigned int glb_second_key        = 1014;
 static const unsigned int glb_nagazora          = 1015;
@@ -83,7 +83,7 @@ static const unsigned int cn_gemina_origins     = 1015;
 static const unsigned int cn_gemina_invasion    = 1016;
 static const unsigned int cn_world_serpent      = 1017;
 static const unsigned int cn_london_holiday     = 1018;
-static const unsigned int cn_springfest          = 1019;
+static const unsigned int cn_springfest         = 1019;
 static const unsigned int cn_elf                = 1020;
 static const unsigned int cn_second_key         = 1021;
 static const unsigned int cn_empyrean_blade     = 1022;
@@ -100,7 +100,8 @@ hmcd_book* hmcd_get_glb_books();
 hmcd_book* hmcd_get_cn_books();
 
 // Check that certificate for https is here
-void hmcd_set_https_cert(CURL* curl_handle, const char* certificate_path);
+// return >= 0 means success, return < 0 means error
+int hmcd_set_https_cert(CURL* curl_handle, const char* certificate_path);
 
 // Get folder size
 unsigned long long int hmcd_get_dir_size(const char* dir_name);
@@ -109,6 +110,7 @@ unsigned long long int hmcd_get_dir_size(const char* dir_name);
 unsigned int hmcd_get_chap_cnt(hmcd_book target_book, DL_SERVER target_server);
 
 // Download book
-void hmcd_dl_book(hmcd_book target_book, unsigned int first_chap, unsigned int last_chap, DL_SERVER target_server);
+// return != 0 means error
+int hmcd_dl_book(hmcd_book target_book, unsigned int first_chap, unsigned int last_chap, DL_SERVER target_server);
 
 #endif /* HMCD_H */

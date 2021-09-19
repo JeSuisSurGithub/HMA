@@ -1,7 +1,7 @@
 cmake_minimum_required(VERSION 3.10)
 
 # Set the project name and version
-project(HMCDCore VERSION 1.1.0)
+project(HMCDCore VERSION 1.2.0)
 
 # Specify the C standard
 set(CMAKE_C_STANDARD 11)

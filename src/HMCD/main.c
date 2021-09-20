@@ -86,8 +86,8 @@ void guided_ui()
             exit(-5);
         }
         char* dir_name = malloc(8 + 1 + 4 + 1 + 1);
-        sprintf(dir_name, "%s_%i/", glb_out_dir, book_list[book_index].book_id);
-        printf("Total diskspace taken by \"%s%i\": %llu (bytes)\n", glb_out_dir, book_list[book_index].book_id, hmcd_get_dir_size(dir_name));
+        sprintf(dir_name, "%s_%i/", GLB_OUT_DIR, book_list[book_index].book_id);
+        printf("Total diskspace taken by \"%s%i\": %llu (bytes)\n", GLB_OUT_DIR, book_list[book_index].book_id, hmcd_get_dir_size(dir_name));
         free(book_list);
         free(dir_name);
     }
@@ -132,8 +132,8 @@ void guided_ui()
             exit(-9);
         }
         char* dir_name = malloc(8 + 1 + 4 + 1 + 1);
-        sprintf(dir_name, "%s_%i/", cn_out_dir, book_list[book_index].book_id);
-        printf("Total diskspace taken by \"%s%i\": %llu (bytes)\n", cn_out_dir, book_list[book_index].book_id, hmcd_get_dir_size(dir_name));
+        sprintf(dir_name, "%s_%i/", CN_OUT_DIR, book_list[book_index].book_id);
+        printf("Total diskspace taken by \"%s%i\": %llu (bytes)\n", CN_OUT_DIR, book_list[book_index].book_id, hmcd_get_dir_size(dir_name));
         free(book_list);
         free(dir_name);
     }

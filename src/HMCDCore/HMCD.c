@@ -4,65 +4,64 @@ hmcd_book hmcd_construct_book(unsigned int book_id, const char* book_name)
 {
     hmcd_book cur_book;
     cur_book.book_id = book_id;
-    cur_book.book_name = malloc(strlen(book_name) + 1);
-    strcpy(cur_book.book_name, book_name);
+    cur_book.book_name = book_name;
     return cur_book;
 }
 
 hmcd_book* hmcd_get_glb_books()
 {
     hmcd_book* book_list = malloc(sizeof(hmcd_book) * GB_CHAPTER_COUNT);
-    book_list[0]  = hmcd_construct_book(glb_aichan_facts,    "Ai-Chan Facts"         );
-    book_list[1]  = hmcd_construct_book(glb_gratitude,       "Gratitude Arc"         );
-    book_list[2]  = hmcd_construct_book(glb_ae_invasion,     "AE Invasion"           );
-    book_list[3]  = hmcd_construct_book(glb_azure_water,     "Azure Waters"          );
-    book_list[4]  = hmcd_construct_book(glb_2nd_eruption,    "Second Eruption"       );
-    book_list[5]  = hmcd_construct_book(glb_gemina_tales,    "Gemina: Tales"         );
-    book_list[6]  = hmcd_construct_book(glb_world_serpent,   "World Serpent"         );
-    book_list[7]  = hmcd_construct_book(glb_kiana_plays_hi3, "Kiana Plays Honkai"    );
-    book_list[8]  = hmcd_construct_book(glb_london_holiday,  "London Holiday"        );
-    book_list[9]  = hmcd_construct_book(glb_moon_shadow,     "Moon Shadow"           );
-    book_list[10] = hmcd_construct_book(glb_elan_palatinus,  "Elan Palatinus"        );
-    book_list[11] = hmcd_construct_book(glb_springfest,      "SpringFest"            );
-    book_list[12] = hmcd_construct_book(glb_elf,             "ELF"                   );
-    book_list[13] = hmcd_construct_book(glb_second_key,      "Second Key"            );
-    book_list[14] = hmcd_construct_book(glb_nagazora,        "Escape From Nagazora"  );
-    book_list[15] = hmcd_construct_book(glb_freya_high,      "St. Freya High"        );
-    book_list[16] = hmcd_construct_book(glb_gemina_invasion, "Gemina: Invasion"      );
-    book_list[17] = hmcd_construct_book(glb_divine_key,      "Divine Key"            );
-    book_list[18] = hmcd_construct_book(glb_cwv,             "Cooking With Valkyries");
-    book_list[19] = hmcd_construct_book(glb_empyrean_blade,  "Empyrean Blade"        );
-    book_list[20] = hmcd_construct_book(glb_alien_space,     "Alien Space"           );
-    book_list[21] = hmcd_construct_book(glb_spring_festival, "Spring Festival Trip"  );
+    book_list[0]  = hmcd_construct_book(HMCD_GLB_AICHAN_FACTS,    HMCD_GLB_AICHAN_FACTS_NAME   );
+    book_list[1]  = hmcd_construct_book(HMCD_GLB_GRATITUDE,       HMCD_GLB_GRATITUDE_NAME      );
+    book_list[2]  = hmcd_construct_book(HMCD_GLB_AE_INVASION,     HMCD_GLB_AE_INVASION_NAME    );
+    book_list[3]  = hmcd_construct_book(HMCD_GLB_AZURE_WATER,     HMCD_GLB_AZURE_WATER_NAME    );
+    book_list[4]  = hmcd_construct_book(HMCD_GLB_2ND_ERUPTION,    HMCD_GLB_2ND_ERUPTION_NAME   );
+    book_list[5]  = hmcd_construct_book(HMCD_GLB_GEMINA_TALES,    HMCD_GLB_GEMINA_TALES_NAME   );
+    book_list[6]  = hmcd_construct_book(HMCD_GLB_WORLD_SERPENT,   HMCD_GLB_WORLD_SERPENT_NAME  );
+    book_list[7]  = hmcd_construct_book(HMCD_GLB_KIANA_PLAYS_HI3, HMCD_GLB_KIANA_PLAYS_HI3_NAME);
+    book_list[8]  = hmcd_construct_book(HMCD_GLB_LONDON_HOLIDAY,  HMCD_GLB_LONDON_HOLIDAY_NAME );
+    book_list[9]  = hmcd_construct_book(HMCD_GLB_MOON_SHADOW,     HMCD_GLB_MOON_SHADOW_NAME    );
+    book_list[10] = hmcd_construct_book(HMCD_GLB_ELAN_PALATINUS,  HMCD_GLB_ELAN_PALATINUS_NAME );
+    book_list[11] = hmcd_construct_book(HMCD_GLB_SPRINGFEST,      HMCD_GLB_SPRINGFEST_NAME     );
+    book_list[12] = hmcd_construct_book(HMCD_GLB_ELF,             HMCD_GLB_ELF_NAME            );
+    book_list[13] = hmcd_construct_book(HMCD_GLB_SECOND_KEY,      HMCD_GLB_SECOND_KEY_NAME     );
+    book_list[14] = hmcd_construct_book(HMCD_GLB_NAGAZORA,        HMCD_GLB_NAGAZORA_NAME       );
+    book_list[15] = hmcd_construct_book(HMCD_GLB_FREYA_HIGH,      HMCD_GLB_FREYA_HIGH_NAME     );
+    book_list[16] = hmcd_construct_book(HMCD_GLB_GEMINA_INVASION, HMCD_GLB_GEMINA_INVASION_NAME);
+    book_list[17] = hmcd_construct_book(HMCD_GLB_DIVINE_KEY,      HMCD_GLB_DIVINE_KEY_NAME     );
+    book_list[18] = hmcd_construct_book(HMCD_GLB_CWV,             HMCD_GLB_CWV_NAME            );
+    book_list[19] = hmcd_construct_book(HMCD_GLB_EMPYREAN_BLADE,  HMCD_GLB_EMPYREAN_BLADE_NAME );
+    book_list[20] = hmcd_construct_book(HMCD_GLB_ALIEN_SPACE,     HMCD_GLB_ALIEN_SPACE_NAME    );
+    book_list[21] = hmcd_construct_book(HMCD_GLB_SPRING_FESTIVAL, HMCD_GLB_SPRING_FESTIVAL_NAME);
     return book_list;
 }
 
 hmcd_book* hmcd_get_cn_books()
 {
     hmcd_book* book_list = malloc(sizeof(hmcd_book) * CN_CHAPTER_COUNT);
-    book_list[0]  = hmcd_construct_book(cn_nagazora,        u8"逃离长空篇");
-    book_list[1]  = hmcd_construct_book(cn_hi3,             u8"樱花追忆篇");
-    book_list[2]  = hmcd_construct_book(cn_bohai,           u8"绀海篇");
-    book_list[3]  = hmcd_construct_book(cn_sakura,          u8"绯樱篇");
-    book_list[4]  = hmcd_construct_book(cn_ae_invasion,     u8"逆熵入侵篇");
-    book_list[5]  = hmcd_construct_book(cn_gratitude_arc,   u8"恩返篇");
-    book_list[6]  = hmcd_construct_book(cn_moon_shadow,     u8"月影篇");
-    book_list[7]  = hmcd_construct_book(cn_elan_palatinus,  u8"紫鸢篇");
-    book_list[8]  = hmcd_construct_book(cn_god_key,         u8"神之键秘话");
-    book_list[9]  = hmcd_construct_book(cn_kiana,           u8"玩崩坏3的琪亚娜");
-    book_list[10] = hmcd_construct_book(cn_2nd_lawman,      u8"第二次崩坏");
-    book_list[11] = hmcd_construct_book(cn_cwv,             u8"女武神的餐桌");
-    book_list[12] = hmcd_construct_book(cn_summer_mem,      u8"夏日回忆-预告篇");
-    book_list[13] = hmcd_construct_book(cn_gemina_origins,  u8"双子：起源");
-    book_list[14] = hmcd_construct_book(cn_gemina_invasion, u8"双子：入侵");
-    book_list[15] = hmcd_construct_book(cn_world_serpent,   u8"蛇之篇");
-    book_list[16] = hmcd_construct_book(cn_london_holiday,  u8"雾都假日");
-    book_list[17] = hmcd_construct_book(cn_springfest,      u8"年岁");
-    book_list[18] = hmcd_construct_book(cn_elf,             u8"武装人偶");
-    book_list[19] = hmcd_construct_book(cn_second_key,      u8"传承");
-    book_list[20] = hmcd_construct_book(cn_empyrean_blade,  u8"云墨剑心");
-    book_list[21] = hmcd_construct_book(cn_alien_space,     u8"异乡");
-    book_list[22] = hmcd_construct_book(cn_spring_festival, u8"新春旅行");
+    book_list[0]  = hmcd_construct_book(HMCD_CN_NAGAZORA,        HMCD_CN_NAGAZORA_NAME       );
+    book_list[1]  = hmcd_construct_book(HMCD_CN_HI3,             HMCD_CN_HI3_NAME            );
+    book_list[2]  = hmcd_construct_book(HMCD_CN_BOHAI,           HMCD_CN_BOHAI_NAME     	 );
+    book_list[3]  = hmcd_construct_book(HMCD_CN_SAKURA,          HMCD_CN_SAKURA_NAME         );
+    book_list[4]  = hmcd_construct_book(HMCD_CN_AE_INVASION,     HMCD_CN_AE_INVASION_NAME    );
+    book_list[5]  = hmcd_construct_book(HMCD_CN_GRATITUDE_ARC,   HMCD_CN_GRATITUDE_ARC_NAME  );
+    book_list[6]  = hmcd_construct_book(HMCD_CN_MOON_SHADOW,     HMCD_CN_MOON_SHADOW_NAME    );
+    book_list[7]  = hmcd_construct_book(HMCD_CN_ELAN_PALATINUS,  HMCD_CN_ELAN_PALATINUS_NAME );
+    book_list[8]  = hmcd_construct_book(HMCD_CN_GOD_KEY,         HMCD_CN_GOD_KEY_NAME        );
+    book_list[9]  = hmcd_construct_book(HMCD_CN_KIANA,           HMCD_CN_KIANA_NAME          );
+    book_list[10] = hmcd_construct_book(HMCD_CN_2ND_LAWMAN,      HMCD_CN_2ND_LAWMAN_NAME     );
+    book_list[11] = hmcd_construct_book(HMCD_CN_CWV,             HMCD_CN_CWV_NAME            );
+    book_list[12] = hmcd_construct_book(HMCD_CN_SUMMER_MEM,      HMCD_CN_SUMMER_MEM_NAME     );
+    book_list[13] = hmcd_construct_book(HMCD_CN_GEMINA_ORIGINS,  HMCD_CN_GEMINA_ORIGINS_NAME );
+    book_list[14] = hmcd_construct_book(HMCD_CN_GEMINA_INVASION, HMCD_CN_GEMINA_INVASION_NAME);
+    book_list[15] = hmcd_construct_book(HMCD_CN_WORLD_SERPENT,   HMCD_CN_WORLD_SERPENT_NAME  );
+    book_list[16] = hmcd_construct_book(HMCD_CN_LONDON_HOLIDAY,  HMCD_CN_LONDON_HOLIDAY_NAME );
+    book_list[17] = hmcd_construct_book(HMCD_CN_SPRINGFEST,      HMCD_CN_SPRINGFEST_NAME     );
+    book_list[18] = hmcd_construct_book(HMCD_CN_ELF,             HMCD_CN_ELF_NAME            );
+    book_list[19] = hmcd_construct_book(HMCD_CN_SECOND_KEY,      HMCD_CN_SECOND_KEY_NAME     );
+    book_list[20] = hmcd_construct_book(HMCD_CN_EMPYREAN_BLADE,  HMCD_CN_EMPYREAN_BLADE_NAME );
+    book_list[21] = hmcd_construct_book(HMCD_CN_ALIEN_SPACE,     HMCD_CN_ALIEN_SPACE_NAME    );
+    book_list[22] = hmcd_construct_book(HMCD_CN_SPRING_FESTIVAL, HMCD_CN_SPRING_FESTIVAL_NAME);
     return book_list;
 }
 
@@ -142,7 +141,7 @@ unsigned long long int hmcd_get_dir_size(const char* dir_name)
 
 unsigned int hmcd_get_chap_cnt(hmcd_book target_book, DL_SERVER target_server)
 {
-    const char* target_base_url = (target_server == CHINA) ? cn_base_url : glb_base_url;
+    const char* target_base_url = (target_server == CHINA) ? CN_BASE_URL : GLB_BASE_URL;
     printf("Getting chapter count...\n");
     CURL* check_handle = curl_easy_init();
     if (check_handle == NULL)
@@ -198,8 +197,8 @@ unsigned int hmcd_get_chap_cnt(hmcd_book target_book, DL_SERVER target_server)
 
 int hmcd_dl_book(hmcd_book target_book, unsigned int first_chap, unsigned int last_chap, DL_SERVER target_server)
 {
-    const char* target_base_url = (target_server == CHINA) ? cn_base_url : glb_base_url;
-    const char* target_out_dir = (target_server == CHINA) ? cn_out_dir : glb_out_dir;
+    const char* target_base_url = (target_server == CHINA) ? CN_BASE_URL : GLB_BASE_URL;
+    const char* target_out_dir = (target_server == CHINA) ? CN_OUT_DIR : GLB_OUT_DIR;
     clock_t clock_start = clock();
 
     char* book_dirname = malloc(strlen(target_out_dir) + 1 + 4 + 1);

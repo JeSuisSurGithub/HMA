@@ -60,13 +60,13 @@ unsigned int dsu_get_file_cnt(const char* path)
     return file_count;
 }
 
-void __get_all_filepath(const char* path, unsigned int* list_iter, char** path_list)
+void __dsu_get_all_filepath(const char* path, unsigned int* list_iter, char** path_list)
 {
     DIR* target_dir;
     struct dirent* entries;
     if ((target_dir = opendir(path)) == NULL)
     {
-        fprintf(stderr, "__get_all_filepath(), cannot open: %s\n", path);
+        fprintf(stderr, "__dsu_get_all_filepath(), cannot open: %s\n", path);
         return;
     }
     while ((entries = readdir(target_dir)) != NULL)
@@ -85,7 +85,7 @@ void __get_all_filepath(const char* path, unsigned int* list_iter, char** path_l
             {
                 char* dirpath = (char*)malloc(strlen(path) + strlen(entries->d_name) + 2);
                 sprintf(dirpath, "%s%s/", path, entries->d_name);
-                __get_all_filepath(dirpath, list_iter, path_list);
+                __dsu_get_all_filepath(dirpath, list_iter, path_list);
                 free(dirpath);
             }
             free(fullpath);
@@ -122,7 +122,7 @@ char** dsu_get_all_filepath(const char* path, unsigned int* file_count)
             {
                 char* dirpath = (char*)malloc(strlen(path) + strlen(entries->d_name) + 2);
                 sprintf(dirpath, "%s%s/", path, entries->d_name);
-                __get_all_filepath(dirpath, &list_iter, path_list);
+                __dsu_get_all_filepath(dirpath, &list_iter, path_list);
                 free(dirpath);
             }
             free(fullpath);
@@ -165,13 +165,13 @@ unsigned int dsu_get_dir_cnt(const char* path, bool is_recur)
     return dir_count;
 }
 
-void __get_all_dirpath(const char* path, unsigned int* list_iter, char** path_list)
+void __dsu_get_all_dirpath(const char* path, unsigned int* list_iter, char** path_list)
 {
     DIR* target_dir;
     struct dirent* entries;
     if ((target_dir = opendir(path)) == NULL)
     {
-        fprintf(stderr, "__get_all_dirpath(), cannot open: %s\n", path);
+        fprintf(stderr, "__dsu_get_all_dirpath(), cannot open: %s\n", path);
         return;
     }
     while ((entries = readdir(target_dir)) != NULL)
@@ -187,7 +187,7 @@ void __get_all_dirpath(const char* path, unsigned int* list_iter, char** path_li
                 (*list_iter)++;
                 char* dirpath = (char*)malloc(strlen(path) + strlen(entries->d_name) + 2);
                 sprintf(dirpath, "%s%s/", path, entries->d_name);
-                __get_all_dirpath(dirpath, list_iter, path_list);
+                __dsu_get_all_dirpath(dirpath, list_iter, path_list);
                 free(dirpath);
             }
             free(fullpath);
@@ -225,7 +225,7 @@ char** dsu_get_all_dirpath(const char* path, unsigned int* dir_count)
                 list_iter++;
                 char* dirpath = (char*)malloc(strlen(path) + strlen(entries->d_name) + 2);
                 sprintf(dirpath, "%s%s/", path, entries->d_name);
-                __get_all_dirpath(dirpath, &list_iter, path_list);
+                __dsu_get_all_dirpath(dirpath, &list_iter, path_list);
                 free(dirpath);
             }
             free(fullpath);

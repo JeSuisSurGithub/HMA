@@ -1,4 +1,8 @@
-#include "DirScanUtil.h"
+#include <HMCD/DirScanUtil.h>
+
+#ifdef __cplusplus
+    extern "C" {
+#endif
 
 int dsu_is_directory(const char* path)
 {
@@ -291,3 +295,7 @@ char** dsu_get_all_entry_no_recur(const char* path, unsigned int* entry_count)
     closedir(target_dir);
     return entry_list;
 }
+
+#ifdef __cplusplus
+    }
+#endif

@@ -1,5 +1,5 @@
-#include <HMCD.h>
-#include "HMCDVersion.h"
+#include <HMCDCore/HMCD.h>
+#include "HMCD-CLI_Version.h"
 #include <getopt.h>
 
 // Gets range from input
@@ -162,10 +162,10 @@ int main(int argc, char* argv[])
     #ifdef _WIN32
         SetConsoleOutputCP(CP_UTF8);
     #endif
-    printf("HMCDCore Version: %i.%i.%i\n",
-        HMCDCore_VERSION_MAJOR, HMCDCore_VERSION_MINOR, HMCDCore_VERSION_PATCH);
-    printf("HMCD Version: %i.%i.%i\n",
+    printf("libhmcd Version: %i.%i.%i\n",
         HMCD_VERSION_MAJOR, HMCD_VERSION_MINOR, HMCD_VERSION_PATCH);
+    printf("HMCD Version: %i.%i.%i\n",
+        HMCD_CLI_VERSION_MAJOR, HMCD_CLI_VERSION_MINOR, HMCD_CLI_VERSION_PATCH);
     printf("Be sure that you have an internet connection!\n");
     if (argc == 1)
     {

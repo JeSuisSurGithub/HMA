@@ -1,4 +1,8 @@
-#include <HMCD.h>
+#include <HMCD/HMCD.h>
+
+#ifdef __cplusplus
+    extern "C" {
+#endif
 
 int hmcd_set_https_cert(CURL* curl_handle, const char* certificate_path)
 {
@@ -233,7 +237,7 @@ int hmcd_dl_book(const HmcdServer* target_server, unsigned int book_index, unsig
         {
             long http_code = 0;
             char* page_url = malloc(strlen(chap_url) + 8 + 1);
-            sprintf(page_url, "%s00%02i.jpg", chap_url, page_count);
+            sprintf(page_url, "%s%04i.jpg", chap_url, page_count);
 
             char* page_name = malloc(strlen(target_out_dir) + 4 + 8 + 2 + 1 + 2 + 2 + 4 + 1);;
             sprintf(page_name, "%s/%02i%02i.jpg", chap_dirname, chap_count, page_count);
@@ -328,3 +332,7 @@ int hmcd_dl_book(const HmcdServer* target_server, unsigned int book_index, unsig
         elapsed_sec);
     return 0;
 }
+
+#ifdef __cplusplus
+    }
+#endif

@@ -2,7 +2,7 @@
 #define HMCD_H
 
 #ifdef __cplusplus
-    extern C {
+    extern "C" {
 #endif
 
 // Standard
@@ -21,7 +21,7 @@
 
 // Other headers
 #include "DirScanUtil.h"
-#include "HMCDCoreVersion.h"
+#include "HMCD_Version.h"
 
 // Constants
 
@@ -35,11 +35,12 @@ static const unsigned int HMCD_GLB_BOOK_COUNT = 22;
 static const unsigned int HMCD_CN_BOOK_COUNT = 23;
 
 // Download server
-typedef enum _HMCD_DL_SERVER
+typedef enum _HMCD_SERVER_ID
 {
-    CHINA = 0,
-    GLOBAL = 1
-}HMCD_DL_SERVER;
+    NONE = 0,
+    CHINA = 1,
+    GLOBAL = 2
+}HMCD_SERVER_ID;
 
 // Structs
 
@@ -58,7 +59,7 @@ typedef struct _HmcdBook
 typedef struct _HmcdServer
 {
     unsigned int book_count;    //!< Number of books available on this server
-    HMCD_DL_SERVER dl_server;   //!< Server identifier indicated by the HMCD_DL_SERVER enum
+    HMCD_SERVER_ID dl_server;   //!< Server identifier indicated by the HMCD_SERVER_ID enum
     const char* base_url;       //!< Base url for books (not ending in /)
     char* out_dir;              //!< Default output directory
     HmcdBook books[];           //!< Array of books available

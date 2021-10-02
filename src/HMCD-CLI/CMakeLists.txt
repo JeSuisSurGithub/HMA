@@ -2,7 +2,7 @@
 cmake_minimum_required(VERSION 3.10)
 
 # Set the project name and version
-project(HMCD-CLI VERSION 1.2.0)
+project(HMCD-CLI VERSION 1.3.0)
 
 # Specify the C standard
 set(CMAKE_C_STANDARD 11)

@@ -44,7 +44,7 @@ endif()
 add_dependencies(HMCD-CLI HMCD-Core_static HMCD-Core_shared)
 
 # Install
-install(TARGETS HMCD-CLI 
+install(TARGETS HMCD-CLI
     RUNTIME DESTINATION "${CMAKE_INSTALL_PREFIX}/bin"
     LIBRARY DESTINATION "${CMAKE_INSTALL_PREFIX}/lib"
     ARCHIVE DESTINATION "${CMAKE_INSTALL_PREFIX}/lib")

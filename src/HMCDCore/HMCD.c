@@ -148,6 +148,7 @@ unsigned long long int hmcd_get_dir_size(const char* dir_name)
         for (size_t index = 0; index < file_count; index++)
             free(file_list[index]);
         free(file_list);
+        return 0;
     }
     unsigned long long int total_dir_sz = 0;
     for (size_t index = 0; index < file_count; index++)
@@ -163,6 +164,10 @@ unsigned int hmcd_get_chap_cnt(const HmcdServer* target_server, unsigned int boo
 {
     HMCD_ASSERT_W_ERR_LOG(book_index < target_server->book_count, "book_index(%i) is out of range", book_index)
 
+#ifdef _WIN32
+    SetConsoleOutputCP(CP_UTF8);
+#endif
+
     const char* target_base_url = target_server->base_url;
     unsigned int book_id = target_server->books[book_index].book_id;
     const char* book_name = target_server->books[book_index].book_name;
@@ -171,7 +176,7 @@ unsigned int hmcd_get_chap_cnt(const HmcdServer* target_server, unsigned int boo
         "Getting chapter count of %s (%i %s)...",
         book_name,
         book_id,
-        hmcd_get_server_name(target_server->dl_server))
+        hmcd_get_server_name(target_server->server_id))
 
     CURL* check_handle;
     HMCD_CURL_INIT_W_ERR_CHK(check_handle, , 0)
@@ -212,7 +217,7 @@ unsigned int hmcd_get_chap_cnt(const HmcdServer* target_server, unsigned int boo
                 "%s (%i %s) has %i chapters",
                 book_name,
                 book_id,
-                hmcd_get_server_name(target_server->dl_server),
+                hmcd_get_server_name(target_server->server_id),
                 (chap_count - 1))
 
             curl_easy_cleanup(check_handle);
@@ -238,6 +243,10 @@ int hmcd_dl_book(const HmcdServer* target_server, unsigned int book_index, unsig
 {
     HMCD_ASSERT_W_ERR_LOG(book_index < target_server->book_count, "book_index(%i) is out of range", book_index)
 
+#ifdef _WIN32
+    SetConsoleOutputCP(CP_UTF8);
+#endif
+
     const char* target_base_url = target_server->base_url;
     const char* target_out_dir = target_server->out_dir;
     unsigned int book_id = target_server->books[book_index].book_id;
@@ -246,7 +255,7 @@ int hmcd_dl_book(const HmcdServer* target_server, unsigned int book_index, unsig
     HMCD_LOG("Downloading %s (%i %s chapter %i to %i)...",
         book_name,
         book_id,
-        hmcd_get_server_name(target_server->dl_server),
+        hmcd_get_server_name(target_server->server_id),
         first_chap,
         last_chap);
 
@@ -267,7 +276,7 @@ int hmcd_dl_book(const HmcdServer* target_server, unsigned int book_index, unsig
     {
         HMCD_LOG_ERR("hmcd_set_https_cert(dl_handle, \"./cacert.pem\") failed");
         curl_easy_cleanup(dl_handle);
-        return -4;
+        return -2;
     }
     curl_easy_setopt(dl_handle, CURLOPT_VERBOSE, 0L);
     curl_easy_setopt(dl_handle, CURLOPT_NOPROGRESS, 1L);
@@ -320,7 +329,7 @@ int hmcd_dl_book(const HmcdServer* target_server, unsigned int book_index, unsig
                 free(chap_dirname);
                 free(book_dirname);
                 curl_easy_cleanup(dl_handle);,
-                -9)
+                -3)
 
             curl_easy_getinfo(dl_handle, CURLINFO_HTTP_CODE, &http_code);
             // If page exists
@@ -333,7 +342,7 @@ int hmcd_dl_book(const HmcdServer* target_server, unsigned int book_index, unsig
                     free(chap_dirname);
                     free(book_dirname);
                     curl_easy_cleanup(dl_handle);,
-                    -6)
+                    -5)
 
                 // Download it and write the data
                 curl_easy_setopt(dl_handle, CURLOPT_URL, page_url);
@@ -349,7 +358,7 @@ int hmcd_dl_book(const HmcdServer* target_server, unsigned int book_index, unsig
                     free(chap_dirname);
                     free(book_dirname);
                     curl_easy_cleanup(dl_handle);,
-                    -10)
+                    -6)
 
                 curl_easy_getinfo(dl_handle, CURLINFO_HTTP_CODE, &http_code);
                 // If somehow we can't get it
@@ -389,7 +398,7 @@ int hmcd_dl_book(const HmcdServer* target_server, unsigned int book_index, unsig
                 free(chap_dirname);
                 free(book_dirname);
                 curl_easy_cleanup(dl_handle);
-                return -5;
+                return -4;
             }
         }
         free(chap_url);
@@ -400,7 +409,7 @@ int hmcd_dl_book(const HmcdServer* target_server, unsigned int book_index, unsig
     HMCD_LOG("Downloaded %s (%i %s chapter %i to %i) in %f (seconds)",
         book_name,
         book_id,
-        hmcd_get_server_name(target_server->dl_server),
+        hmcd_get_server_name(target_server->server_id),
         first_chap,
         last_chap,
         elapsed_sec);

@@ -89,7 +89,7 @@ typedef struct _HmcdBook
 typedef struct _HmcdServer
 {
     unsigned int book_count;    //!< Number of books available on this server
-    HMCD_SERVER_ID dl_server;   //!< Server identifier indicated by the HMCD_SERVER_ID enum
+    HMCD_SERVER_ID server_id;   //!< Server identifier indicated by the HMCD_SERVER_ID enum
     const char* base_url;       //!< Base url for books (not ending in /)
     char* out_dir;              //!< Default output directory
     HmcdBook books[];           //!< Array of books available
@@ -167,10 +167,13 @@ static const HmcdServer HMCD_CN_SERVER =
     }
 };
 
+// Enable logs to stdout
 void hmcd_enable_logs(bool enable);
 
+// Check if logs are enabled
 bool hmcd_enabled_logs();
 
+// Return NULL if server_id unrecognized
 const char* hmcd_get_server_name(HMCD_SERVER_ID server_id);
 
 // Check that certificate for https is here
@@ -181,10 +184,11 @@ int hmcd_set_https_cert(CURL* curl_handle, const char* certificate_path);
 unsigned long long int hmcd_get_dir_size(const char* dir_name);
 
 // Get chapter count
+// Returns 0 on error
 unsigned int hmcd_get_chap_cnt(const HmcdServer* target_server, unsigned int book_index);
 
 // Download book
-// return != 0 means error
+// Return != 0 on error
 int hmcd_dl_book(const HmcdServer* target_server, unsigned int book_index, unsigned int first_chap, unsigned int last_chap);
 
 #ifdef __cplusplus

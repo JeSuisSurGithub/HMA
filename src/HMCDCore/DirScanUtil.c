@@ -1,4 +1,4 @@
-#include <HMCD/DirScanUtil.h>
+#include <HMCDCore/DirScanUtil.h>
 
 #ifdef __cplusplus
     extern "C" {

@@ -2,8 +2,8 @@
 /build/
 /Win32-release/
 /Wrapper.sh
-/src/HMCD/HMCDVersion.h
-/include/HMCDCore/HMCDCoreVersion.h
-/hmcd-auto-setup-gcc.sh
-/hmcd-auto-setup-mingw.cmd
+/include/HMCDCore/HMCD-Core_Version.h
+/src/HMCD-CLI/HMCD-CLI_Version.h
+/hmcd-clone-and-build.sh
+/hmcd-clone-and-build.cmd
 /build-win-release.sh

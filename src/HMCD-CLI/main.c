@@ -1,6 +1,6 @@
 #include "HMCD-CLI_Version.h"
 
-#include <HMCD/HMCD.h>
+#include <HMCDCore/HMCD.h>
 #include <getopt.h>
 
 // Gets range from input
@@ -45,7 +45,7 @@ void guided_ui()
     unsigned int book_index = 0;
 
     // Get server
-    printf("Welcome to HI3 manga C downloader!\n\n");
+    printf("Welcome to HI3 manga C downloader!\n");
     printf("Get more help or report issues at https://github.com/JeFaitDesSpaghettis/HMCD\n");
     printf( "Type 1 to download from CN server\n"
             "Type 2 to download from global server\n"

@@ -1,4 +1,4 @@
-#include <HMCD/HMCD.h>
+#include <HMCDCore/HMCD.h>
 
 #ifdef __cplusplus
     extern "C" {
@@ -12,8 +12,22 @@ bool g_hmcd_enable_logs = true;
 #define HMCD_LOG_ERR(FMT, ...)  \
     fprintf(stderr, "ERROR: (%s:%i), "FMT"\n", __FILENAME__, __LINE__, ##__VA_ARGS__);
 
-#define HMCD_ASSERT_W_ERR_LOG(ASSERT, FMT, ...) \
-    if(!(ASSERT)) { HMCD_LOG_ERR(FMT, ##__VA_ARGS__) assert(ASSERT); }
+#ifdef RELEASE_BUILD
+    #define HMCD_ASSERT_W_ERR_LOG(ASSERT, FMT, ...) \
+    if(!(ASSERT))   \
+    {   \
+        HMCD_LOG_ERR("ASSERTION ERROR: "FMT, ##__VA_ARGS__)    \
+        assert(ASSERT); \
+        abort();    \
+    }
+#else
+    #define HMCD_ASSERT_W_ERR_LOG(ASSERT, FMT, ...) \
+    if(!(ASSERT))   \
+    {   \
+        HMCD_LOG_ERR(FMT, ##__VA_ARGS__)    \
+        assert(ASSERT); \
+    }
+#endif
 
 #define HMCD_FOPEN_W_ERR_CHK(FPTR, FN, MODE, CLEANUPS, RETCODE)  \
     if (!((FPTR) = fopen(FN, MODE))) \

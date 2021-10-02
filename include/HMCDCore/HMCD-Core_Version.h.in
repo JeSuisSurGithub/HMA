@@ -1,0 +1,14 @@
+#define HMCD_Core_VERSION_MAJOR @HMCD-Core_VERSION_MAJOR@
+#define HMCD_Core_VERSION_MINOR @HMCD-Core_VERSION_MINOR@
+#define HMCD_Core_VERSION_PATCH @HMCD-Core_VERSION_PATCH@
+#define RELEASE_BUILD @RELEASE_BUILD@
+
+#ifdef RELEASE_BUILD
+    #define NDEBUG
+#endif
+
+#ifdef __WIN32
+    #define __FILENAME__ (__FILE__ + @SRC_PATH_LEN@)
+#else
+    #define __FILENAME__ (__FILE__ + @SRC_PATH_LEN@)
+#endif

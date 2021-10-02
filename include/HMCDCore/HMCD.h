@@ -6,7 +6,7 @@
 #endif
 // Other headers
 #include "DirScanUtil.h"
-#include "HMCD_Version.h"
+#include "HMCD-Core_Version.h"
 
 // Non-std libraries
 #include <curl/curl.h>

@@ -6,7 +6,7 @@
 #endif
 
 // Other headers
-#include "HMCD_Version.h"
+#include "HMCD-Core_Version.h"
 
 // Posix
 #include <dirent.h>

@@ -5,7 +5,14 @@ HMCD is a C program to download manhuas from the official HI3 COMIC, CN site (ht
 Just go [there](https://github.com/JeFaitDesSpaghettis/HMCD/releases) or build it yourself.
 
 ## Build
-To build you'll git cmake and curl development packages.
+To build you'll git cmake and curl development packages.<br/>
+Then run these commands:<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;```git clone "https://github.com/JeFaitDesSpaghettis/HMCD"```<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;```cd "./HMCD"```<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;```cmake -G"MinGW Makefiles" -B"./build" -S"./"```<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;```cmake --build "./build" -j8```<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;```cmake --install "./build"``` (optional)<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;```cmake --build "./build" --target uninstall``` (to uninstall)<br/>
 
 ## Explanation
 The url of a page uses the following scheme:<br/>

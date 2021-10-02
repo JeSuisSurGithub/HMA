@@ -63,4 +63,10 @@ install(TARGETS HMCD-Core_static HMCD-Core_shared
     RUNTIME DESTINATION "${CMAKE_INSTALL_PREFIX}/bin"
     LIBRARY DESTINATION "${CMAKE_INSTALL_PREFIX}/lib"
     ARCHIVE DESTINATION "${CMAKE_INSTALL_PREFIX}/lib")
-install(DIRECTORY "${HMCD-Core_INC_DIR}" DESTINATION "${CMAKE_INSTALL_PREFIX}/include")
+
+install(FILES
+    "${HMCD-Core_INC_DIR}/DirScanUtil.h"
+    "${HMCD-Core_INC_DIR}/HMCD-Core_Version.h"
+    "${HMCD-Core_INC_DIR}/HMCD.h"
+    "${HMCD-Core_INC_DIR}/HMCPPD.hpp"
+    DESTINATION "${CMAKE_INSTALL_PREFIX}/include/HMCDCore")

@@ -4,12 +4,9 @@
 #ifdef __cplusplus
     extern "C" {
 #endif
-
-// Standard
-#include <stdio.h>
-#include <stdlib.h>
-#include <string.h>
-#include <time.h>
+// Other headers
+#include "DirScanUtil.h"
+#include "HMCD_Version.h"
 
 // Non-std libraries
 #include <curl/curl.h>
@@ -19,9 +16,36 @@
     #include <windows.h>
 #endif
 
-// Other headers
-#include "DirScanUtil.h"
-#include "HMCD_Version.h"
+// Standard
+#include <stdio.h>
+#include <stdlib.h>
+#include <stdbool.h>
+#include <string.h>
+#include <assert.h>
+#include <time.h>
+
+/**
+ * Explanation:
+ * The url of a page uses the following scheme:
+ * [XXXXXXXX]/comic/book/[BOOK_ID]/[CHAPTER]/[PAGE].jpg
+ * Where:
+ *      XXXXXXXX is the cdn, it can be either
+ *          "https://d2tpbmzklky1cl.cloudfront.net/manga/static" (global)
+ *          OR
+ *          "https://comicstatic.bh3.com/new_static_v2" (china)
+ *      BOOK_ID is an 4 digit integer starting from 1001(and growing up) indicating the book
+ *      CHAPTER is a non zero padded integer starting at 1 indicating the chapter
+ *      PAGE is zero padded 4 digit integer starting at 0001
+ * They will be then downloaded using the following scheme:
+ * [OUT_DIR]_[BOOK_ID]/Chapter[CHAPTER]/[CHAPTER][PAGE].jpg
+ * Where:
+ *      OUT_DIR is either "./GBBook" or "./CNBook"
+ *      BOOK_ID is an 4 digit integer starting from 1001(and growing up) indicating the book
+ *      CHAPTER is a zero padded 2 digit integer starting at 1 indicating the chapter
+ *      CHAPTER is reused again in the page file name for having all pages in one directory
+ *          without having the page names non conflicting
+ *      PAGE is zero padded 2 digit integer starting
+*/
 
 // Constants
 
@@ -34,12 +58,18 @@ static const unsigned int HMCD_GLB_BOOK_COUNT = 22;
 // Number of books available on the chinese server last checked: 27/09/2021
 static const unsigned int HMCD_CN_BOOK_COUNT = 23;
 
+// Number of books available on the global server last checked: 27/09/2021
+static const char* HMCD_GLB_NAME = "global";
+
+// Number of books available on the chinese server last checked: 27/09/2021
+static const char* HMCD_CN_NAME = "china";
+
 // Download server
 typedef enum _HMCD_SERVER_ID
 {
-    NONE = 0,
-    CHINA = 1,
-    GLOBAL = 2
+    HMCD_NONE = 0,
+    HMCD_CHINA = 1,
+    HMCD_GLOBAL = 2
 }HMCD_SERVER_ID;
 
 // Structs
@@ -72,7 +102,7 @@ typedef struct _HmcdServer
 static const HmcdServer HMCD_GLB_SERVER =
 {
     HMCD_GLB_BOOK_COUNT,
-    GLOBAL,
+    HMCD_GLOBAL,
     "https://d2tpbmzklky1cl.cloudfront.net/manga/static/comic/book",
     "./GBBook",
     {
@@ -107,7 +137,7 @@ static const HmcdServer HMCD_GLB_SERVER =
 static const HmcdServer HMCD_CN_SERVER =
 {
     HMCD_CN_BOOK_COUNT,
-    CHINA,
+    HMCD_CHINA,
     "https://comicstatic.bh3.com/new_static_v2/comic/book",
     "./CNBook",
     {
@@ -137,6 +167,12 @@ static const HmcdServer HMCD_CN_SERVER =
     }
 };
 
+void hmcd_enable_logs(bool enable);
+
+bool hmcd_enabled_logs();
+
+const char* hmcd_get_server_name(HMCD_SERVER_ID server_id);
+
 // Check that certificate for https is here
 // return >= 0 means success, return < 0 means error
 int hmcd_set_https_cert(CURL* curl_handle, const char* certificate_path);
@@ -154,4 +190,5 @@ int hmcd_dl_book(const HmcdServer* target_server, unsigned int book_index, unsig
 #ifdef __cplusplus
     }
 #endif
+
 #endif /* HMCD_H */

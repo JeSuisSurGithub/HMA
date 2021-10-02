@@ -5,15 +5,19 @@
     extern "C" {
 #endif
 
+// Other headers
+#include "HMCD_Version.h"
+
+// Posix
+#include <dirent.h>
+#include <sys/stat.h>
+
 // Standard
 #include <stdio.h>
 #include <stdlib.h>
 #include <stdbool.h>
 #include <string.h>
-
-// Posix
-#include <dirent.h>
-#include <sys/stat.h>
+#include <assert.h>
 
 // Return true if directory
 int dsu_is_directory(const char* path);

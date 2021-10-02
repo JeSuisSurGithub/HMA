@@ -11,6 +11,17 @@ set(CMAKE_C_STANDARD_REQUIRED True)
 set(HMCD_src_prefix "${CMAKE_CURRENT_LIST_DIR}/")
 set(HMCD_inc_prefix "${CMAKE_CURRENT_LIST_DIR}/../../include")
 
+# Macro definitions
+if (CMAKE_BUILD_TYPE MATCHES "Release")
+    set(RELEASE_BUILD 1)
+else()
+    set(RELEASE_BUILD 0)
+endif()
+
+get_filename_component(ABSOLUTE_PROJECT_PATH "${HMCD_src_prefix}/../../" ABSOLUTE)
+string(LENGTH "${ABSOLUTE_PROJECT_PATH}/" SRC_PATH_SIZE)
+add_definitions("-DSRC_PATH_SIZE=${SRC_PATH_SIZE}")
+
 # Configure version
 configure_file(
     "${HMCD_inc_prefix}/HMCD/HMCD_Version.h.in" "${HMCD_inc_prefix}/HMCD/HMCD_Version.h")

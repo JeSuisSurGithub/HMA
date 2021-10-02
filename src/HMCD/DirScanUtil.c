@@ -4,6 +4,12 @@
     extern "C" {
 #endif
 
+#define DSU_LOG_ERR(FMT, ...)  \
+    fprintf(stderr, "ERROR: (%s:%i), "FMT"\n", __FILENAME__, __LINE__, ##__VA_ARGS__);
+
+#define DSU_ASSERT_W_ERR_LOG(ASSERT, FMT, ...) \
+    if(!(ASSERT)) { DSU_LOG_ERR(FMT, ##__VA_ARGS__) assert(ASSERT); }
+
 int dsu_is_directory(const char* path)
 {
     struct stat path_stat;
@@ -20,10 +26,12 @@ int dsu_is_regfile(const char* path)
 
 unsigned int dsu_get_filesize(const char* filepath)
 {
+    DSU_ASSERT_W_ERR_LOG(filepath != NULL, "filepath is a null pointer")
+
     FILE* file;
     if ((file = fopen(filepath, "rb")) == NULL)
     {
-        fprintf(stderr, "dsu_get_filesize(), cannot open: %s\n", filepath);
+        DSU_LOG_ERR("cannot open: %s", filepath)
         return 0;
     }
     fseek(file, 0L, SEEK_END);
@@ -34,12 +42,14 @@ unsigned int dsu_get_filesize(const char* filepath)
 
 unsigned int dsu_get_file_cnt(const char* path)
 {
+    DSU_ASSERT_W_ERR_LOG(path != NULL, "path is a null pointer")
+
     DIR* target_dir;
     struct dirent* entries;
     unsigned int file_count = 0;
     if ((target_dir = opendir(path)) == NULL)
     {
-        fprintf(stderr, "dsu_get_file_cnt(), cannot open: %s\n", path);
+        DSU_LOG_ERR("cannot open: %s", path)
         return 0;
     }
     while ((entries = readdir(target_dir)) != NULL)
@@ -66,11 +76,15 @@ unsigned int dsu_get_file_cnt(const char* path)
 
 void __dsu_get_all_filepath(const char* path, unsigned int* list_iter, char** path_list)
 {
+    DSU_ASSERT_W_ERR_LOG(path != NULL, "path is a null pointer")
+    DSU_ASSERT_W_ERR_LOG(list_iter != NULL, "list_iter is a null pointer")
+    DSU_ASSERT_W_ERR_LOG(path_list != NULL, "path_list is a null pointer")
+
     DIR* target_dir;
     struct dirent* entries;
     if ((target_dir = opendir(path)) == NULL)
     {
-        fprintf(stderr, "__dsu_get_all_filepath(), cannot open: %s\n", path);
+        DSU_LOG_ERR("cannot open: %s", path)
         return;
     }
     while ((entries = readdir(target_dir)) != NULL)
@@ -100,6 +114,9 @@ void __dsu_get_all_filepath(const char* path, unsigned int* list_iter, char** pa
 
 char** dsu_get_all_filepath(const char* path, unsigned int* file_count)
 {
+    DSU_ASSERT_W_ERR_LOG(path != NULL, "path is a null pointer")
+    DSU_ASSERT_W_ERR_LOG(file_count != NULL, "file_count is a null pointer")
+
     (*file_count) = dsu_get_file_cnt(path);
     unsigned int list_iter = 0;
     char** path_list = (char**)malloc((*file_count) * sizeof(char*));
@@ -107,7 +124,7 @@ char** dsu_get_all_filepath(const char* path, unsigned int* file_count)
     struct dirent* entries;
     if ((target_dir = opendir(path)) == NULL)
     {
-        fprintf(stderr, "dsu_get_all_filepath(), cannot open: %s\n", path);
+        DSU_LOG_ERR("cannot open: %s", path)
         return NULL;
     }
     while ((entries = readdir(target_dir)) != NULL)
@@ -138,6 +155,8 @@ char** dsu_get_all_filepath(const char* path, unsigned int* file_count)
 
 unsigned int dsu_get_dir_cnt(const char* path, bool is_recur)
 {
+    DSU_ASSERT_W_ERR_LOG(path != NULL, "path is a null pointer")
+
     DIR* target_dir;
     struct dirent* entries;
     unsigned int dir_count = 0;
@@ -145,7 +164,7 @@ unsigned int dsu_get_dir_cnt(const char* path, bool is_recur)
         dir_count = 1;
     if ((target_dir = opendir(path)) == NULL)
     {
-        fprintf(stderr, "dsu_get_dir_cnt(), cannot open: %s\n", path);
+        DSU_LOG_ERR("cannot open: %s", path)
         return 0;
     }
     while ((entries = readdir(target_dir)) != NULL)
@@ -171,11 +190,15 @@ unsigned int dsu_get_dir_cnt(const char* path, bool is_recur)
 
 void __dsu_get_all_dirpath(const char* path, unsigned int* list_iter, char** path_list)
 {
+    DSU_ASSERT_W_ERR_LOG(path != NULL, "path is a null pointer")
+    DSU_ASSERT_W_ERR_LOG(list_iter != NULL, "list_iter is a null pointer")
+    DSU_ASSERT_W_ERR_LOG(path_list != NULL, "path_list is a null pointer")
+
     DIR* target_dir;
     struct dirent* entries;
     if ((target_dir = opendir(path)) == NULL)
     {
-        fprintf(stderr, "__dsu_get_all_dirpath(), cannot open: %s\n", path);
+        DSU_LOG_ERR("cannot open: %s", path)
         return;
     }
     while ((entries = readdir(target_dir)) != NULL)
@@ -202,6 +225,9 @@ void __dsu_get_all_dirpath(const char* path, unsigned int* list_iter, char** pat
 
 char** dsu_get_all_dirpath(const char* path, unsigned int* dir_count)
 {
+    DSU_ASSERT_W_ERR_LOG(path != NULL, "path is a null pointer")
+    DSU_ASSERT_W_ERR_LOG(dir_count != NULL, "dir_count is a null pointer")
+
     (*dir_count) = dsu_get_dir_cnt(path, false);
     unsigned int list_iter = 1;
     char** path_list = (char**)malloc((*dir_count) * sizeof(char*));
@@ -213,7 +239,7 @@ char** dsu_get_all_dirpath(const char* path, unsigned int* dir_count)
     struct dirent* entries;
     if ((target_dir = opendir(path)) == NULL)
     {
-        fprintf(stderr, "dsu_get_all_dirpath(), cannot open: %s\n", path);
+        DSU_LOG_ERR("cannot open: %s", path)
         return NULL;
     }
     while ((entries = readdir(target_dir)) != NULL)
@@ -241,12 +267,14 @@ char** dsu_get_all_dirpath(const char* path, unsigned int* dir_count)
 
 unsigned int dsu_get_entry_cnt_no_recur(const char* path)
 {
+    DSU_ASSERT_W_ERR_LOG(path != NULL, "path is a null pointer")
+
     DIR* target_dir;
     struct dirent* entries;
     unsigned int entry_count = 0;
     if ((target_dir = opendir(path)) == NULL)
     {
-        fprintf(stderr, "dsu_get_entry_cnt_no_recur(), cannot open: %s\n", path);
+        DSU_LOG_ERR("cannot open: %s", path)
         return 0;
     }
     while ((entries = readdir(target_dir)) != NULL)
@@ -260,6 +288,9 @@ unsigned int dsu_get_entry_cnt_no_recur(const char* path)
 
 char** dsu_get_all_entry_no_recur(const char* path, unsigned int* entry_count)
 {
+    DSU_ASSERT_W_ERR_LOG(path != NULL, "path is a null pointer")
+    DSU_ASSERT_W_ERR_LOG(entry_count != NULL, "entry_count is a null pointer")
+
     (*entry_count) = dsu_get_entry_cnt_no_recur(path);
     unsigned int list_iter = 0;
     char** entry_list = (char**)malloc((*entry_count) * sizeof(char*));
@@ -268,7 +299,7 @@ char** dsu_get_all_entry_no_recur(const char* path, unsigned int* entry_count)
     struct dirent* entries;
     if ((target_dir = opendir(path)) == NULL)
     {
-        fprintf(stderr, "dsu_get_all_entry_no_recur(), cannot open: %s\n", path);
+        DSU_LOG_ERR("cannot open: %s", path)
         return NULL;
     }
     while ((entries = readdir(target_dir)) != NULL)
@@ -295,6 +326,9 @@ char** dsu_get_all_entry_no_recur(const char* path, unsigned int* entry_count)
     closedir(target_dir);
     return entry_list;
 }
+
+#undef DSU_LOG_ERR
+#undef DSU_ASSERT_W_ERR_LOG
 
 #ifdef __cplusplus
     }

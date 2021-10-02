@@ -62,8 +62,8 @@ void guided_ui()
 
     // Show available books and get range from user input
     book_list = &target_server->books;
-    for (size_t index = 0; index < target_server->book_count; index++)
-        printf("Type %llu to download %i (%s)\n", index, book_list[index].book_id, book_list[index].book_name);
+    for (unsigned int index = 0; index < target_server->book_count; index++)
+        printf("Type %i to download %i (%s)\n", index, book_list[index].book_id, book_list[index].book_name);
 
     fgets(in_buf, 32, stdin);
     sscanf(in_buf, "%u", &book_index);

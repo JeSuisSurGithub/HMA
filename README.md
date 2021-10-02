@@ -11,7 +11,7 @@ Then run these commands:<br/>
 &nbsp;&nbsp;&nbsp;&nbsp;```cd "./HMCD"```<br/>
 &nbsp;&nbsp;&nbsp;&nbsp;```cmake -G"MinGW Makefiles" -B"./build" -S"./"```<br/>
 &nbsp;&nbsp;&nbsp;&nbsp;```cmake --build "./build" -j8```<br/>
-&nbsp;&nbsp;&nbsp;&nbsp;```cmake --install "./build"``` (optional)<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;```cmake --build "./build" --target install``` (optional)<br/>
 &nbsp;&nbsp;&nbsp;&nbsp;```cmake --build "./build" --target uninstall``` (to uninstall)<br/>
 
 ## Explanation

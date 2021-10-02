@@ -28,7 +28,7 @@ Where:<br/>
 + `PAGE` is zero padded 4 digit integer starting at 0001<br/>
 
 They will be then downloaded using the following scheme:<br/>
-[OUT_DIR]_[BOOK_ID]/Chapter[CHAPTER]/[CHAPTER][PAGE].jpg<br/>
+`[OUT_DIR]_[BOOK_ID]/Chapter[CHAPTER]/[CHAPTER][PAGE].jpg`<br/>
 Where:<br/>
 + `OUT_DIR` is either "./GBBook" or "./CNBook"<br/>
 * `BOOK_ID` is an 4 digit integer starting from 1001(and growing up) indicating the book<br/>

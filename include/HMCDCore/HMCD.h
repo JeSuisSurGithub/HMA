@@ -1,9 +1,36 @@
 #ifndef HMCD_H
 #define HMCD_H
 
+/**
+ * @file include/HMCDCore/HMCD.h
+ * @brief Downloads HI3 manhuas
+ * @details @verbatim
+ * The url of a page uses the following scheme:
+ * [XXXXXXXX]/comic/book/[BOOK_ID]/[CHAPTER]/[PAGE].jpg
+ * Where:
+ *      XXXXXXXX is the cdn, it can be either
+ *          "https://d2tpbmzklky1cl.cloudfront.net/manga/static" (global)
+ *          OR
+ *          "https://comicstatic.bh3.com/new_static_v2" (china)
+ *      BOOK_ID is an 4 digit integer starting from 1001(and growing up) indicating the book
+ *      CHAPTER is a non zero padded integer starting at 1 indicating the chapter
+ *      PAGE is zero padded 4 digit integer starting at 0001
+ * They will be then downloaded using the following scheme:
+ * [OUT_DIR]_[BOOK_ID]/Chapter[CHAPTER]/[CHAPTER][PAGE].jpg
+ * Where:
+ *      OUT_DIR is either "./GBBook" or "./CNBook"
+ *      BOOK_ID is an 4 digit integer starting from 1001(and growing up) indicating the book
+ *      CHAPTER is a zero padded 2 digit integer starting at 1 indicating the chapter
+ *      CHAPTER is reused again in the page file name for having all pages in one directory
+ *          without having the page names non conflicting
+ *      PAGE is zero padded 2 digit integer starting
+ * @endverbatim
+*/
+
 #ifdef __cplusplus
     extern "C" {
 #endif
+
 // Other headers
 #include "DirScanUtil.h"
 #include "HMCD-Core_Version.h"
@@ -24,47 +51,36 @@
 #include <assert.h>
 #include <time.h>
 
-/**
- * Explanation:
- * The url of a page uses the following scheme:
- * [XXXXXXXX]/comic/book/[BOOK_ID]/[CHAPTER]/[PAGE].jpg
- * Where:
- *      XXXXXXXX is the cdn, it can be either
- *          "https://d2tpbmzklky1cl.cloudfront.net/manga/static" (global)
- *          OR
- *          "https://comicstatic.bh3.com/new_static_v2" (china)
- *      BOOK_ID is an 4 digit integer starting from 1001(and growing up) indicating the book
- *      CHAPTER is a non zero padded integer starting at 1 indicating the chapter
- *      PAGE is zero padded 4 digit integer starting at 0001
- * They will be then downloaded using the following scheme:
- * [OUT_DIR]_[BOOK_ID]/Chapter[CHAPTER]/[CHAPTER][PAGE].jpg
- * Where:
- *      OUT_DIR is either "./GBBook" or "./CNBook"
- *      BOOK_ID is an 4 digit integer starting from 1001(and growing up) indicating the book
- *      CHAPTER is a zero padded 2 digit integer starting at 1 indicating the chapter
- *      CHAPTER is reused again in the page file name for having all pages in one directory
- *          without having the page names non conflicting
- *      PAGE is zero padded 2 digit integer starting
-*/
-
 // Constants
 
-// https certificate url
+/**
+ * @brief https certificate url
+*/
 static const char* HMCD_CURL_HTTPS_CERT_URL = "https://curl.se/ca/cacert.pem";
 
-// Number of books available on the global server last checked: 27/09/2021
+/**
+ * @brief Number of books available on the global server last checked: 27/09/2021
+*/
 static const unsigned int HMCD_GLB_BOOK_COUNT = 22;
 
-// Number of books available on the chinese server last checked: 27/09/2021
+/**
+ * @brief Number of books available on the chinese server last checked: 27/09/2021
+*/
 static const unsigned int HMCD_CN_BOOK_COUNT = 23;
 
-// Number of books available on the global server last checked: 27/09/2021
+/**
+ * @brief Global server designation
+*/
 static const char* HMCD_GLB_NAME = "global";
 
-// Number of books available on the chinese server last checked: 27/09/2021
+/**
+ * @brief Chinese server designation
+*/
 static const char* HMCD_CN_NAME = "china";
 
-// Download server
+/**
+ * @brief Server designation helper
+*/
 typedef enum _HMCD_SERVER_ID
 {
     HMCD_NONE = 0,
@@ -75,7 +91,7 @@ typedef enum _HMCD_SERVER_ID
 // Structs
 
 /**
- * Structure representing a book
+ * @brief Structure representing a book
 */
 typedef struct _HmcdBook
 {
@@ -84,7 +100,7 @@ typedef struct _HmcdBook
 }HmcdBook;
 
 /**
- * Structure representing a server
+ * @brief Structure representing a server
 */
 typedef struct _HmcdServer
 {
@@ -97,7 +113,8 @@ typedef struct _HmcdServer
 
 
 /**
- * Global server
+ * @brief Global server information
+ * @details Contains information needed about global server
 */
 static const HmcdServer HMCD_GLB_SERVER =
 {
@@ -132,7 +149,8 @@ static const HmcdServer HMCD_GLB_SERVER =
 };
 
 /**
- * China server
+ * @brief China server information
+ * @details Contains information needed about china server
 */
 static const HmcdServer HMCD_CN_SERVER =
 {
@@ -167,28 +185,61 @@ static const HmcdServer HMCD_CN_SERVER =
     }
 };
 
-// Enable logs to stdout
+/**
+ * @brief Internal global variable
+*/
+extern bool g_hmcd_enable_logs;
+
+/**
+ * @brief Enable logs to stdout
+ * @param enable True to enable
+*/
 void hmcd_enable_logs(bool enable);
 
-// Check if logs are enabled
+/**
+ * @brief Check if logs are enabled
+ * @return True if enabled
+*/
 bool hmcd_enabled_logs();
 
-// Return NULL if server_id unrecognized
+/**
+ * @brief Get server designation
+ * @param server_id Numerical server designation
+ * @return Designation string, free must not be called, NULL if unknown
+*/
 const char* hmcd_get_server_name(HMCD_SERVER_ID server_id);
 
-// Check that certificate for https is here
-// return >= 0 means success, return < 0 means error
+/**
+ * @brief Gets https certificate
+ * @param curl_handle Curl handle to set SSL certificate for, abort() if NULL
+ * @param certificate_path Certificate destination, abort() if NULL
+ * @return return < 0 means error, return >= success
+*/
 int hmcd_set_https_cert(CURL* curl_handle, const char* certificate_path);
 
-// Get folder size
+/**
+ * @brief Returns directory size
+ * @param dir_name Directory path, abort() if NULL
+ * @return Total size
+*/
 unsigned long long int hmcd_get_dir_size(const char* dir_name);
 
-// Get chapter count
-// Returns 0 on error
+/**
+ * @brief Get number of chapter
+ * @param target_server Server to get from
+ * @param book_index index of target_server->books, abort() if >= target_server->book_count
+ * @return Number of chapters
+*/
 unsigned int hmcd_get_chap_cnt(const HmcdServer* target_server, unsigned int book_index);
 
-// Download book
-// Return != 0 on error
+/**
+ * @brief Downloads manhua
+ * @param target_server Server to download from
+ * @param book_index index of target_server->books, abort() if >= target_server->book_count
+ * @param first_chap First chapter to download
+ * @param last_chap Last chapter to download, no checks are performed on the validity
+ * @return Zero on success, non zero on fail
+*/
 int hmcd_dl_book(const HmcdServer* target_server, unsigned int book_index, unsigned int first_chap, unsigned int last_chap);
 
 #ifdef __cplusplus

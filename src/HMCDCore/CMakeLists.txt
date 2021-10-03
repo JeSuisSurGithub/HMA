@@ -1,24 +1,13 @@
 cmake_minimum_required(VERSION 3.10)
 
-# Set the project name and version
 project(HMCD-Core VERSION 2.0.0)
 
-# Specify the C standard
 set(CMAKE_C_STANDARD 11)
 set(CMAKE_C_STANDARD_REQUIRED True)
 
-# Macro definitions
-if (CMAKE_BUILD_TYPE MATCHES "Release")
-    set(RELEASE_BUILD 1)
-else()
-    set(RELEASE_BUILD 0)
-endif()
-
-#get_filename_component(ABSOLUTE_PROJECT_PATH "${CMAKE_CURRENT_LIST_DIR}/../../" ABSOLUTE)
 string(LENGTH "${HMCD_ROOT_DIR}/" SRC_PATH_LEN)
-add_definitions("-DSRC_PATH_LEN=${SRC_PATH_LEN}")
 
-# Configure version
+# Configure version and debugging
 configure_file("${HMCD-Core_INC_DIR}/HMCD-Core_Version.h.in" "${HMCD-Core_INC_DIR}/HMCD-Core_Version.h")
 
 # List of files to compile
@@ -32,8 +21,8 @@ add_library(HMCD-Core_static STATIC "${HMCD-Core_SRC_LIST}")
 add_library(HMCD-Core_shared SHARED "${HMCD-Core_SRC_LIST}")
 
 # Includes
-target_include_directories(HMCD-Core_static PUBLIC "${CMAKE_CURRENT_LIST_DIR}" "${HMCD-Core_INC_DIR}/../")
-target_include_directories(HMCD-Core_shared PUBLIC "${CMAKE_CURRENT_LIST_DIR}" "${HMCD-Core_INC_DIR}/../")
+target_include_directories(HMCD-Core_static PUBLIC "${CMAKE_CURRENT_LIST_DIR}" "${HMCD_INC_DIR}/")
+target_include_directories(HMCD-Core_shared PUBLIC "${CMAKE_CURRENT_LIST_DIR}" "${HMCD_INC_DIR}/")
 
 # Common output name
 set_target_properties(HMCD-Core_static PROPERTIES OUTPUT_NAME hmcd)
@@ -50,8 +39,13 @@ else (CURL_FOUND)
 endif(CURL_FOUND)
 
 # Flags
-target_compile_options(HMCD-Core_static PUBLIC "-Wall" "-O2")
-target_compile_options(HMCD-Core_shared PUBLIC "-Wall" "-O2")
+if(RELEASE_BUILD EQUAL 1)
+    target_compile_options(HMCD-Core_static PUBLIC "-Wall" "-O2")
+    target_compile_options(HMCD-Core_shared PUBLIC "-Wall" "-O2")
+else()
+    target_compile_options(HMCD-Core_static PUBLIC "-Wall" "-ggdb")
+    target_compile_options(HMCD-Core_shared PUBLIC "-Wall" "-ggdb")
+endif()
 
 if (CMAKE_CXX_COMPILER_ID STREQUAL "GNU")
     target_compile_options(HMCD-Core_static PUBLIC "-Wextra")

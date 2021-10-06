@@ -25,6 +25,9 @@ target_include_directories(HMCD-CLI PUBLIC
 # Link built libraries
 target_link_directories(HMCD-CLI PUBLIC "${CMAKE_CURRENT_LIST_DIR}" "${CMAKE_BINARY_DIR}")
 
+# Lower case name
+set_target_properties(HMCD-CLI PROPERTIES OUTPUT_NAME hmcd-cli)
+
 # Link with static one
 target_link_libraries(HMCD-CLI PUBLIC
     HMCD-Core_static

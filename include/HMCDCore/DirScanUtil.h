@@ -97,6 +97,13 @@ unsigned int dsu_get_entry_cnt_no_recur(const char* path);
 */
 char** dsu_get_all_entry_no_recur(const char* path, unsigned int* entry_count);
 
+/**
+ * @brief Helper to free char** returned by function above
+ * @param char_pp Initialized list of c strings
+ * @param p_len Length of char_pp
+*/
+void dsu_free_char_pp(char** char_pp, unsigned int p_len);
+
 #ifdef __cplusplus
     }
 #endif

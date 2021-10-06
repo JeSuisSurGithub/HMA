@@ -1,6 +1,5 @@
 /.vscode/
 /build/
-/docs/
 /Win32-release/
 /Doxyfile
 /Wrapper.sh

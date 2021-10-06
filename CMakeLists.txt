@@ -13,7 +13,7 @@ else()
     add_definitions("-DRELEASE_BUILD=${RELEASE_BUILD}")
 endif()
 
-# Define paths
+# Define global paths
 set(HMCD_ROOT_DIR "${CMAKE_CURRENT_LIST_DIR}" CACHE INTERNAL "")
 set(HMCD_SRC_DIR "${CMAKE_CURRENT_LIST_DIR}/src" CACHE INTERNAL "")
 set(HMCD_INC_DIR "${CMAKE_CURRENT_LIST_DIR}/include" CACHE INTERNAL "")
@@ -27,11 +27,13 @@ find_package(Doxygen)
 option(BUILD_DOCUMENTATION "Create and install the HTML based API
 documentation (requires Doxygen)" "${DOXYGEN_FOUND}")
 
+# https://stackoverflow.com/questions/34878276/build-doxygen-from-cmake-script
 if(BUILD_DOCUMENTATION)
     if(NOT DOXYGEN_FOUND)
         message(FATAL_ERROR "Doxygen is needed to build the documentation")
     endif()
 
+    file(RELATIVE_PATH RELATIVE_BINARY_DIR "${HMCD_ROOT_DIR}" "${CMAKE_CURRENT_BINARY_DIR}")
     configure_file("${CMAKE_CURRENT_SOURCE_DIR}/Doxyfile.in" "${CMAKE_CURRENT_SOURCE_DIR}/Doxyfile")
 
     message("Doxygen build started")

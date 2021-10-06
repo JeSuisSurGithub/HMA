@@ -145,18 +145,14 @@ unsigned long long int hmcd_get_dir_size(const char* dir_name)
     if (!file_list)
     {
         HMCD_LOG_ERR("dsu_get_all_filepath() failed, dir_name = %s", dir_name)
-        for (size_t index = 0; index < file_count; index++)
-            free(file_list[index]);
-        free(file_list);
+        dsu_free_char_pp(file_list, file_count);
         return 0;
     }
     unsigned long long int total_dir_sz = 0;
     for (size_t index = 0; index < file_count; index++)
         total_dir_sz += dsu_get_filesize(file_list[index]);
 
-    for (size_t index = 0; index < file_count; index++)
-        free(file_list[index]);
-    free(file_list);
+    dsu_free_char_pp(file_list, file_count);
     return total_dir_sz;
 }
 
@@ -191,15 +187,14 @@ unsigned int hmcd_get_chap_cnt(const HmcdServer* target_server, unsigned int boo
 
     long http_code = 0;
     CURLcode curl_err_code;
+
+    // / + book_id + / + chap_count + / + "0001.jpg" + NULL
+    char* first_page_url = malloc(strlen(target_base_url) + 1 + 4 + 1 + 2 + 9 + 1);
+
     // Check if first page (0001.jpg) exist for every chapter
     // Assume http 404 or 403 means no chapter and 200 means it exists
     for (unsigned int chap_count = 1; ; chap_count++)
     {
-        // / + book_id + / + chap_count + / + "0001.jpg" + NULL
-        char* first_page_url = (chap_count >= 10) ?
-            malloc(strlen(target_base_url) + 1 + 4 + 1 + 2 + 9 + 1)
-            : malloc(strlen(target_base_url) + 1 + 4 + 1 + 1 + 9 + 1);
-
         sprintf(first_page_url, "%s/%i/%i/0001.jpg", target_base_url, book_id, chap_count);
 
         curl_easy_setopt(check_handle, CURLOPT_URL, first_page_url);
@@ -224,10 +219,7 @@ unsigned int hmcd_get_chap_cnt(const HmcdServer* target_server, unsigned int boo
             free(first_page_url);
             return chap_count;
         }
-        else if (http_code == 200)
-        {
-            HMCD_LOG("Chapter %i OK", chap_count);
-        }
+        else if (http_code == 200) { HMCD_LOG("Chapter %i OK", chap_count); }
         else
         {
             HMCD_LOG_ERR("curl_easy_perform(check_handle) failed, http: %li", http_code)
@@ -235,7 +227,6 @@ unsigned int hmcd_get_chap_cnt(const HmcdServer* target_server, unsigned int boo
             free(first_page_url);
             return chap_count;
         }
-        free(first_page_url);
     }
 }
 
@@ -264,11 +255,13 @@ int hmcd_dl_book(const HmcdServer* target_server, unsigned int book_index, unsig
     // target_out_dir + _ + book_id + NULL
     char* book_dirname = malloc(strlen(target_out_dir) + 1 + 4 + 1);
     sprintf(book_dirname, "%s_%i", target_out_dir, book_id);
+
 #ifdef _WIN32
     mkdir(book_dirname);
 #else
     mkdir(book_dirname, 0777);
 #endif
+
     CURL* dl_handle;
     HMCD_CURL_INIT_W_ERR_CHK(dl_handle, , -1)
     int res_dl = hmcd_set_https_cert(dl_handle, "./cacert.pem");
@@ -284,17 +277,23 @@ int hmcd_dl_book(const HmcdServer* target_server, unsigned int book_index, unsig
     CURLcode curl_err_code;
     long http_code;
 
+    // target_base_url + / + book_id + / + chap_count + / + NULL
+    char* chap_url = malloc(strlen(target_base_url) + 1 + 4 + 1 + 2 + 1 + 1);
+
+    // book_dirname + / + "/Chapter" + chap_count + NULL
+    char* chap_dirname = malloc(strlen(book_dirname) + 8 + 2 + 1);
+
+    // chap_url + page_count + ".jpg" + NULL
+    char* page_url = malloc((strlen(target_base_url) + 1 + 4 + 1 + 2 + 1) + 8 + 1);
+
+    // chap_dirname + / + chap_count + page_count + ".jpg" + NULL
+    char* page_filename = malloc((strlen(book_dirname) + 8 + 2) + 1 + 2 + 2 + 4 + 1);
+
     // For all chapter in the range
     for (unsigned int chap_count = first_chap; chap_count <= last_chap; chap_count++)
     {
-        // target_base_url + / + book_id + / + chap_count + / + NULL
-        char* chap_url = (chap_count >= 10) ?
-            malloc(strlen(target_base_url) + 1 + 4 + 1 + 2 + 1 + 1) :
-            malloc(strlen(target_base_url) + 1 + 4 + 1 + 1 + 1 + 1);
         sprintf(chap_url, "%s/%i/%i/", target_base_url, book_id, chap_count);
 
-        // book_dirname + / + "/Chapter" + chap_count + NULL
-        char* chap_dirname = malloc(strlen(book_dirname) + 8 + 2 + 1);
         sprintf(chap_dirname, "%s/Chapter%02i", book_dirname, chap_count);
 #ifdef _WIN32
         mkdir(chap_dirname);
@@ -310,24 +309,20 @@ int hmcd_dl_book(const HmcdServer* target_server, unsigned int book_index, unsig
         // If 200 go download it
         for (page_count = 1; ; page_count++)
         {
-            // chap_url + page_count + ".jpg" + NULL
-            char* page_url = malloc(strlen(chap_url) + 8 + 1);
             sprintf(page_url, "%s%04i.jpg", chap_url, page_count);
 
-            // chap_dirname + / + chap_count + page_count + ".jpg" + NULL
-            char* page_name = malloc(strlen(chap_dirname) + 1 + 2 + 2 + 4 + 1);
-            sprintf(page_name, "%s/%02i%02i.jpg", chap_dirname, chap_count, page_count);
+            sprintf(page_filename, "%s/%02i%02i.jpg", chap_dirname, chap_count, page_count);
 
             // Get http_code
             curl_easy_setopt(dl_handle, CURLOPT_URL, page_url);
             curl_easy_setopt(dl_handle, CURLOPT_NOBODY, 1L);
 
             HMCD_CURL_PERF_W_ERR_CHK(dl_handle, curl_err_code,
-                free(page_url);
-                free(page_name);
+                free(book_dirname);
                 free(chap_url);
                 free(chap_dirname);
-                free(book_dirname);
+                free(page_url);
+                free(page_filename);
                 curl_easy_cleanup(dl_handle);,
                 -3)
 
@@ -336,11 +331,12 @@ int hmcd_dl_book(const HmcdServer* target_server, unsigned int book_index, unsig
             if (http_code == 200)
             {
                 FILE* page_file;
-                HMCD_FOPEN_W_ERR_CHK(page_file, page_name, "wb+", free(page_url);
-                    free(page_name);
+                HMCD_FOPEN_W_ERR_CHK(page_file, page_filename, "wb+",
+                    free(book_dirname);
                     free(chap_url);
                     free(chap_dirname);
-                    free(book_dirname);
+                    free(page_url);
+                    free(page_filename);
                     curl_easy_cleanup(dl_handle);,
                     -5)
 
@@ -352,11 +348,11 @@ int hmcd_dl_book(const HmcdServer* target_server, unsigned int book_index, unsig
 	            curl_easy_setopt(dl_handle, CURLOPT_WRITEDATA, page_file);
 
 	            HMCD_CURL_PERF_W_ERR_CHK(dl_handle, curl_err_code,
-                    free(page_url);
-                    free(page_name);
+                    free(book_dirname);
                     free(chap_url);
                     free(chap_dirname);
-                    free(book_dirname);
+                    free(page_url);
+                    free(page_filename);
                     curl_easy_cleanup(dl_handle);,
                     -6)
 
@@ -365,44 +361,38 @@ int hmcd_dl_book(const HmcdServer* target_server, unsigned int book_index, unsig
                 if (http_code != 200)
                 {
                     HMCD_LOG_ERR("curl_easy_perform(dl_handle) failed, page_url = %s; http = %li", page_url, http_code)
-                    free(page_url);
-                    free(page_name);
+                    free(book_dirname);
                     free(chap_url);
                     free(chap_dirname);
-                    free(book_dirname);
+                    free(page_url);
+                    free(page_filename);
                     curl_easy_cleanup(dl_handle);
                     return -7;
                 }
 
 	            fclose(page_file);
-                HMCD_LOG("%s => %s OK", page_url, page_name);
-                free(page_url);
-                free(page_name);
+                HMCD_LOG("%s => %s OK", page_url, page_filename);
             }
             // Assume error 404(for GLOBAL server) or 403(for CN server) means end of chapter
             else if (http_code == 404 || http_code == 403)
             {
-                HMCD_LOG("%s => %s XX", page_url, page_name);
+                HMCD_LOG("%s => %s XX", page_url, page_filename);
                 HMCD_LOG("Downloaded chapter %i (%i pages)", chap_count, page_count);
-                free(page_url);
-                free(page_name);
                 break;
             }
             // Other errors will fallback here
             else
             {
                 HMCD_LOG_ERR("curl_easy_perform(dl_handle) failed, page_url = %s; http = %li", page_url, http_code)
-                free(page_url);
-                free(page_name);
+                free(book_dirname);
                 free(chap_url);
                 free(chap_dirname);
-                free(book_dirname);
+                free(page_url);
+                free(page_filename);
                 curl_easy_cleanup(dl_handle);
                 return -4;
             }
         }
-        free(chap_url);
-        free(chap_dirname);
     }
     clock_t clock_end = clock();
     float elapsed_sec = ((float)(clock_end - clock_start)) / CLOCKS_PER_SEC;
@@ -415,6 +405,10 @@ int hmcd_dl_book(const HmcdServer* target_server, unsigned int book_index, unsig
         elapsed_sec);
 
     free(book_dirname);
+    free(chap_url);
+    free(chap_dirname);
+    free(page_url);
+    free(page_filename);
     curl_easy_cleanup(dl_handle);
     return 0;
 }

@@ -327,6 +327,14 @@ char** dsu_get_all_entry_no_recur(const char* path, unsigned int* entry_count)
     return entry_list;
 }
 
+void dsu_free_char_pp(char** char_pp, unsigned int p_len)
+{
+    for (unsigned int index = 0; index < p_len; index++)
+        free(char_pp[index]);
+    free(char_pp);
+    return;
+}
+
 #undef DSU_LOG_ERR
 #undef DSU_ASSERT_W_ERR_LOG
 

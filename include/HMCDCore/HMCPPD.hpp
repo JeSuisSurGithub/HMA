@@ -27,7 +27,7 @@ namespace hmcppd
     typedef HMCD_SERVER_ID SERVER_ID;
 
     /**
-     * @brief Structure representing a book
+     * @brief Structure representing a book, used for book lists
     */
     typedef struct _Book
     {

@@ -15,14 +15,14 @@ Then run these commands:<br/>
 &nbsp;&nbsp;&nbsp;&nbsp;`cmake --build "./build" --target uninstall` (to uninstall)<br/>
 
 ## Usage
-Usage : hmcd-cli.exe [OPTIONS]; NO ARGS, launches guided mode<br/>
-&nbsp;&nbsp;&nbsp;&nbsp;-h, --help      Prints out this help<br/>
-&nbsp;&nbsp;&nbsp;&nbsp;-s, --server[int]       1 = GLOBAL, 2 = MAINLAND CHINA<br/>
-&nbsp;&nbsp;&nbsp;&nbsp;-b, --book[int]         The 4-digit integer on the HI3 COMIC Official site when you read a specific book i.e: http://....com/book/[BookID]<br/>
-&nbsp;&nbsp;&nbsp;&nbsp;-f, --first[int]        First chapter to download<br/>
-&nbsp;&nbsp;&nbsp;&nbsp;-l, --last[int]         Last chapter to download<br/>
-&nbsp;&nbsp;&nbsp;&nbsp;-n, --lessverbose       Less information<br/>
-&nbsp;&nbsp;&nbsp;&nbsp;-r, --noseparation      All pages in one big directory<br/>
+`Usage : hmcd-cli.exe [OPTIONS]`; `NO ARGS`, launches guided mode<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;`-h, --help      Prints out this help`<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;`-s, --server[int]       1 = GLOBAL, 2 = MAINLAND CHINA`<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;`-b, --book[int]         The 4-digit integer on the HI3 COMIC Official site when you read a specific book i.e: http://....com/book/[BookID]`<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;`-f, --first[int]        First chapter to download`<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;`-l, --last[int]         Last chapter to download`<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;`-n, --lessverbose       Less information`<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;`-r, --noseparation      All pages in one big directory`<br/>
 
 ## Explanation
 The url of a page uses the following scheme:<br/>

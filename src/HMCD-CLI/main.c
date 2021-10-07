@@ -36,13 +36,14 @@ void get_range(unsigned int* first_chap, unsigned int* last_chap, unsigned int c
     }
 }
 
-void guided_ui()
+void phone_style_ui()
 {
     char in_buf[32] = {0};
     HMCD_SERVER_ID server_id = HMCD_NONE;
     const HmcdBook* book_list = NULL;
     const HmcdServer* target_server = NULL;
     unsigned int book_index = 0;
+    unsigned int one_big_dir = false;
 
     // Get server
     printf("Welcome to HI3 manga C downloader!\n");
@@ -58,7 +59,6 @@ void guided_ui()
     if (server_id == HMCD_CHINA) target_server = &HMCD_CN_SERVER;
     else if (server_id == HMCD_GLOBAL) target_server = &HMCD_GLB_SERVER;
     else { fprintf(stderr, "Invalid server\n"); exit(-1); }
-
 
     // Show available books and get range from user input
     book_list = &target_server->books;
@@ -83,7 +83,17 @@ void guided_ui()
     }
     get_range(&first_chap, &last_chap, chap_count);
 
-    int res = hmcd_dl_book(target_server, book_index, first_chap, last_chap);
+    printf( "Type 1 to download all pages in different directories\n"
+            "Type 2 to download all pages in one directory\n"
+            "Type the corresponding number: ");
+    fgets(in_buf, 32, stdin);
+    sscanf(in_buf, "%u", &one_big_dir);
+
+    if (one_big_dir == 1) one_big_dir = false;
+    else if (one_big_dir == 2) one_big_dir = true;
+    else { fprintf(stderr, "Invalid response\n"); exit(-5); }
+
+    int res = hmcd_dl_book(target_server, book_index, first_chap, last_chap, (bool)one_big_dir);
     if (res != 0)
     {
         fprintf(stderr, "hmcd_dl_book() failed\n");
@@ -102,7 +112,7 @@ void guided_ui()
     getchar();
 }
 
-void cmd_args_ui(HMCD_SERVER_ID server_id, unsigned int book_id, unsigned int first_chap, unsigned int last_chap)
+void cmd_args_ui(HMCD_SERVER_ID server_id, unsigned int book_id, unsigned int first_chap, unsigned int last_chap, bool one_big_dir)
 {
     const HmcdServer* target_server = NULL;
     const HmcdBook* book_list = NULL;
@@ -132,6 +142,8 @@ void cmd_args_ui(HMCD_SERVER_ID server_id, unsigned int book_id, unsigned int fi
 
     printf("Range: %i-%i\n", first_chap, last_chap);
 
+    printf("Downloading %s\n", (one_big_dir) ? "everything in one directory" : "pages to separate directories by chapter");
+
     unsigned int chap_count = hmcd_get_chap_cnt(target_server, book_index);
     if (chap_count == 0)
     {
@@ -141,7 +153,7 @@ void cmd_args_ui(HMCD_SERVER_ID server_id, unsigned int book_id, unsigned int fi
     if ((first_chap <= last_chap) && (last_chap <= (chap_count - 1)
         && last_chap >= 1) && (first_chap >= 1 || first_chap <= (chap_count - 1)))
     {
-        int res = hmcd_dl_book(target_server, book_index, first_chap, last_chap);
+        int res = hmcd_dl_book(target_server, book_index, first_chap, last_chap, one_big_dir);
         if (res != 0)
         {
             fprintf(stderr, "hmcd_dl_book() failed\n");
@@ -159,7 +171,7 @@ int main(int argc, char* argv[])
 #endif
     if (argc == 1)
     {
-        guided_ui();
+        phone_style_ui();
         curl_global_cleanup();
         exit(EXIT_SUCCESS);
     }
@@ -173,7 +185,8 @@ int main(int argc, char* argv[])
             { "book", required_argument, NULL, 'b' },
             { "first", required_argument, NULL, 'f' },
             { "last", required_argument, NULL, 'l' },
-            { "noverbose", no_argument, NULL, 'n' },
+            { "lessverbose", no_argument, NULL, 'n' },
+            { "noseparation", no_argument, NULL, 'r' },
             { 0 }
         };
         int opt;
@@ -181,7 +194,8 @@ int main(int argc, char* argv[])
         unsigned int book_id = 0;
         unsigned int first_chap = 0;
         unsigned int last_chap = 0;
-        while((opt = getopt_long(argc, argv, "hs:b:f:l:n", longopts, 0)) != -1)
+        bool one_big_dir = false;
+        while((opt = getopt_long(argc, argv, "hs:b:f:l:nr", longopts, 0)) != -1)
         {
             switch(opt)
             {
@@ -203,6 +217,9 @@ int main(int argc, char* argv[])
                 case 'n':
                     hmcd_enable_logs(false);
                     break;
+                case 'r':
+                    one_big_dir = true;
+                    break;
                 case ':':
                     printf("No value given\n");
                     break;
@@ -223,13 +240,14 @@ int main(int argc, char* argv[])
             printf("\t -b, --book[int]\t The 4-digit integer on the HI3 COMIC Official site when you read a specific book i.e: http://....com/book/[BookID]\n");
             printf("\t -f, --first[int]\t First chapter to download\n");
             printf("\t -l, --last[int]\t Last chapter to download\n");
-            printf("\t -n, --noverbose\t Silent libhmcd\n");
+            printf("\t -n, --lessverbose\t Silent libhmcd\n");
+            printf("\t -r, --noseparation\t All pages in one big directory\n");
             printf("This program uses libcURL and Mozilla's certificate store (cacert.pem), see https://curl.se/docs/copyright.html and https://curl.se/docs/caextract.html\n");
             printf("Get more help or report issues at https://github.com/JeFaitDesSpaghettis/HMCD\n");
             curl_global_cleanup();
             exit(EXIT_SUCCESS);
         }
-        cmd_args_ui(server_id, book_id, first_chap, last_chap);
+        cmd_args_ui(server_id, book_id, first_chap, last_chap, one_big_dir);
     }
     curl_global_cleanup();
     exit(EXIT_SUCCESS);

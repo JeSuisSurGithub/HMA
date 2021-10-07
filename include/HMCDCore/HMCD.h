@@ -238,9 +238,16 @@ unsigned int hmcd_get_chap_cnt(const HmcdServer* target_server, unsigned int boo
  * @param book_index index of target_server->books, abort() if >= target_server->book_count
  * @param first_chap First chapter to download
  * @param last_chap Last chapter to download, no checks are performed on the validity
+ * @param one_big_dir On true, downloads all files to one directory
  * @return Zero on success, non zero on fail
 */
-int hmcd_dl_book(const HmcdServer* target_server, unsigned int book_index, unsigned int first_chap, unsigned int last_chap);
+int hmcd_dl_book(
+    const HmcdServer* target_server,
+    unsigned int book_index,
+    unsigned int first_chap,
+    unsigned int last_chap,
+    bool one_big_dir
+);
 
 #ifdef __cplusplus
     }

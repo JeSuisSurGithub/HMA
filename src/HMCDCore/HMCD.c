@@ -230,7 +230,13 @@ unsigned int hmcd_get_chap_cnt(const HmcdServer* target_server, unsigned int boo
     }
 }
 
-int hmcd_dl_book(const HmcdServer* target_server, unsigned int book_index, unsigned int first_chap, unsigned int last_chap)
+int hmcd_dl_book(
+    const HmcdServer* target_server,
+    unsigned int book_index,
+    unsigned int first_chap,
+    unsigned int last_chap,
+    bool one_big_dir
+)
 {
     HMCD_ASSERT_W_ERR_LOG(book_index < target_server->book_count, "book_index(%i) is out of range", book_index)
 
@@ -294,7 +300,9 @@ int hmcd_dl_book(const HmcdServer* target_server, unsigned int book_index, unsig
     {
         sprintf(chap_url, "%s/%i/%i/", target_base_url, book_id, chap_count);
 
-        sprintf(chap_dirname, "%s/Chapter%02i", book_dirname, chap_count);
+        (one_big_dir) ?
+            strcpy(chap_dirname, book_dirname)
+            : sprintf(chap_dirname, "%s/Chapter%02i", book_dirname, chap_count);
 #ifdef _WIN32
         mkdir(chap_dirname);
 #else

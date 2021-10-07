@@ -14,6 +14,16 @@ Then run these commands:<br/>
 &nbsp;&nbsp;&nbsp;&nbsp;`cmake --build "./build" --target install` (optional)<br/>
 &nbsp;&nbsp;&nbsp;&nbsp;`cmake --build "./build" --target uninstall` (to uninstall)<br/>
 
+## Usage
+Usage : hmcd-cli.exe [OPTIONS]; NO ARGS, launches guided mode<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;-h, --help      Prints out this help<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;-s, --server[int]       1 = GLOBAL, 2 = MAINLAND CHINA<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;-b, --book[int]         The 4-digit integer on the HI3 COMIC Official site when you read a specific book i.e: http://....com/book/[BookID]<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;-f, --first[int]        First chapter to download<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;-l, --last[int]         Last chapter to download<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;-n, --lessverbose       Less information<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;-r, --noseparation      All pages in one big directory<br/>
+
 ## Explanation
 The url of a page uses the following scheme:<br/>
 `[XXXXXXXX]/comic/book/[BOOK_ID]/[CHAPTER]/[PAGE].jpg`<br/>
@@ -38,7 +48,7 @@ Where:<br/>
 * `PAGE` is zero padded 2 digit integer starting
 
 ## Why?
-It allows you to download the official hi3 manhuas releases in a easy way. \
-Also today everything needs internet and that is pretty annoying, one of the biggest problems about HI3 (and games in general) is the fact that it needs constant internet connection, and also game file encryption, if suddenly miHoYo shutdown or this game is blocked you can't do anything \
-Sooo i wrote a script to download HI3 Manhuas and download them on whatever device that supports libCURL, Windows, GNU-Linux or Android through Termux. \
+It allows you to download the official hi3 manhuas releases in a easy way. <br/>
+Also today everything needs internet and that is pretty annoying, one of the biggest problems about HI3 (and games in general) is the fact that it needs constant internet connection, and also game file encryption, if suddenly miHoYo shutdown or this game is blocked you can't do anything <br/>
+Sooo i wrote a script to download HI3 Manhuas and download them on whatever device that supports libCURL, Windows, GNU-Linux or Android through Termux. <br/>
 So that we can at least keep this part of HI3!

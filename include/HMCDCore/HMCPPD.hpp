@@ -117,8 +117,9 @@ namespace hmcppd
          * @param book_index index of target_server->books, throws std::invalid_argument if >= get_book_count()
          * @param first_chap First chapter to download
          * @param last_chap Last chapter to download
+         * @param one_big_dir Download every page in one directory
         */
-        public: void dl_book(unsigned int book_index, unsigned int first_chap, unsigned int last_chap)
+        public: void dl_book(unsigned int book_index, unsigned int first_chap, unsigned int last_chap, bool one_big_dir)
         {
             if (book_index >= dl_server->book_count)
                 throw std::invalid_argument("book_index >= get_book_count()\n");
@@ -131,7 +132,7 @@ namespace hmcppd
             if (last_chap > chapter_count)
                 throw std::invalid_argument("last_chap >= get_chap_count(book_index)\n");
 
-            int result = hmcd_dl_book(dl_server, book_index, first_chap, last_chap);
+            int result = hmcd_dl_book(dl_server, book_index, first_chap, last_chap, one_big_dir);
             if (result != 0)
                 throw std::runtime_error("dl_book() failed\n");
         }
@@ -145,10 +146,10 @@ namespace hmcppd
             switch (dl_server->server_id)
             {
                 case SERVER_ID::HMCD_CHINA:
-                    dl_server = const_cast<HmcdServer*>(&HMCD_GLB_SERVER);
+                    dl_server = &HMCD_GLB_SERVER;
                     break;
                 case SERVER_ID::HMCD_GLOBAL:
-                    dl_server = const_cast<HmcdServer*>(&HMCD_CN_SERVER);
+                    dl_server = &HMCD_CN_SERVER;
                     break;
                 default:
                     throw std::runtime_error("Unrecognized server_id = " + std::to_string(dl_server->server_id) + "\n");

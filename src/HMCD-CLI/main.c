@@ -1,3 +1,4 @@
+#include "HMCD-Core_Version.h"
 #include "HMCD-CLI_Version.h"
 
 #include <HMCDCore/HMCD.h>
@@ -228,9 +229,11 @@ int main(int argc, char* argv[])
     else
     {
         int help_flag = 0;
+        int v_flag = 0;
         struct option longopts[] =
         {
             { "help", no_argument, &help_flag, 1 },
+            { "version", no_argument, &v_flag, 'v' },
             { "server", required_argument, NULL, 's' },
             { "book", required_argument, NULL, 'b' },
             { "first", optional_argument, NULL, 'f' },
@@ -245,12 +248,15 @@ int main(int argc, char* argv[])
         unsigned int first_chap = 0;
         unsigned int last_chap = 0;
         bool one_big_dir = false;
-        while((opt = getopt_long(argc, argv, "hs:b:f:l:nr", longopts, 0)) != -1)
+        while((opt = getopt_long(argc, argv, "hvs:b:f:l:nr", longopts, 0)) != -1)
         {
             switch(opt)
             {
                 case 'h':
                     help_flag = 1;
+                    break;
+                case 'v':
+                    v_flag = 1;
                     break;
                 case 's':
                     server_id = atoi(optarg);
@@ -292,8 +298,16 @@ int main(int argc, char* argv[])
             printf("\t -l, --last[int]\t Last chapter to download, optional\n");
             printf("\t -n, --lessverbose\t Silent libhmcd\n");
             printf("\t -r, --noseparation\t All pages in one big directory\n");
-            printf("This program uses libcURL and Mozilla's certificate store (cacert.pem), see https://curl.se/docs/copyright.html and https://curl.se/docs/caextract.html\n");
             printf("Get more help or report issues at https://github.com/JeFaitDesSpaghettis/HMCD\n");
+            curl_global_cleanup();
+            exit(EXIT_SUCCESS);
+        }
+        if (v_flag)
+        {
+            printf("HMCDCore: v%i.%i.%i\n", HMCD_Core_VERSION_MAJOR, HMCD_Core_VERSION_MINOR, HMCD_Core_VERSION_PATCH);
+            printf("HMCD-CLI: v%i.%i.%i\n", HMCD_CLI_VERSION_MAJOR, HMCD_CLI_VERSION_MINOR, HMCD_CLI_VERSION_PATCH);
+            printf("This program is licensed under the Apache 2.0 License, for more information see LICENSE.md\n");
+            printf("This program uses libcURL and Mozilla's certificate store (cacert.pem), see https://curl.se/docs/copyright.html and https://curl.se/docs/caextract.html\n");
             curl_global_cleanup();
             exit(EXIT_SUCCESS);
         }

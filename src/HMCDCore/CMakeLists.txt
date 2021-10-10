@@ -5,8 +5,6 @@ project(HMCD-Core VERSION 2.1.0)
 set(CMAKE_C_STANDARD 11)
 set(CMAKE_C_STANDARD_REQUIRED True)
 
-string(LENGTH "${HMCD_ROOT_DIR}/" SRC_PATH_LEN)
-
 # Configure version and debugging
 configure_file("${HMCD-Core_INC_DIR}/HMCD-Core_Version.h.in" "${HMCD-Core_INC_DIR}/HMCD-Core_Version.h")
 
@@ -39,18 +37,19 @@ else (CURL_FOUND)
 endif(CURL_FOUND)
 
 # Flags
+if (CMAKE_CXX_COMPILER_ID STREQUAL "GNU")
+    target_compile_options(HMCD-Core_static PUBLIC "-Wextra")
+    target_compile_options(HMCD-Core_shared PUBLIC "-Wextra")
+endif()
+
 if(RELEASE_BUILD EQUAL 1)
-    target_compile_options(HMCD-Core_static PUBLIC "-Wall" "-O2")
-    target_compile_options(HMCD-Core_shared PUBLIC "-Wall" "-O2")
+    target_compile_options(HMCD-Core_static PUBLIC "-Wall" "-O2" "-ffile-prefix-map=${HMCD_ROOT_DIR_WIN}=")
+    target_compile_options(HMCD-Core_shared PUBLIC "-Wall" "-O2" "-ffile-prefix-map=${HMCD_ROOT_DIR_WIN}=")
 else()
     target_compile_options(HMCD-Core_static PUBLIC "-Wall" "-ggdb")
     target_compile_options(HMCD-Core_shared PUBLIC "-Wall" "-ggdb")
 endif()
 
-if (CMAKE_CXX_COMPILER_ID STREQUAL "GNU")
-    target_compile_options(HMCD-Core_static PUBLIC "-Wextra")
-    target_compile_options(HMCD-Core_shared PUBLIC "-Wextra")
-endif()
 
 # Install
 install(TARGETS HMCD-Core_static HMCD-Core_shared

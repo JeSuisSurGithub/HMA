@@ -34,15 +34,16 @@ target_link_libraries(HMCD-CLI PUBLIC
 )
 
 # Flags
+if (CMAKE_CXX_COMPILER_ID STREQUAL "GNU")
+    target_compile_options(HMCD-CLI PUBLIC "-Wextra")
+endif()
+
 if(RELEASE_BUILD EQUAL 1)
-    target_compile_options(HMCD-CLI PUBLIC "-Wall" "-O2")
+    target_compile_options(HMCD-CLI PUBLIC "-Wall" "-O2" "-ffile-prefix-map=${HMCD_ROOT_DIR_WIN}=")
 else()
     target_compile_options(HMCD-CLI PUBLIC "-Wall" "-ggdb")
 endif()
 
-if (CMAKE_CXX_COMPILER_ID STREQUAL "GNU")
-    target_compile_options(HMCD-CLI PUBLIC "-Wextra")
-endif()
 
 # Wait first for libraries to build
 add_dependencies(HMCD-CLI HMCD-Core_static HMCD-Core_shared)

@@ -2,7 +2,17 @@
 cmake_minimum_required(VERSION 3.10)
 
 # Set the project name and version
-project(HMCD VERSION 1.3.0)
+project(HMCD VERSION 2.0.0)
+
+
+# Define global paths
+set(HMCD_ROOT_DIR "${CMAKE_CURRENT_LIST_DIR}" CACHE INTERNAL "")
+set(HMCD_SRC_DIR "${CMAKE_CURRENT_LIST_DIR}/src" CACHE INTERNAL "")
+set(HMCD_INC_DIR "${CMAKE_CURRENT_LIST_DIR}/include" CACHE INTERNAL "")
+set(HMCD-Core_SRC_DIR "${CMAKE_CURRENT_LIST_DIR}/src/HMCDCore" CACHE INTERNAL "")
+set(HMCD-Core_INC_DIR "${CMAKE_CURRENT_LIST_DIR}/include/HMCDCore" CACHE INTERNAL "")
+set(HMCD-CLI_SRC_DIR "${CMAKE_CURRENT_LIST_DIR}/src/HMCD-CLI" CACHE INTERNAL "")
+string(REPLACE "/" "\\" HMCD_ROOT_DIR_WIN "${HMCD_ROOT_DIR}\\")
 
 # Macro definitions
 if (CMAKE_BUILD_TYPE MATCHES "Debug")
@@ -12,15 +22,6 @@ else()
     set(RELEASE_BUILD 1 CACHE INTERNAL "")
     add_definitions("-DRELEASE_BUILD=${RELEASE_BUILD}")
 endif()
-
-# Define global paths
-set(HMCD_ROOT_DIR "${CMAKE_CURRENT_LIST_DIR}" CACHE INTERNAL "")
-set(HMCD_SRC_DIR "${CMAKE_CURRENT_LIST_DIR}/src" CACHE INTERNAL "")
-set(HMCD_INC_DIR "${CMAKE_CURRENT_LIST_DIR}/include" CACHE INTERNAL "")
-set(HMCD-Core_SRC_DIR "${CMAKE_CURRENT_LIST_DIR}/src/HMCDCore" CACHE INTERNAL "")
-set(HMCD-Core_INC_DIR "${CMAKE_CURRENT_LIST_DIR}/include/HMCDCore" CACHE INTERNAL "")
-set(HMCD-CLI_SRC_DIR "${CMAKE_CURRENT_LIST_DIR}/src/HMCD-CLI" CACHE INTERNAL "")
-
 
 # Documentation
 find_package(Doxygen)

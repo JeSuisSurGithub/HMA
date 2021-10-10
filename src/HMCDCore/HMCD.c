@@ -10,7 +10,7 @@ bool g_hmcd_enable_logs = true;
     if (hmcd_enabled_logs()) { printf("LOG: "FMT"\n", ##__VA_ARGS__); }
 
 #define HMCD_LOG_ERR(FMT, ...)  \
-    fprintf(stderr, "ERROR: (%s:%i), "FMT"\n", __FILENAME__, __LINE__, ##__VA_ARGS__);
+    fprintf(stderr, "ERROR: (%s:%i), "FMT"\n", __FILE__, __LINE__, ##__VA_ARGS__);
 
 #ifdef RELEASE_BUILD
     #define HMCD_ASSERT_W_ERR_LOG(ASSERT, FMT, ...) \

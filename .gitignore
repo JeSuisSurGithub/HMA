@@ -1,6 +1,6 @@
 /.vscode/
 /build/
-/Win32-release/
+/package/
 /Doxyfile
 /Wrapper.sh
 /include/HMCDCore/HMCD-Core_Version.h

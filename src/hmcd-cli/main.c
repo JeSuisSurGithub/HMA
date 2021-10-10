@@ -1,7 +1,7 @@
 #include "hmcdcore_version.h"
 #include "hmcd-cli_version.h"
 
-#include <HMCDCore/HMCD.h>
+#include <hmcdcore/hmcd.h>
 #include <getopt.h>
 
 #define WRONG_DL_MODE -1

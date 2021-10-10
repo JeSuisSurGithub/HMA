@@ -1,5 +1,5 @@
-#include "HMCD-Core_Version.h"
-#include "HMCD-CLI_Version.h"
+#include "hmcdcore_version.h"
+#include "hmcd-cli_version.h"
 
 #include <HMCDCore/HMCD.h>
 #include <getopt.h>
@@ -304,7 +304,7 @@ int main(int argc, char* argv[])
         }
         if (v_flag)
         {
-            printf("HMCDCore: v%i.%i.%i\n", HMCD_Core_VERSION_MAJOR, HMCD_Core_VERSION_MINOR, HMCD_Core_VERSION_PATCH);
+            printf("HMCDCORE: v%i.%i.%i\n", HMCDCORE_VERSION_MAJOR, HMCDCORE_VERSION_MINOR, HMCDCORE_VERSION_PATCH);
             printf("HMCD-CLI: v%i.%i.%i\n", HMCD_CLI_VERSION_MAJOR, HMCD_CLI_VERSION_MINOR, HMCD_CLI_VERSION_PATCH);
             printf("This program is licensed under the Apache 2.0 License, for more information see LICENSE.md\n");
             printf("This program uses libcURL and Mozilla's certificate store (cacert.pem), see https://curl.se/docs/copyright.html and https://curl.se/docs/caextract.html\n");

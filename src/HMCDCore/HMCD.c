@@ -1,4 +1,4 @@
-#include <HMCDCore/HMCD.h>
+#include <hmcdcore/hmcd.h>
 
 #ifdef __cplusplus
     extern "C" {

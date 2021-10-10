@@ -6,7 +6,7 @@ set(CMAKE_C_STANDARD 11)
 set(CMAKE_C_STANDARD_REQUIRED True)
 
 # Configure version
-configure_file("${HMCD-CLI_SRC_DIR}/HMCD-CLI_Version.h.in" "${HMCD-CLI_SRC_DIR}/HMCD-CLI_Version.h")
+configure_file("${HMCD-CLI_SRC_DIR}/hmcd-cli_version.h.in" "${HMCD-CLI_SRC_DIR}/hmcd-cli_version.h")
 
 # Build libraries
 include("${HMCD-Core_SRC_DIR}/CMakeLists.txt")
@@ -15,8 +15,8 @@ include("${HMCD-Core_SRC_DIR}/CMakeLists.txt")
 add_executable(HMCD-CLI
     "${HMCD-CLI_SRC_DIR}/main.c"
 )
-# Include
 
+# Include
 target_include_directories(HMCD-CLI PUBLIC
     "${CMAKE_CURRENT_LIST_DIR}"
     "${HMCD-CLI_SRC_DIR}"

@@ -6,12 +6,12 @@ set(CMAKE_C_STANDARD 11)
 set(CMAKE_C_STANDARD_REQUIRED True)
 
 # Configure version and debugging
-configure_file("${HMCD-Core_INC_DIR}/HMCD-Core_Version.h.in" "${HMCD-Core_INC_DIR}/HMCD-Core_Version.h")
+configure_file("${HMCD-Core_INC_DIR}/hmcdcore_version.h.in" "${HMCD-Core_INC_DIR}/hmcdcore_version.h")
 
 # List of files to compile
 set(HMCD-Core_SRC_LIST
-    "${HMCD-Core_SRC_DIR}/HMCD.c"
-    "${HMCD-Core_SRC_DIR}/DirScanUtil.c"
+    "${HMCD-Core_SRC_DIR}/hmcd.c"
+    "${HMCD-Core_SRC_DIR}/dir_scan_util.c"
 )
 
 # Build shared and static
@@ -58,8 +58,8 @@ install(TARGETS HMCD-Core_static HMCD-Core_shared
     ARCHIVE DESTINATION "${CMAKE_INSTALL_PREFIX}/lib")
 
 install(FILES
-    "${HMCD-Core_INC_DIR}/DirScanUtil.h"
-    "${HMCD-Core_INC_DIR}/HMCD-Core_Version.h"
-    "${HMCD-Core_INC_DIR}/HMCD.h"
-    "${HMCD-Core_INC_DIR}/HMCPPD.hpp"
-    DESTINATION "${CMAKE_INSTALL_PREFIX}/include/HMCDCore")
+    "${HMCD-Core_INC_DIR}/dir_scan_util.h"
+    "${HMCD-Core_INC_DIR}/hmcdcore_version.h"
+    "${HMCD-Core_INC_DIR}/hmcd.h"
+    "${HMCD-Core_INC_DIR}/hmcppd.hpp"
+    DESTINATION "${CMAKE_INSTALL_PREFIX}/include/hmcdcore")

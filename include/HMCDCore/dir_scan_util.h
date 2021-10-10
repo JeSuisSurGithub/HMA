@@ -2,7 +2,7 @@
 #define DIRSCANUTIL_H
 
 /**
- * @file include/HMCDCore/DirScanUtil.h
+ * @file include/hmcdcore/dir_scan_util.h
  * @brief Utility to fetch directory contents
 */
 
@@ -11,7 +11,7 @@
 #endif
 
 // Other headers
-#include "HMCD-Core_Version.h"
+#include "hmcdcore_version.h"
 
 // Posix
 #include <dirent.h>

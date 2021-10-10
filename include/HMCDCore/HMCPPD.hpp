@@ -2,10 +2,10 @@
 #define HMCDPPD_HPP
 
 /**
- * @file include/HMCDCore/HMCPPD.hpp
+ * @file include/hmcdcore/hmcppd.hpp
  * @brief C++ namespace and class wrapper for HMCD.h
 */
-#include "HMCD.h"
+#include "hmcd.h"
 
 #include <cstddef>
 #include <cstdint>

@@ -2,7 +2,7 @@
 #define HMCD_H
 
 /**
- * @file include/HMCDCore/HMCD.h
+ * @file include/hmcdcore/hmcd.h
  * @brief Downloads HI3 manhuas
  * @details @verbatim
  * The url of a page uses the following scheme:
@@ -32,8 +32,8 @@
 #endif
 
 // Other headers
-#include "DirScanUtil.h"
-#include "HMCD-Core_Version.h"
+#include "dir_scan_util.h"
+#include "hmcdcore_version.h"
 
 // Non-std libraries
 #include <curl/curl.h>

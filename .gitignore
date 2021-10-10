@@ -3,8 +3,8 @@
 /package/
 /Doxyfile
 /Wrapper.sh
-/include/HMCDCore/HMCD-Core_Version.h
-/src/HMCD-CLI/HMCD-CLI_Version.h
+/include/hmcdcore/hmcdcore_version.h
+/src/hmcd-cli/hmcd-cli_version.h
 /hmcd-clone-and-build.sh
 /hmcd-clone-and-build.cmd
 /build-win-release.sh

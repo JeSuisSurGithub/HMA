@@ -12,22 +12,12 @@ bool g_hmcd_enable_logs = true;
 #define HMCD_LOG_ERR(FMT, ...)  \
     fprintf(stderr, "ERROR: (%s:%i), "FMT"\n", __FILE__, __LINE__, ##__VA_ARGS__);
 
-#ifdef RELEASE_BUILD
-    #define HMCD_ASSERT_W_ERR_LOG(ASSERT, FMT, ...) \
+#define HMCD_ASSERT_W_ERR_LOG(ASSERT, FMT, ...) \
     if(!(ASSERT))   \
     {   \
         HMCD_LOG_ERR("ASSERTION ERROR: "FMT, ##__VA_ARGS__)    \
         assert(ASSERT); \
-        abort();    \
     }
-#else
-    #define HMCD_ASSERT_W_ERR_LOG(ASSERT, FMT, ...) \
-    if(!(ASSERT))   \
-    {   \
-        HMCD_LOG_ERR(FMT, ##__VA_ARGS__)    \
-        assert(ASSERT); \
-    }
-#endif
 
 #define HMCD_FOPEN_W_ERR_CHK(FPTR, FN, MODE, CLEANUPS, RETCODE)  \
     if (!((FPTR) = fopen(FN, MODE))) \
@@ -56,9 +46,9 @@ bool g_hmcd_enable_logs = true;
     }
 
 #define HMCD_DO_SILENT(FUNCTION_CALL)   \
-    hmcd_enable_logs(false) \
+    hmcd_enable_logs(false); \
     FUNCTION_CALL   \
-    hmcd_enable_logs(true)
+    hmcd_enable_logs(true);
 
 void hmcd_enable_logs(bool enable)
 {
@@ -158,6 +148,7 @@ unsigned long long int hmcd_get_dir_size(const char* dir_name)
 
 unsigned int hmcd_get_chap_cnt(const HmcdServer* target_server, unsigned int book_index)
 {
+    HMCD_ASSERT_W_ERR_LOG(target_server != NULL, "target_server is a null pointer")
     HMCD_ASSERT_W_ERR_LOG(book_index < target_server->book_count, "book_index(%i) is out of range", book_index)
 
 #ifdef _WIN32
@@ -238,6 +229,7 @@ int hmcd_dl_book(
     bool one_big_dir
 )
 {
+    HMCD_ASSERT_W_ERR_LOG(target_server != NULL, "target_server is a null pointer")
     HMCD_ASSERT_W_ERR_LOG(book_index < target_server->book_count, "book_index(%i) is out of range", book_index)
 
 #ifdef _WIN32

@@ -211,15 +211,15 @@ const char* hmcd_get_server_name(HMCD_SERVER_ID server_id);
 
 /**
  * @brief Gets https certificate
- * @param curl_handle Curl handle to set SSL certificate for, abort() if NULL
- * @param certificate_path Certificate destination, abort() if NULL
+ * @param curl_handle Curl handle to set SSL certificate for
+ * @param certificate_path Certificate destination
  * @return return < 0 means error, return >= success
 */
 int hmcd_set_https_cert(CURL* curl_handle, const char* certificate_path);
 
 /**
  * @brief Returns directory size
- * @param dir_name Directory path, abort() if NULL
+ * @param dir_name Directory path
  * @return Total size
 */
 unsigned long long int hmcd_get_dir_size(const char* dir_name);
@@ -227,15 +227,15 @@ unsigned long long int hmcd_get_dir_size(const char* dir_name);
 /**
  * @brief Get number of chapter
  * @param target_server Server to get from
- * @param book_index index of target_server->books, abort() if >= target_server->book_count
- * @return Number of chapters
+ * @param book_index index of target_server->books
+ * @return Number of chapters, 0 on error
 */
 unsigned int hmcd_get_chap_cnt(const HmcdServer* target_server, unsigned int book_index);
 
 /**
  * @brief Downloads manhua
  * @param target_server Server to download from
- * @param book_index index of target_server->books, abort() if >= target_server->book_count
+ * @param book_index index of target_server->books
  * @param first_chap First chapter to download
  * @param last_chap Last chapter to download, no checks are performed on the validity
  * @param one_big_dir On true, downloads all files to one directory

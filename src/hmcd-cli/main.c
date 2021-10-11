@@ -292,6 +292,7 @@ int main(int argc, char* argv[])
             printf("Usage : %s [OPTIONS]\n", argv[0]);
             printf("\t NO ARGS, launches guided mode\n");
             printf("\t -h, --help\t Prints out this help\n");
+            printf("\t -v, --version\t Prints version\n");
             printf("\t -s, --server[int]\t 1 = MAINLAND CHINA, 2 = GLOBAL\n");
             printf("\t -b, --book[int]\t The 4-digit integer on the HI3 COMIC Official site when you read a specific book i.e: http://....com/book/[BookID]\n");
             printf("\t -f, --first[int]\t First chapter to download, optional\n");

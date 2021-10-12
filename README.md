@@ -15,7 +15,7 @@ Then run these commands:<br/>
 &nbsp;&nbsp;&nbsp;&nbsp;`cmake --build build" --target uninstall` (to uninstall)<br/>
 
 ## Usage
-`Usage : hmcd-cli.exe [OPTIONS]`; `NO ARGS`, launches guided mode<br/>
+`Usage : hmcd-cli [OPTIONS]`; `NO ARGS`, launches guided mode<br/>
 &nbsp;&nbsp;&nbsp;&nbsp;`-h, --help      Prints out this help`<br/>
 &nbsp;&nbsp;&nbsp;&nbsp;`-s, --server[int]       1 = MAINLAND CHINA, 2 = GLOBAL`<br/>
 &nbsp;&nbsp;&nbsp;&nbsp;`-b, --book[int]         The 4-digit integer on the HI3 COMIC Official site when you read a specific book i.e: http://....com/book/[BookID]`<br/>

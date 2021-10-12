@@ -1,3 +1,3 @@
-cmake -G"MinGW Makefiles" -B"./build" -S"./"
-cmake --build "./build" -j2
+cmake -B build -S . -DCMAKE_BUILD_TYPE="Release"
+cmake --build build -j 2
 PAUSE

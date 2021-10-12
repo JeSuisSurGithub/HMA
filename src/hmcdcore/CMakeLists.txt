@@ -10,8 +10,8 @@ configure_file("${HMCD-Core_INC_DIR}/hmcdcore_version.h.in" "${HMCD-Core_INC_DIR
 
 # List of files to compile
 set(HMCD-Core_SRC_LIST
-    "${HMCD-Core_SRC_DIR}/hmcd.c"
     "${HMCD-Core_SRC_DIR}/dir_scan_util.c"
+    "${HMCD-Core_SRC_DIR}/hmcd.c"
 )
 
 # Build shared and static
@@ -59,7 +59,7 @@ install(TARGETS HMCD-Core_static HMCD-Core_shared
 
 install(FILES
     "${HMCD-Core_INC_DIR}/dir_scan_util.h"
-    "${HMCD-Core_INC_DIR}/hmcdcore_version.h"
     "${HMCD-Core_INC_DIR}/hmcd.h"
+    "${HMCD-Core_INC_DIR}/hmcdcore_version.h"
     "${HMCD-Core_INC_DIR}/hmcppd.hpp"
     DESTINATION "${CMAKE_INSTALL_PREFIX}/include/hmcdcore")

@@ -7,12 +7,12 @@ Just go [there](https://github.com/JeFaitDesSpaghettis/HMCD/releases) or build i
 ## Build
 To build you'll git cmake and curl development packages.<br/>
 Then run these commands:<br/>
-&nbsp;&nbsp;&nbsp;&nbsp;`git clone "https://github.com/JeFaitDesSpaghettis/HMCD"`<br/>
-&nbsp;&nbsp;&nbsp;&nbsp;`cd "./HMCD"`<br/>
-&nbsp;&nbsp;&nbsp;&nbsp;`cmake -G"MinGW Makefiles" -B"./build" -S"./"`<br/>
-&nbsp;&nbsp;&nbsp;&nbsp;`cmake --build "./build" -j8`<br/>
-&nbsp;&nbsp;&nbsp;&nbsp;`cmake --build "./build" --target install` (optional)<br/>
-&nbsp;&nbsp;&nbsp;&nbsp;`cmake --build "./build" --target uninstall` (to uninstall)<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;`git clone https://github.com/JeFaitDesSpaghettis/HMCD`<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;`cd HMCD`<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;`cmake -B build -S . -DCMAKE_BUILD_TYPE="Release""`<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;`cmake --build build" -j 2`<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;`cmake --build build" --target install` (optional)<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;`cmake --build build" --target uninstall` (to uninstall)<br/>
 
 ## Usage
 `Usage : hmcd-cli.exe [OPTIONS]`; `NO ARGS`, launches guided mode<br/>

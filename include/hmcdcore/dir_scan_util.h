@@ -18,11 +18,11 @@
 #include <sys/stat.h>
 
 // Standard
-#include <stdio.h>
-#include <stdlib.h>
-#include <stdbool.h>
-#include <string.h>
 #include <assert.h>
+#include <stdbool.h>
+#include <stdlib.h>
+#include <stdio.h>
+#include <string.h>
 
 /**
  * @brief Return true if directory

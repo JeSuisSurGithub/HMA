@@ -22,6 +22,7 @@ target_include_directories(HMCD-CLI PUBLIC
     "${HMCD-CLI_SRC_DIR}"
     "${HMCD-Core_INC_DIR}"
 )
+
 # Lower case name
 set_target_properties(HMCD-CLI PROPERTIES OUTPUT_NAME hmcd-cli)
 
@@ -39,7 +40,11 @@ if (CMAKE_CXX_COMPILER_ID STREQUAL "GNU")
 endif()
 
 if(RELEASE_BUILD EQUAL 1)
-    target_compile_options(HMCD-CLI PUBLIC "-Wall" "-O2" "-ffile-prefix-map=${HMCD_ROOT_DIR_WIN}=")
+    if (WIN32)
+        target_compile_options(HMCD-CLI PUBLIC "-Wall" "-O2" "-ffile-prefix-map=${HMCD_ROOT_DIR_WIN}=")
+    else()
+        target_compile_options(HMCD-CLI PUBLIC "-Wall" "-O2" "-ffile-prefix-map=${HMCD_ROOT_DIR}=")
+    endif()
 else()
     target_compile_options(HMCD-CLI PUBLIC "-Wall" "-ggdb")
 endif()

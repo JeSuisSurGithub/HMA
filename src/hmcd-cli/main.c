@@ -10,6 +10,29 @@
 #define GET_CHAP_CNT_FAIL -4
 #define DL_BOOK_FAIL -5
 
+void print_help(const char* argv_0)
+{
+    printf("Usage : %s [OPTIONS]\n", argv_0);
+    printf("\t NO ARGS, launches guided mode\n");
+    printf("\t-h, --help\t Prints out this help\n");
+    printf("\t-v, --version\t Prints version\n");
+    printf("\t-s, --server[int]\t 1 = MAINLAND CHINA, 2 = GLOBAL\n");
+    printf("\t-b, --book[int]\t The 4-digit integer on the HI3 COMIC Official site when you read a specific book i.e: http://....com/book/[BookID]\n");
+    printf("\t-f, --first[int]\t First chapter to download, optional\n");
+    printf("\t-l, --last[int]\t Last chapter to download, optional\n");
+    printf("\t-n, --lessverbose\t Silent libhmcd\n");
+    printf("\t-r, --noseparation\t All pages in one big directory\n");
+    printf("Get more help or report issues at https://github.com/JeFaitDesSpaghettis/HMCD\n");
+}
+
+void print_version()
+{
+    printf("HMCDCORE: v%i.%i.%i\n", HMCDCORE_VERSION_MAJOR, HMCDCORE_VERSION_MINOR, HMCDCORE_VERSION_PATCH);
+    printf("HMCD-CLI: v%i.%i.%i\n", HMCD_CLI_VERSION_MAJOR, HMCD_CLI_VERSION_MINOR, HMCD_CLI_VERSION_PATCH);
+    printf("This program is licensed under the Apache 2.0 License, for more information see LICENSE.md\n");
+    printf("This program uses libcURL and Mozilla's certificate store (cacert.pem), see https://curl.se/docs/copyright.html and https://curl.se/docs/caextract.html\n");
+}
+
 void phone_style_ui()
 {
     char in_buf[32] = {0};
@@ -233,7 +256,7 @@ int main(int argc, char* argv[])
         struct option longopts[] =
         {
             { "help", no_argument, &help_flag, 1 },
-            { "version", no_argument, &v_flag, 'v' },
+            { "version", no_argument, &v_flag, 1 },
             { "server", required_argument, NULL, 's' },
             { "book", required_argument, NULL, 'b' },
             { "first", optional_argument, NULL, 'f' },
@@ -289,26 +312,13 @@ int main(int argc, char* argv[])
         }
         if (help_flag)
         {
-            printf("Usage : %s [OPTIONS]\n", argv[0]);
-            printf("\t NO ARGS, launches guided mode\n");
-            printf("\t -h, --help\t Prints out this help\n");
-            printf("\t -v, --version\t Prints version\n");
-            printf("\t -s, --server[int]\t 1 = MAINLAND CHINA, 2 = GLOBAL\n");
-            printf("\t -b, --book[int]\t The 4-digit integer on the HI3 COMIC Official site when you read a specific book i.e: http://....com/book/[BookID]\n");
-            printf("\t -f, --first[int]\t First chapter to download, optional\n");
-            printf("\t -l, --last[int]\t Last chapter to download, optional\n");
-            printf("\t -n, --lessverbose\t Silent libhmcd\n");
-            printf("\t -r, --noseparation\t All pages in one big directory\n");
-            printf("Get more help or report issues at https://github.com/JeFaitDesSpaghettis/HMCD\n");
+            print_help(argv[0]);
             curl_global_cleanup();
             exit(EXIT_SUCCESS);
         }
         if (v_flag)
         {
-            printf("HMCDCORE: v%i.%i.%i\n", HMCDCORE_VERSION_MAJOR, HMCDCORE_VERSION_MINOR, HMCDCORE_VERSION_PATCH);
-            printf("HMCD-CLI: v%i.%i.%i\n", HMCD_CLI_VERSION_MAJOR, HMCD_CLI_VERSION_MINOR, HMCD_CLI_VERSION_PATCH);
-            printf("This program is licensed under the Apache 2.0 License, for more information see LICENSE.md\n");
-            printf("This program uses libcURL and Mozilla's certificate store (cacert.pem), see https://curl.se/docs/copyright.html and https://curl.se/docs/caextract.html\n");
+            print_version();
             curl_global_cleanup();
             exit(EXIT_SUCCESS);
         }

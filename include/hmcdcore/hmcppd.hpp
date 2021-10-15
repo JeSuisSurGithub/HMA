@@ -181,7 +181,7 @@ namespace hmcppd
         {
             std::vector<Book> Books;
             Books.resize(dl_server->book_count);
-            for (size_t index = 0; index < dl_server->book_count; index++)
+            for (std::size_t index = 0; index < dl_server->book_count; index++)
                 Books[index] = {dl_server->books[index].book_id, std::string(dl_server->books[index].book_name)};
             return Books;
         }

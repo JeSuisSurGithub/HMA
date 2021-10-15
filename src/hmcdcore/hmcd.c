@@ -1,9 +1,5 @@
 #include <hmcdcore/hmcd.h>
 
-#ifdef __cplusplus
-    extern "C" {
-#endif
-
 bool g_hmcd_enable_logs = true;
 
 #define HMCD_LOG(FMT, ...) \
@@ -167,7 +163,7 @@ unsigned int hmcd_get_chap_cnt(const HmcdServer* target_server, unsigned int boo
 
     CURL* check_handle;
     HMCD_CURL_INIT_W_ERR_CHK(check_handle, , 0)
-    int res = hmcd_set_https_cert(check_handle, "./cacert.pem");
+    int res = hmcd_set_https_cert(check_handle, HMCD_CURL_HTTPS_CERT_URL);
     if (res < 0)
     {
         HMCD_LOG_ERR("hmcd_set_https_cert(), failed")
@@ -262,10 +258,10 @@ int hmcd_dl_book(
 
     CURL* dl_handle;
     HMCD_CURL_INIT_W_ERR_CHK(dl_handle, , -1)
-    int res_dl = hmcd_set_https_cert(dl_handle, "./cacert.pem");
+    int res_dl = hmcd_set_https_cert(dl_handle, HMCD_CURL_HTTPS_CERT_URL);
     if (res_dl < 0)
     {
-        HMCD_LOG_ERR("hmcd_set_https_cert(dl_handle, \"./cacert.pem\") failed");
+        HMCD_LOG_ERR("hmcd_set_https_cert(dl_handle, \"%s\") failed", HMCD_CURL_HTTPS_CERT_URL);
         curl_easy_cleanup(dl_handle);
         return -2;
     }
@@ -287,14 +283,14 @@ int hmcd_dl_book(
     // chap_dirname + / + chap_count + page_count + ".jpg" + NULL
     char* page_filename = malloc((strlen(book_dirname) + 8 + 2) + 1 + 2 + 2 + 4 + 1);
 
+    if (one_big_dir) { strcpy(chap_dirname, book_dirname); }
+
     // For all chapter in the range
     for (unsigned int chap_count = first_chap; chap_count <= last_chap; chap_count++)
     {
         sprintf(chap_url, "%s/%i/%i/", target_base_url, book_id, chap_count);
 
-        (one_big_dir) ?
-            strcpy(chap_dirname, book_dirname)
-            : sprintf(chap_dirname, "%s/Chapter%02i", book_dirname, chap_count);
+        if (!one_big_dir) { sprintf(chap_dirname, "%s/Chapter%02i", book_dirname, chap_count); }
 #ifdef _WIN32
         mkdir(chap_dirname);
 #else
@@ -420,7 +416,3 @@ int hmcd_dl_book(
 #undef HMCD_CURL_INIT_W_ERR_CHK
 #undef HMCD_CURL_PERF_W_ERR_CHK
 #undef HMCD_DO_SILENT
-
-#ifdef __cplusplus
-    }
-#endif

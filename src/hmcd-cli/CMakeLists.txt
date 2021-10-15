@@ -39,7 +39,7 @@ if (CMAKE_CXX_COMPILER_ID STREQUAL "GNU")
     target_compile_options(HMCD-CLI PUBLIC "-Wextra")
 endif()
 
-if(RELEASE_BUILD EQUAL 1)
+if (RELEASE_BUILD EQUAL 1)
     if (WIN32)
         target_compile_options(HMCD-CLI PUBLIC "-Wall" "-O2" "-ffile-prefix-map=${HMCD_ROOT_DIR_WIN}=")
     else()

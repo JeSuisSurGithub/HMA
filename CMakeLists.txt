@@ -23,6 +23,26 @@ else()
     add_definitions("-DRELEASE_BUILD=${RELEASE_BUILD}")
 endif()
 
+# Flags
+set(HMCD_FLAGS "-Wall" "-O3" CACHE INTERNAL "")
+if (CMAKE_CXX_COMPILER_ID STREQUAL "GNU")
+    list(APPEND HMCD_FLAGS "-Wextra")
+endif()
+
+if (RELEASE_BUILD EQUAL 1)
+    if (WIN32)
+        list(APPEND HMCD_FLAGS "-ffile-prefix-map=${HMCD_ROOT_DIR_WIN}=")
+    else()
+        list(APPEND HMCD_FLAGS "-ffile-prefix-map=${HMCD_ROOT_DIR}=")
+    endif()
+else()
+    if (CMAKE_CXX_COMPILER_ID STREQUAL "GNU")
+        list(APPEND HMCD_FLAGS "-ggdb")
+    else()
+        list(APPEND HMCD_FLAGS "-g3")
+    endif()
+endif()
+
 # Documentation
 find_package(Doxygen)
 option(BUILD_DOCUMENTATION "Create and install the HTML based API

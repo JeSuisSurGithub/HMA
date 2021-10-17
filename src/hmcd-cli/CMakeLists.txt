@@ -12,9 +12,7 @@ configure_file("${HMCD-CLI_SRC_DIR}/hmcd-cli_version.h.in" "${HMCD-CLI_SRC_DIR}/
 include("${HMCD-Core_SRC_DIR}/CMakeLists.txt")
 
 # Source
-add_executable(HMCD-CLI
-    "${HMCD-CLI_SRC_DIR}/main.c"
-)
+add_executable(HMCD-CLI "${HMCD-CLI_SRC_DIR}/main.c")
 
 # Include
 target_include_directories(HMCD-CLI PUBLIC
@@ -35,20 +33,7 @@ target_link_libraries(HMCD-CLI PUBLIC
 )
 
 # Flags
-if (CMAKE_CXX_COMPILER_ID STREQUAL "GNU")
-    target_compile_options(HMCD-CLI PUBLIC "-Wextra")
-endif()
-
-if (RELEASE_BUILD EQUAL 1)
-    if (WIN32)
-        target_compile_options(HMCD-CLI PUBLIC "-Wall" "-O2" "-ffile-prefix-map=${HMCD_ROOT_DIR_WIN}=")
-    else()
-        target_compile_options(HMCD-CLI PUBLIC "-Wall" "-O2" "-ffile-prefix-map=${HMCD_ROOT_DIR}=")
-    endif()
-else()
-    target_compile_options(HMCD-CLI PUBLIC "-Wall" "-ggdb")
-endif()
-
+target_compile_options(HMCD-CLI PUBLIC "${HMCD_FLAGS}")
 
 # Wait first for libraries to build
 add_dependencies(HMCD-CLI HMCD-Core_static HMCD-Core_shared)

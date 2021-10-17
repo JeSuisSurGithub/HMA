@@ -37,23 +37,8 @@ else (CURL_FOUND)
 endif(CURL_FOUND)
 
 # Flags
-if (CMAKE_CXX_COMPILER_ID STREQUAL "GNU")
-    target_compile_options(HMCD-Core_static PUBLIC "-Wextra")
-    target_compile_options(HMCD-Core_shared PUBLIC "-Wextra")
-endif()
-
-if(RELEASE_BUILD EQUAL 1)
-    if (WIN32)
-        target_compile_options(HMCD-Core_static PUBLIC "-Wall" "-O2" "-ffile-prefix-map=${HMCD_ROOT_DIR_WIN}=")
-        target_compile_options(HMCD-Core_shared PUBLIC "-Wall" "-O2" "-ffile-prefix-map=${HMCD_ROOT_DIR_WIN}=")
-    else()
-        target_compile_options(HMCD-Core_static PUBLIC "-Wall" "-O2" "-ffile-prefix-map=${HMCD_ROOT_DIR}=")
-        target_compile_options(HMCD-Core_shared PUBLIC "-Wall" "-O2" "-ffile-prefix-map=${HMCD_ROOT_DIR}=")
-    endif()
-else()
-    target_compile_options(HMCD-Core_static PUBLIC "-Wall" "-ggdb")
-    target_compile_options(HMCD-Core_shared PUBLIC "-Wall" "-ggdb")
-endif()
+target_compile_options(HMCD-Core_static PUBLIC "${HMCD_FLAGS}")
+target_compile_options(HMCD-Core_shared PUBLIC "${HMCD_FLAGS}")
 
 
 # Install

@@ -163,7 +163,7 @@ unsigned int hmcd_get_chap_cnt(const HmcdServer* target_server, unsigned int boo
 
     CURL* check_handle;
     HMCD_CURL_INIT_W_ERR_CHK(check_handle, , 0)
-    int res = hmcd_set_https_cert(check_handle, HMCD_CURL_HTTPS_CERT_URL);
+    int res = hmcd_set_https_cert(check_handle, "cacert.pem");
     if (res < 0)
     {
         HMCD_LOG_ERR("hmcd_set_https_cert(), failed")
@@ -258,10 +258,10 @@ int hmcd_dl_book(
 
     CURL* dl_handle;
     HMCD_CURL_INIT_W_ERR_CHK(dl_handle, , -1)
-    int res_dl = hmcd_set_https_cert(dl_handle, HMCD_CURL_HTTPS_CERT_URL);
+    int res_dl = hmcd_set_https_cert(dl_handle, "cacert.pem");
     if (res_dl < 0)
     {
-        HMCD_LOG_ERR("hmcd_set_https_cert(dl_handle, \"%s\") failed", HMCD_CURL_HTTPS_CERT_URL);
+        HMCD_LOG_ERR("hmcd_set_https_cert(dl_handle, \"%s\") failed", "cacert.pem");
         curl_easy_cleanup(dl_handle);
         return -2;
     }

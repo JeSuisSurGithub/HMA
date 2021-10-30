@@ -11,8 +11,7 @@ configure_file("${HMCD-Core_INC_DIR}/hmcdcore_version.h.in" "${HMCD-Core_INC_DIR
 # List of files to compile
 set(HMCD-Core_SRC_LIST
     "${HMCD-Core_SRC_DIR}/dir_scan_util.c"
-    "${HMCD-Core_SRC_DIR}/hmcd.c"
-)
+    "${HMCD-Core_SRC_DIR}/hmcd.c")
 
 # Build shared and static
 add_library(HMCD-Core_static STATIC "${HMCD-Core_SRC_LIST}")

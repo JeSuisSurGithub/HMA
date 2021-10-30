@@ -215,7 +215,7 @@ const char* hmcd_get_server_name(HMCD_SERVER_ID server_id);
  * @param certificate_path Certificate destination
  * @return return < 0 means error, return >= success
 */
-int hmcd_set_https_cert(CURL* curl_handle, const char* certificate_path);
+int _hmcd_set_https_cert(CURL* curl_handle, const char* certificate_path);
 
 /**
  * @brief Returns directory size
@@ -246,8 +246,7 @@ int hmcd_dl_book(
     unsigned int book_index,
     unsigned int first_chap,
     unsigned int last_chap,
-    bool one_big_dir
-);
+    bool one_big_dir);
 
 #ifdef __cplusplus
     }

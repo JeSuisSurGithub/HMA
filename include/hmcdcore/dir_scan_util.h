@@ -55,7 +55,7 @@ unsigned int dsu_get_file_cnt(const char* path);
 /**
  * @brief Do not call
 */
-void __dsu_get_all_filepath(const char* path, unsigned int* file_count, char** path_list);
+void _dsu_get_all_filepath(const char* path, unsigned int* file_count, char** path_list);
 
 /**
  * @brief Get list of files
@@ -76,7 +76,7 @@ unsigned int dsu_get_dir_cnt(const char* path, bool is_recur);
 /**
  * @brief Do not call
 */
-void __dsu_get_all_dirpath(const char* path, unsigned int* dir_count, char** path_list);
+void _dsu_get_all_dirpath(const char* path, unsigned int* dir_count, char** path_list);
 
 /**
  * @brief Get list of directory

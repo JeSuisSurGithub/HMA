@@ -18,8 +18,7 @@ add_executable(HMCD-CLI "${HMCD-CLI_SRC_DIR}/main.c")
 target_include_directories(HMCD-CLI PUBLIC
     "${CMAKE_CURRENT_LIST_DIR}"
     "${HMCD-CLI_SRC_DIR}"
-    "${HMCD-Core_INC_DIR}"
-)
+    "${HMCD-Core_INC_DIR}")
 
 # Lower case name
 set_target_properties(HMCD-CLI PROPERTIES OUTPUT_NAME hmcd-cli)
@@ -28,9 +27,7 @@ set_target_properties(HMCD-CLI PROPERTIES OUTPUT_NAME hmcd-cli)
 target_link_directories(HMCD-CLI PUBLIC "${CMAKE_CURRENT_LIST_DIR}" "${CMAKE_BINARY_DIR}")
 
 # Link with static one
-target_link_libraries(HMCD-CLI PUBLIC
-    HMCD-Core_static
-)
+target_link_libraries(HMCD-CLI PUBLIC HMCD-Core_static)
 
 # Flags
 target_compile_options(HMCD-CLI PUBLIC "${HMCD_FLAGS}")

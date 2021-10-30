@@ -74,7 +74,7 @@ unsigned int dsu_get_file_cnt(const char* path)
     return file_count;
 }
 
-void __dsu_get_all_filepath(const char* path, unsigned int* list_iter, char** path_list)
+void _dsu_get_all_filepath(const char* path, unsigned int* list_iter, char** path_list)
 {
     DSU_ASSERT_W_ERR_LOG(path != NULL, "path is a null pointer")
     DSU_ASSERT_W_ERR_LOG(list_iter != NULL, "list_iter is a null pointer")
@@ -102,7 +102,7 @@ void __dsu_get_all_filepath(const char* path, unsigned int* list_iter, char** pa
             {
                 char* dirpath = (char*)malloc(strlen(path) + 1 + strlen(entries->d_name) + 2);
                 sprintf(dirpath, "%s/%s/", path, entries->d_name);
-                __dsu_get_all_filepath(dirpath, list_iter, path_list);
+                _dsu_get_all_filepath(dirpath, list_iter, path_list);
                 free(dirpath);
             }
             free(fullpath);
@@ -141,7 +141,7 @@ char** dsu_get_all_filepath(const char* path, unsigned int* file_count)
             {
                 char* dirpath = (char*)malloc(strlen(path) + 1 + strlen(entries->d_name) + 2);
                 sprintf(dirpath, "%s/%s/", path, entries->d_name);
-                __dsu_get_all_filepath(dirpath, &list_iter, path_list);
+                _dsu_get_all_filepath(dirpath, &list_iter, path_list);
                 free(dirpath);
             }
             free(fullpath);
@@ -186,7 +186,7 @@ unsigned int dsu_get_dir_cnt(const char* path, bool is_recur)
     return dir_count;
 }
 
-void __dsu_get_all_dirpath(const char* path, unsigned int* list_iter, char** path_list)
+void _dsu_get_all_dirpath(const char* path, unsigned int* list_iter, char** path_list)
 {
     DSU_ASSERT_W_ERR_LOG(path != NULL, "path is a null pointer")
     DSU_ASSERT_W_ERR_LOG(list_iter != NULL, "list_iter is a null pointer")
@@ -211,7 +211,7 @@ void __dsu_get_all_dirpath(const char* path, unsigned int* list_iter, char** pat
                 strcpy(path_list[(*list_iter)++], fullpath);
                 char* dirpath = (char*)malloc(strlen(path) + 1 + strlen(entries->d_name) + 2);
                 sprintf(dirpath, "%s/%s/", path, entries->d_name);
-                __dsu_get_all_dirpath(dirpath, list_iter, path_list);
+                _dsu_get_all_dirpath(dirpath, list_iter, path_list);
                 free(dirpath);
             }
             free(fullpath);
@@ -251,7 +251,7 @@ char** dsu_get_all_dirpath(const char* path, unsigned int* dir_count)
                 strcpy(path_list[list_iter++], fullpath);
                 char* dirpath = (char*)malloc(strlen(path) + 1 + strlen(entries->d_name) + 2);
                 sprintf(dirpath, "%s/%s/", path, entries->d_name);
-                __dsu_get_all_dirpath(dirpath, &list_iter, path_list);
+                _dsu_get_all_dirpath(dirpath, &list_iter, path_list);
                 free(dirpath);
             }
             free(fullpath);

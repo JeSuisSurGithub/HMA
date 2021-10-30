@@ -63,7 +63,7 @@ const char* hmcd_get_server_name(HMCD_SERVER_ID server_id)
     else { return NULL; }
 }
 
-int hmcd_set_https_cert(CURL* curl_handle, const char* certificate_path)
+int _hmcd_set_https_cert(CURL* curl_handle, const char* certificate_path)
 {
     HMCD_ASSERT_W_ERR_LOG(curl_handle != NULL, "Uninitialized handle")
     HMCD_ASSERT_W_ERR_LOG(certificate_path != NULL, "No certificate path given")
@@ -163,10 +163,10 @@ unsigned int hmcd_get_chap_cnt(const HmcdServer* target_server, unsigned int boo
 
     CURL* check_handle;
     HMCD_CURL_INIT_W_ERR_CHK(check_handle, , 0)
-    int res = hmcd_set_https_cert(check_handle, "cacert.pem");
+    int res = _hmcd_set_https_cert(check_handle, "cacert.pem");
     if (res < 0)
     {
-        HMCD_LOG_ERR("hmcd_set_https_cert(), failed")
+        HMCD_LOG_ERR("_hmcd_set_https_cert(), failed")
         curl_easy_cleanup(check_handle);
         return 0;
     }
@@ -222,8 +222,7 @@ int hmcd_dl_book(
     unsigned int book_index,
     unsigned int first_chap,
     unsigned int last_chap,
-    bool one_big_dir
-)
+    bool one_big_dir)
 {
     HMCD_ASSERT_W_ERR_LOG(target_server != NULL, "target_server is a null pointer")
     HMCD_ASSERT_W_ERR_LOG(book_index < target_server->book_count, "book_index(%i) is out of range", book_index)
@@ -258,10 +257,10 @@ int hmcd_dl_book(
 
     CURL* dl_handle;
     HMCD_CURL_INIT_W_ERR_CHK(dl_handle, , -1)
-    int res_dl = hmcd_set_https_cert(dl_handle, "cacert.pem");
+    int res_dl = _hmcd_set_https_cert(dl_handle, "cacert.pem");
     if (res_dl < 0)
     {
-        HMCD_LOG_ERR("hmcd_set_https_cert(dl_handle, \"%s\") failed", "cacert.pem");
+        HMCD_LOG_ERR("_hmcd_set_https_cert(dl_handle, \"%s\") failed", "cacert.pem");
         curl_easy_cleanup(dl_handle);
         return -2;
     }

@@ -79,6 +79,11 @@ static const char* HMCD_GLB_NAME = "global";
 static const char* HMCD_CN_NAME = "china";
 
 /**
+ * @brief Width of the progress bar in characters
+*/
+#define PROGRESS_BAR_WIDTH 30
+
+/**
  * @brief Server designation helper
 */
 typedef enum _HMCD_SERVER_ID
@@ -93,30 +98,30 @@ typedef enum _HMCD_SERVER_ID
 /**
  * @brief Structure representing a book
 */
-typedef struct _HmcdBook
+typedef struct _hmcd_book
 {
     unsigned int book_id;   //!< ID of the book starting at 1001
     const char* book_name;  //!< Name of the book, may be unicode
-}HmcdBook;
+}hmcd_book;
 
 /**
  * @brief Structure representing a server
 */
-typedef struct _HmcdServer
+typedef struct _hmcd_server
 {
     unsigned int book_count;    //!< Number of books available on this server
     HMCD_SERVER_ID server_id;   //!< Server identifier indicated by the HMCD_SERVER_ID enum
     const char* base_url;       //!< Base url for books (not ending in /)
     char* out_dir;              //!< Default output directory
-    HmcdBook books[];           //!< Array of books available
-}HmcdServer;
+    hmcd_book books[];           //!< Array of books available
+}hmcd_server;
 
 
 /**
  * @brief Global server information
  * @details Contains information needed about global server
 */
-static const HmcdServer HMCD_GLB_SERVER =
+static const hmcd_server HMCD_GLB_SERVER =
 {
     HMCD_GLB_BOOK_COUNT,
     HMCD_GLOBAL,
@@ -152,7 +157,7 @@ static const HmcdServer HMCD_GLB_SERVER =
  * @brief China server information
  * @details Contains information needed about china server
 */
-static const HmcdServer HMCD_CN_SERVER =
+static const hmcd_server HMCD_CN_SERVER =
 {
     HMCD_CN_BOOK_COUNT,
     HMCD_CHINA,
@@ -230,7 +235,17 @@ unsigned long long int hmcd_get_dir_size(const char* dir_name);
  * @param book_index index of target_server->books
  * @return Number of chapters, 0 on error
 */
-unsigned int hmcd_get_chap_cnt(const HmcdServer* target_server, unsigned int book_index);
+unsigned int hmcd_get_chap_cnt(const hmcd_server* target_server, unsigned int book_index);
+
+/**
+ * @brief Progress bar for curl
+*/
+int _hmcd_curl_progress_callback(
+    void *clientp,
+    curl_off_t dltotal,
+    curl_off_t dlnow,
+    curl_off_t ultotal,
+    curl_off_t ulnow);
 
 /**
  * @brief Downloads manhua
@@ -242,7 +257,7 @@ unsigned int hmcd_get_chap_cnt(const HmcdServer* target_server, unsigned int boo
  * @return Zero on success, non zero on fail
 */
 int hmcd_dl_book(
-    const HmcdServer* target_server,
+    const hmcd_server* target_server,
     unsigned int book_index,
     unsigned int first_chap,
     unsigned int last_chap,

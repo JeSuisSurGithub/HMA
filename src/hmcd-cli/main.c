@@ -37,8 +37,8 @@ void phone_style_ui()
 {
     char in_buf[32] = {0};
     HMCD_SERVER_ID server_id = HMCD_NONE;
-    const HmcdBook* book_list = NULL;
-    const HmcdServer* target_server = NULL;
+    const hmcd_book* book_list = NULL;
+    const hmcd_server* target_server = NULL;
     unsigned int book_index = 0;
     unsigned int one_big_dir = false;
     unsigned int first_chap = 0;
@@ -177,8 +177,8 @@ void phone_style_ui()
 
 void cmd_args_ui(HMCD_SERVER_ID server_id, unsigned int book_id, unsigned int first_chap, unsigned int last_chap, bool one_big_dir)
 {
-    const HmcdServer* target_server = NULL;
-    const HmcdBook* book_list = NULL;
+    const hmcd_server* target_server = NULL;
+    const hmcd_book* book_list = NULL;
     unsigned int book_index = 0;
 
     // Check download mode

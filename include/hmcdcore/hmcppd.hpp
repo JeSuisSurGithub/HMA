@@ -29,40 +29,37 @@ namespace hmcppd
     /**
      * @brief Structure representing a book, used for book lists
     */
-    typedef struct _Book
+    typedef struct _book
     {
         std::uint32_t book_id;   //!< ID of the book starting at 1001
         std::string book_name;  //!< Name of the book, may be unicode
-    }Book;
+    }book;
 
     /**
-     * @brief Wrapper around HmcdServer
+     * @brief Wrapper around hmcd_server
     */
-    class DlServer
+    class dl_server
     {
         // PUBLIC FUNCTIONS
 
         /**
          * @brief Basic constructor, throws std::runtime_error, if unrecognized
         */
-        public: DlServer(SERVER_ID server_id)
+        public: dl_server(SERVER_ID server_id)
         {
             if (server_id == SERVER_ID::HMCD_CHINA)
-                dl_server = &HMCD_CN_SERVER;
+                m_dl_server = &HMCD_CN_SERVER;
             else if (server_id == SERVER_ID::HMCD_GLOBAL)
-                dl_server = &HMCD_GLB_SERVER;
+                m_dl_server = &HMCD_GLB_SERVER;
             else throw std::runtime_error("Unrecognized server_id = " + std::to_string(server_id) + "\n");
         }
 
-        public: DlServer() = delete;
+        public: dl_server() = delete;
 
         /**
-         * @brief Does nothing, only here because of smart pointers needing a destructor definition
+         * @brief Default destructor
         */
-        public: ~DlServer()
-        {
-            ;
-        }
+        public: ~dl_server() {}
 
         /**
          * @brief Enable logs to stdout
@@ -82,10 +79,10 @@ namespace hmcppd
         */
         public: std::string get_server_name()
         {
-            const char* server_name = hmcd_get_server_name(dl_server->server_id);
+            const char* server_name = hmcd_get_server_name(m_dl_server->server_id);
             if (!server_name)
                 throw std::runtime_error(
-                    "get_server_name() failed, unrecognized server_id = " + std::to_string(dl_server->server_id) + "\n");
+                    "get_server_name() failed, unrecognized server_id = " + std::to_string(m_dl_server->server_id) + "\n");
             return std::string(server_name);
         }
 
@@ -104,9 +101,9 @@ namespace hmcppd
         */
         public: unsigned int get_chap_cnt(unsigned int book_index)
         {
-            if (book_index >= dl_server->book_count)
+            if (book_index >= m_dl_server->book_count)
                 throw std::invalid_argument("book_index >= get_book_count()\n");
-            unsigned int chap_count = hmcd_get_chap_cnt(dl_server, book_index);
+            unsigned int chap_count = hmcd_get_chap_cnt(m_dl_server, book_index);
             if (chap_count == 0)
                 throw std::runtime_error("get_chap_cnt() failed\n");
             return chap_count;
@@ -121,7 +118,7 @@ namespace hmcppd
         */
         public: void dl_book(unsigned int book_index, unsigned int first_chap, unsigned int last_chap, bool one_big_dir)
         {
-            if (book_index >= dl_server->book_count)
+            if (book_index >= m_dl_server->book_count)
                 throw std::invalid_argument("book_index >= get_book_count()\n");
 
             bool previous_state = enabled_logs();
@@ -132,7 +129,7 @@ namespace hmcppd
             if (last_chap > chapter_count)
                 throw std::invalid_argument("last_chap >= get_chap_count(book_index)\n");
 
-            int result = hmcd_dl_book(dl_server, book_index, first_chap, last_chap, one_big_dir);
+            int result = hmcd_dl_book(m_dl_server, book_index, first_chap, last_chap, one_big_dir);
             if (result != 0)
                 throw std::runtime_error("dl_book() failed\n");
         }
@@ -143,16 +140,16 @@ namespace hmcppd
         */
         public: void switch_server()
         {
-            switch (dl_server->server_id)
+            switch (m_dl_server->server_id)
             {
                 case SERVER_ID::HMCD_CHINA:
-                    dl_server = &HMCD_GLB_SERVER;
+                    m_dl_server = &HMCD_GLB_SERVER;
                     break;
                 case SERVER_ID::HMCD_GLOBAL:
-                    dl_server = &HMCD_CN_SERVER;
+                    m_dl_server = &HMCD_CN_SERVER;
                     break;
                 default:
-                    throw std::runtime_error("Unrecognized server_id = " + std::to_string(dl_server->server_id) + "\n");
+                    throw std::runtime_error("Unrecognized server_id = " + std::to_string(m_dl_server->server_id) + "\n");
                     break;
             }
         }
@@ -162,34 +159,34 @@ namespace hmcppd
         /**
          * @brief Number of books on the current server
         */
-        public: std::uint32_t get_book_count() { return dl_server->book_count; }
+        public: std::uint32_t get_book_count() { return m_dl_server->book_count; }
 
         /**
          * @brief Current server designation
         */
-        public: SERVER_ID get_server_id() { return dl_server->server_id; }
+        public: SERVER_ID get_server_id() { return m_dl_server->server_id; }
 
         /**
          * @brief Get output directory of downloads
         */
-        public: std::string get_out_dir() { return std::string(dl_server->out_dir); }
+        public: std::string get_out_dir() { return std::string(m_dl_server->out_dir); }
 
         /**
          * @brief Get vector of Books
         */
-        public: std::vector<Book> get_books()
+        public: std::vector<book> get_books()
         {
-            std::vector<Book> Books;
-            Books.resize(dl_server->book_count);
-            for (std::size_t index = 0; index < dl_server->book_count; index++)
-                Books[index] = {dl_server->books[index].book_id, std::string(dl_server->books[index].book_name)};
+            std::vector<book> Books;
+            Books.resize(m_dl_server->book_count);
+            for (std::size_t index = 0; index < m_dl_server->book_count; index++)
+                Books[index] = {m_dl_server->books[index].book_id, std::string(m_dl_server->books[index].book_name)};
             return Books;
         }
 
         // VARIABLES
 
         // Server
-        private: const HmcdServer* dl_server = nullptr;
+        private: const hmcd_server* m_dl_server = nullptr;
     };
 }
 

@@ -20,7 +20,7 @@ void print_help(const char* argv_0)
     printf("\t-b, --book[int]\t The 4-digit integer on the HI3 COMIC Official site when you read a specific book i.e: http://....com/book/[BookID]\n");
     printf("\t-f, --first[int]\t First chapter to download, optional\n");
     printf("\t-l, --last[int]\t Last chapter to download, optional\n");
-    printf("\t-n, --lessverbose\t Silent libhmcd\n");
+    printf("\t-n, --quiet\t Silent libhmcd\n");
     printf("\t-r, --noseparation\t All pages in one big directory\n");
     printf("Get more help or report issues at https://github.com/JeFaitDesSpaghettis/HMCD\n");
 }
@@ -96,7 +96,7 @@ void phone_style_ui()
                 // Show available books and get range from user input
                 book_list = &target_server->books;
                 for (size_t index = 0; index < target_server->book_count; index++)
-                    printf("Type %llu to download %i (%s)\n", index, book_list[index].book_id, book_list[index].book_name);
+                    printf("Type %zu to download %i (%s)\n", index, book_list[index].book_id, book_list[index].book_name);
 
                 fgets(in_buf, 32, stdin);
                 sscanf(in_buf, "%u", &book_index);
@@ -233,6 +233,14 @@ void cmd_args_ui(HMCD_SERVER_ID server_id, unsigned int book_id, unsigned int fi
             fprintf(stderr, "hmcd_dl_book() failed\n");
             exit(DL_BOOK_FAIL);
         }
+        char* dir_name = malloc(strlen(target_server->out_dir) + 1 + 4 + 1 + 1);
+        sprintf(dir_name, "%s_%i/", target_server->out_dir, book_list[book_index].book_id);
+        printf(
+            "Total diskspace taken by \"%s%i\": %llu (bytes)\n",
+            target_server->out_dir,
+            book_list[book_index].book_id,
+            hmcd_get_dir_size(dir_name));
+        free(dir_name);
     }
     else { printf("Invalid range\n"); }
 }
@@ -261,7 +269,7 @@ int main(int argc, char* argv[])
             { "book", required_argument, NULL, 'b' },
             { "first", optional_argument, NULL, 'f' },
             { "last", optional_argument, NULL, 'l' },
-            { "lessverbose", no_argument, NULL, 'n' },
+            { "quiet", no_argument, NULL, 'n' },
             { "noseparation", no_argument, NULL, 'r' },
             { 0 }
         };

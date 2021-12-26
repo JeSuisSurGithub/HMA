@@ -388,7 +388,9 @@ int hmcd_dl_book(
                     free(page_filename);
                     curl_easy_cleanup(dl_handle);,
                     -6)
-                putchar('\n');
+
+                if (g_hmcd_enable_logs)
+                    putchar('\n');
 
                 curl_easy_getinfo(dl_handle, CURLINFO_HTTP_CODE, &http_code);
                 // If somehow we can't get it

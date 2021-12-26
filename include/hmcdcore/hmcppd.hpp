@@ -176,11 +176,11 @@ namespace hmcppd
         */
         public: std::vector<book> get_books()
         {
-            std::vector<book> Books;
-            Books.resize(m_dl_server->book_count);
+            std::vector<book> books;
+            books.resize(m_dl_server->book_count);
             for (std::size_t index = 0; index < m_dl_server->book_count; index++)
-                Books[index] = {m_dl_server->books[index].book_id, std::string(m_dl_server->books[index].book_name)};
-            return Books;
+                books[index] = {m_dl_server->books[index].book_id, std::string(m_dl_server->books[index].book_name)};
+            return books;
         }
 
         // VARIABLES

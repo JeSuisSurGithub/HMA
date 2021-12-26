@@ -2,7 +2,7 @@
 /build/
 /package/
 /Doxyfile
-/Wrapper.sh
+/wrapper.sh
 /include/hmcdcore/hmcdcore_version.h
 /src/hmcd-cli/hmcd-cli_version.h
 /build-package.sh

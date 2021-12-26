@@ -21,7 +21,7 @@ Then run these commands:<br/>
 &nbsp;&nbsp;&nbsp;&nbsp;`-b, --book[int]         The 4-digit integer on the HI3 COMIC Official site when you read a specific book i.e: http://....com/book/[BookID]`<br/>
 &nbsp;&nbsp;&nbsp;&nbsp;`-f, --first[int]        First chapter to download, optional`<br/>
 &nbsp;&nbsp;&nbsp;&nbsp;`-l, --last[int]         Last chapter to download, optional`<br/>
-&nbsp;&nbsp;&nbsp;&nbsp;`-n, --lessverbose       Less information`<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;`-n, --quiet             Less information`<br/>
 &nbsp;&nbsp;&nbsp;&nbsp;`-r, --noseparation      All pages in one big directory`<br/>
 
 ## Explanation
@@ -50,5 +50,5 @@ Where:<br/>
 ## Why?
 It allows you to download the official hi3 manhuas releases in a easy way. <br/>
 Also today everything needs internet and that is pretty annoying, one of the biggest problems about HI3 (and games in general) is the fact that it needs constant internet connection, and also game file encryption, if suddenly miHoYo shutdown or this game is blocked you can't do anything <br/>
-Sooo i wrote a script to download HI3 Manhuas and download them on whatever device that supports libCURL, Windows, GNU-Linux or Android through Termux. <br/>
+Sooo i wrote a program to download HI3 Manhuas and download them on whatever device that supports libCURL, Windows, GNU-Linux or Android through Termux. <br/>
 So that we can at least keep this part of HI3!

@@ -14,13 +14,13 @@ void print_help(const char* argv_0)
 {
     printf("Usage : %s [OPTIONS]\n", argv_0);
     printf("\t NO ARGS, launches guided mode\n");
-    printf("\t-h, --help\t Prints out this help\n");
-    printf("\t-v, --version\t Prints version\n");
+    printf("\t-h, --help\t\t Prints out this help\n");
+    printf("\t-v, --version\t\t Prints version\n");
     printf("\t-s, --server[int]\t 1 = MAINLAND CHINA, 2 = GLOBAL\n");
-    printf("\t-b, --book[int]\t The 4-digit integer on the HI3 COMIC Official site when you read a specific book i.e: http://....com/book/[BookID]\n");
+    printf("\t-b, --book[int]\t\t The 4-digit integer on the HI3 COMIC Official site when you read a specific book i.e: http://....com/book/[BookID]\n");
     printf("\t-f, --first[int]\t First chapter to download, optional\n");
-    printf("\t-l, --last[int]\t Last chapter to download, optional\n");
-    printf("\t-n, --quiet\t Silent libhmcd\n");
+    printf("\t-l, --last[int]\t\t Last chapter to download, optional\n");
+    printf("\t-n, --quiet\t\t Silent libhmcd\n");
     printf("\t-r, --noseparation\t All pages in one big directory\n");
     printf("Get more help or report issues at https://github.com/JeFaitDesSpaghettis/HMCD\n");
 }
@@ -121,6 +121,8 @@ void phone_style_ui()
                     printf("Please type the first chapter to download (0 is same as 1): ");
                     fgets(in_buf, 32, stdin);
                     sscanf(in_buf, "%u", &first_chap);
+                    if (first_chap == 0)
+                        first_chap = 1;
 
                     if (first_chap > (chap_count - 1))
                         printf("Start range cannot be greater or equal to %u\n", chap_count);
@@ -128,6 +130,8 @@ void phone_style_ui()
                     printf("Please type the last chapter to download (0 is all the way to last chapter): ");
                     fgets(in_buf, 32, stdin);
                     sscanf(in_buf, "%u", &last_chap);
+                    if (last_chap == 0)
+                        last_chap = (chap_count - 1);
 
                     if (last_chap > (chap_count - 1))
                         printf("End range cannot be greater or equal to %u\n", chap_count);
@@ -139,10 +143,7 @@ void phone_style_ui()
                         (last_chap <= (chap_count - 1)) && (first_chap <= (chap_count - 1)))
                         break;
                 }
-                if (first_chap == 0)
-                    first_chap = 1;
-                if (last_chap == 0)
-                    last_chap = (chap_count - 1);
+
                 /* NO BREAK */
             case 5:
                 dl_book_res = hmcd_dl_book(target_server, book_index, first_chap, last_chap, (bool)one_big_dir);

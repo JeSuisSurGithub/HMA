@@ -288,6 +288,7 @@ int cmd_args_ui(
 int main(int argc, char* argv[])
 {
     curl_global_init(CURL_GLOBAL_ALL);
+    setbuf(stdout, NULL);
     if (argc == 1)
     {
         phone_style_ui();

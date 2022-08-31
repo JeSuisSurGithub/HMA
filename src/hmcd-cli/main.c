@@ -1,14 +1,31 @@
-#include "hmcdcore_version.h"
-#include "hmcd-cli_version.h"
+#include "hmcd-cli_config.h"
 
 #include <hmcdcore/hmcd.h>
-#include <getopt.h>
 
-#define WRONG_DL_MODE -1
-#define WRONG_SERVER -2
-#define WRONG_BOOK -3
-#define GET_CHAP_CNT_FAIL -4
-#define DL_BOOK_FAIL -5
+#include <getopt.h>
+#include <stdlib.h>
+
+typedef enum _CLI_ERROR_CODE
+{
+    SUCCESS = EXIT_SUCCESS,
+    WRONG_DL_MODE = -1,
+    WRONG_SERVER = -2,
+    WRONG_BOOK = -3,
+    GET_CHAP_CNT_FAIL = -4,
+    DL_BOOK_FAIL = -5,
+    INIT_FAIL = -6
+}CLI_ERROR_CODE;
+
+typedef enum _MENU_JUMP_TABLE
+{
+    QUIT = 0,
+    SELECT_DOWNLOAD_MODE = 1,
+    SELECT_SERVER = 2,
+    SELECT_BOOK = 3,
+    SELECT_RANGE = 4,
+    DOWNLOAD = 5,
+    SELECT_JUMP = 6
+}MENU_JUMP_TABLE;
 
 void print_help(const char* argv_0)
 {
@@ -20,9 +37,9 @@ void print_help(const char* argv_0)
     printf("\t-b, --book[int]\t\t The 4-digit integer on the HI3 COMIC Official site when you read a specific book i.e: http://....com/book/[BookID]\n");
     printf("\t-f, --first[int]\t First chapter to download, optional\n");
     printf("\t-l, --last[int]\t\t Last chapter to download, optional\n");
-    printf("\t-n, --quiet\t\t Silent libhmcd\n");
-    printf("\t-r, --noseparation\t All pages in one big directory\n");
-    printf("Get more help or report issues at https://github.com/JeFaitDesSpaghettis/HMCD\n");
+    printf("\t-n, --quiet\t\t No output messages\n");
+    printf("\t-o, --onedirectory\t All pages in one directory\n");
+    printf("Get more help or report issues at https://github.com/JeFaisDesSpaghettis/HMCD\n");
 }
 
 void print_version()
@@ -33,94 +50,110 @@ void print_version()
     printf("This program uses libcURL and Mozilla's certificate store (cacert.pem), see https://curl.se/docs/copyright.html and https://curl.se/docs/caextract.html\n");
 }
 
-void phone_style_ui()
+int phone_style_ui()
 {
-    char in_buf[32] = {0};
+    char input_buf[32] = {0};
+    int exit_status = 0;
+    bool quit = false;
+
+    unsigned int one_directory = false;
     HMCD_SERVER_ID server_id = HMCD_NONE;
-    const hmcd_book* book_list = NULL;
-    const hmcd_server* target_server = NULL;
     unsigned int book_index = 0;
-    unsigned int one_big_dir = false;
     unsigned int first_chap = 0;
     unsigned int last_chap = 0;
     unsigned int chap_count = 0;
-    int dl_book_res;
-    bool quit = false;
-    printf("Welcome to HI3 manga C downloader!\n");
-    printf("Get more help or report issues at https://github.com/JeFaitDesSpaghettis/HMCD\n");
+    hmcd_context* hmcd_ctx = NULL;
+    if (hmcd_init_context(
+        &hmcd_ctx,
+        true,
+        "hmcdoutput",
+        NULL) != HMCD_SUCCESS)
+    {
+        fprintf(stderr, "hmcd_init_context() failed\n");
+        return INIT_FAIL;
+    }
 
-    /**
-     * jump_index table
-     * 0: Quit
-     * 1: Select download mode
-     * 2: Get server
-     * 3: Select book
-     * 4: Select range
-     * 5: Download
-     * 6: Select next thing to do
-    */
-    unsigned int jump_index = 1;
+    printf("Welcome to HMCD's menu\n");
+    printf("Get more help or report issues at https://github.com/JeFaisDesSpaghettis/HMCD\n");
+
+    MENU_JUMP_TABLE jump_index = SELECT_DOWNLOAD_MODE;
     while (!quit)
     {
         switch (jump_index)
         {
-            case 0:
-                quit = true;
+            case QUIT:
                 printf("Quitting...");
+                quit = true;
                 break;
-            case 1:
-                printf( "Type 1 to download all pages in different directories\n"
-                        "Type 2 to download all pages in one directory\n"
+            case SELECT_DOWNLOAD_MODE:
+                printf("Type 1 to download all pages sorted into directories\n"
+                        "Type 2 to download all pages in one single directory\n"
                         "Type the corresponding number: ");
-                fgets(in_buf, 32, stdin);
-                sscanf(in_buf, "%u", &one_big_dir);
+                fgets(input_buf, 32, stdin);
+                sscanf(input_buf, "%u", &one_directory);
 
-                if (one_big_dir == 1) { one_big_dir = false; }
-                else if (one_big_dir == 2) { one_big_dir = true; }
-                else { fprintf(stderr, "Invalid response\n"); exit(WRONG_DL_MODE); }
-                /* NO BREAK */
-            case 2:
-                // Get server
-                printf( "Type 1 to download from CN server\n"
-                        "Type 2 to download from global server\n"
-                        "Type the corresponding number: ");
-
-                fgets(in_buf, 32, stdin);
-                sscanf(in_buf, "%u", (int*)&server_id);
-
-                if (server_id == HMCD_CHINA) { target_server = &HMCD_CN_SERVER; }
-                else if (server_id == HMCD_GLOBAL) { target_server = &HMCD_GLB_SERVER; }
-                else { fprintf(stderr, "Invalid server\n"); exit(WRONG_SERVER); }
-                /* NO BREAK */
-            case 3:
-                // Show available books and get range from user input
-                book_list = &target_server->books;
-                for (size_t index = 0; index < target_server->book_count; index++)
-                    printf("Type %zu to download %i (%s)\n", index, book_list[index].book_id, book_list[index].book_name);
-
-                fgets(in_buf, 32, stdin);
-                sscanf(in_buf, "%u", &book_index);
-                if (book_index >= target_server->book_count)
+                if (one_directory == 1) { one_directory = false; }
+                else if (one_directory == 2) { one_directory = true; }
+                else
                 {
-                    fprintf(stderr, "Invalid book\n");
-                    exit(WRONG_BOOK);
+                    fprintf(stderr, "Invalid response\n");
+                    exit_status = WRONG_DL_MODE;
+                    quit = true;
+                    break;
                 }
                 /* NO BREAK */
-            case 4:
+            case SELECT_SERVER:
+                // Get server
+                printf( "Type 1 to download from china server\n"
+                        "Type 2 to download from global server\n"
+                        "Type the corresponding number: ");
+                fgets(input_buf, 32, stdin);
+                sscanf(input_buf, "%u", &server_id);
+
+                if (server_id == HMCD_CHINA) { hmcd_ctx->server = &HMCD_CN_SERVER; }
+                else if (server_id == HMCD_GLOBAL) { hmcd_ctx->server = &HMCD_GLB_SERVER; }
+                else
+                {
+                    fprintf(stderr, "Invalid server\n");
+                    exit_status = WRONG_SERVER;
+                    quit = true;
+                    break;
+                }
+                /* NO BREAK */
+            case SELECT_BOOK:
+                // Show available books and get range from user input
+                for (size_t index = 0; index < hmcd_ctx->server->book_count; index++)
+                    printf("Type %zu to download %i (%s)\n",
+                        index,
+                        hmcd_ctx->server->books[index].book_id,
+                        hmcd_ctx->server->books[index].book_name);
+
+                fgets(input_buf, 32, stdin);
+                sscanf(input_buf, "%u", &book_index);
+                if (book_index >= hmcd_ctx->server->book_count)
+                {
+                    fprintf(stderr, "Invalid book\n");
+                    exit_status = WRONG_BOOK;
+                    quit = true;
+                    break;
+                }
+                /* NO BREAK */
+            case SELECT_RANGE:
                 first_chap = 0;
                 last_chap = 0;
-                chap_count = hmcd_get_chap_cnt(target_server, book_index);
-                if (chap_count == 0)
+                if (hmcd_get_chap_cnt(hmcd_ctx, &chap_count, book_index) != HMCD_SUCCESS)
                 {
                     fprintf(stderr, "hmcd_get_chap_cnt() failed\n");
-                    exit(GET_CHAP_CNT_FAIL);
+                    exit_status = GET_CHAP_CNT_FAIL;
+                    quit = true;
+                    break;
                 }
                 while (true)
                 {
                     printf("Chapter 1 to %i are available\n", (chap_count - 1));
                     printf("Please type the first chapter to download (0 is same as 1): ");
-                    fgets(in_buf, 32, stdin);
-                    sscanf(in_buf, "%u", &first_chap);
+                    fgets(input_buf, 32, stdin);
+                    sscanf(input_buf, "%u", &first_chap);
                     if (first_chap == 0)
                         first_chap = 1;
 
@@ -128,8 +161,8 @@ void phone_style_ui()
                         printf("Start range cannot be greater or equal to %u\n", chap_count);
 
                     printf("Please type the last chapter to download (0 is all the way to last chapter): ");
-                    fgets(in_buf, 32, stdin);
-                    sscanf(in_buf, "%u", &last_chap);
+                    fgets(input_buf, 32, stdin);
+                    sscanf(input_buf, "%u", &last_chap);
                     if (last_chap == 0)
                         last_chap = (chap_count - 1);
 
@@ -145,23 +178,16 @@ void phone_style_ui()
                 }
 
                 /* NO BREAK */
-            case 5:
-                dl_book_res = hmcd_dl_book(target_server, book_index, first_chap, last_chap, (bool)one_big_dir);
-                if (dl_book_res != 0)
+            case DOWNLOAD:
+                if (hmcd_dl_book(hmcd_ctx, book_index, first_chap, last_chap, (bool)one_directory) != HMCD_SUCCESS)
                 {
                     fprintf(stderr, "hmcd_dl_book() failed\n");
-                    exit(DL_BOOK_FAIL);
+                    exit_status = DL_BOOK_FAIL;
+                    quit = true;
+                    break;
                 }
-                char* dir_name = malloc(strlen(target_server->out_dir) + 1 + 4 + 1 + 1);
-                sprintf(dir_name, "%s_%i/", target_server->out_dir, book_list[book_index].book_id);
-                printf(
-                    "Total diskspace taken by \"%s%i\": %llu (bytes)\n",
-                    target_server->out_dir,
-                    book_list[book_index].book_id,
-                    hmcd_get_dir_size(dir_name));
-                free(dir_name);
                 /* NO BREAK */
-            case 6:
+            case SELECT_JUMP:
                 printf( "Type 0 to quit\n"
                         "Type 1 to the download mode selection\n"
                         "Type 2 to the server selection\n"
@@ -169,34 +195,53 @@ void phone_style_ui()
                         "Type 4 to the range selection\n"
                         "Type 5 to download again\n"
                         "Type the corresponding number: ");
-                fgets(in_buf, 32, stdin);
-                sscanf(in_buf, "%u", &jump_index);
+                fgets(input_buf, 32, stdin);
+                sscanf(input_buf, "%u", &jump_index);
+                if (jump_index > DOWNLOAD)
+                    jump_index = SELECT_JUMP;
                 break;
         }
     }
+    hmcd_destroy_context(hmcd_ctx);
+    return exit_status;
 }
 
-void cmd_args_ui(HMCD_SERVER_ID server_id, unsigned int book_id, unsigned int first_chap, unsigned int last_chap, bool one_big_dir)
+int cmd_args_ui(
+    HMCD_SERVER_ID server_id,
+    unsigned int book_id,
+    unsigned int first_chap,
+    unsigned int last_chap,
+    bool one_directory,
+    bool enable_logs)
 {
     const hmcd_server* target_server = NULL;
-    const hmcd_book* book_list = NULL;
-    unsigned int book_index = 0;
-
-    // Check download mode
-    printf("Downloading %s\n", (one_big_dir) ? "everything in one directory" : "pages to separate directories by chapter");
 
     // Check server
     if (server_id == HMCD_CHINA) target_server = &HMCD_CN_SERVER;
     else if (server_id == HMCD_GLOBAL) target_server = &HMCD_GLB_SERVER;
-    else { fprintf(stderr, "Invalid server, CN = 1, GLOBAL = 2\n"); exit(-1); }
-    printf("Target server: %s\n", hmcd_get_server_name(server_id));
+    else
+    {
+        fprintf(stderr, "Invalid server, CHINA = 1, GLOBAL = 2\n");
+        return WRONG_SERVER;
+    }
+
+    hmcd_context* hmcd_ctx = NULL;
+    if (hmcd_init_context(
+        &hmcd_ctx,
+        enable_logs,
+        "hmcdoutput",
+        target_server) != HMCD_SUCCESS)
+    {
+        fprintf(stderr, "hmcd_init_context() failed\n");
+        return INIT_FAIL;
+    }
 
     // Check book
     bool book_id_is_valid = false;
-    book_list = &target_server->books;
-    for (book_index = 0; book_index < target_server->book_count; book_index++)
+    unsigned int book_index;
+    for (book_index = 0; book_index < hmcd_ctx->server->book_count; book_index++)
     {
-        if (book_id == book_list[book_index].book_id)
+        if (book_id == hmcd_ctx->server->books[book_index].book_id)
         {
             book_id_is_valid = true;
             break;
@@ -204,54 +249,45 @@ void cmd_args_ui(HMCD_SERVER_ID server_id, unsigned int book_id, unsigned int fi
     }
     if (book_id_is_valid == false)
     {
+        hmcd_destroy_context(hmcd_ctx);
         fprintf(stderr, "Invalid book ID\n");
-        exit(WRONG_BOOK);
+        return WRONG_BOOK;
     }
-    printf("Target book: %i (%s)\n", book_id, book_list[book_index].book_name);
 
     // Check chapters
-    unsigned int chap_count = hmcd_get_chap_cnt(target_server, book_index);
-    if (chap_count == 0)
+    unsigned int chap_count;
+    if (hmcd_get_chap_cnt(hmcd_ctx, &chap_count, book_index) != HMCD_SUCCESS)
     {
+        hmcd_destroy_context(hmcd_ctx);
         fprintf(stderr, "hmcd_get_chap_cnt() failed\n");
-        exit(GET_CHAP_CNT_FAIL);
+        return GET_CHAP_CNT_FAIL;
     }
 
+    // Special chapter counts
     if (first_chap == 0)
         first_chap = 1;
     if (last_chap == 0)
         last_chap = (chap_count - 1);
 
-    printf("Range: %i-%i\n", first_chap, last_chap);
-
     // Download
     if ((first_chap <= last_chap) && (last_chap <= (chap_count - 1)
         && last_chap >= 1) && (first_chap >= 1 || first_chap <= (chap_count - 1)))
     {
-        int dl_book_res = hmcd_dl_book(target_server, book_index, first_chap, last_chap, one_big_dir);
-        if (dl_book_res != 0)
+        if (hmcd_dl_book(hmcd_ctx, book_index, first_chap, last_chap, one_directory) != HMCD_SUCCESS)
         {
+            hmcd_destroy_context(hmcd_ctx);
             fprintf(stderr, "hmcd_dl_book() failed\n");
-            exit(DL_BOOK_FAIL);
+            return DL_BOOK_FAIL;
         }
-        char* dir_name = malloc(strlen(target_server->out_dir) + 1 + 4 + 1 + 1);
-        sprintf(dir_name, "%s_%i/", target_server->out_dir, book_list[book_index].book_id);
-        printf(
-            "Total diskspace taken by \"%s%i\": %llu (bytes)\n",
-            target_server->out_dir,
-            book_list[book_index].book_id,
-            hmcd_get_dir_size(dir_name));
-        free(dir_name);
     }
     else { printf("Invalid range\n"); }
+    hmcd_destroy_context(hmcd_ctx);
+    return EXIT_SUCCESS;
 }
 
 int main(int argc, char* argv[])
 {
     curl_global_init(CURL_GLOBAL_ALL);
-#ifdef _WIN32
-    SetConsoleOutputCP(CP_UTF8);
-#endif
     if (argc == 1)
     {
         phone_style_ui();
@@ -262,6 +298,12 @@ int main(int argc, char* argv[])
     {
         int help_flag = 0;
         int v_flag = 0;
+        unsigned int server_id = 0;
+        unsigned int book_id = 0;
+        unsigned int first_chap = 0;
+        unsigned int last_chap = 0;
+        bool enable_logs = true;
+        bool one_directory = false;
         struct option longopts[] =
         {
             { "help", no_argument, &help_flag, 1 },
@@ -271,16 +313,11 @@ int main(int argc, char* argv[])
             { "first", optional_argument, NULL, 'f' },
             { "last", optional_argument, NULL, 'l' },
             { "quiet", no_argument, NULL, 'n' },
-            { "noseparation", no_argument, NULL, 'r' },
+            { "onedirectory", no_argument, NULL, 'o' },
             { 0 }
         };
         int opt;
-        unsigned int server_id = 0;
-        unsigned int book_id = 0;
-        unsigned int first_chap = 0;
-        unsigned int last_chap = 0;
-        bool one_big_dir = false;
-        while((opt = getopt_long(argc, argv, "hvs:b:f:l:nr", longopts, 0)) != -1)
+        while((opt = getopt_long(argc, argv, "hvs:b:f:l:no", longopts, 0)) != -1)
         {
             switch(opt)
             {
@@ -303,13 +340,13 @@ int main(int argc, char* argv[])
                     last_chap = atoi(optarg);
                     break;
                 case 'n':
-                    hmcd_enable_logs(false);
+                    enable_logs = false;
                     break;
-                case 'r':
-                    one_big_dir = true;
+                case 'o':
+                    one_directory = true;
                     break;
                 case ':':
-                    printf("No value given\n");
+                    printf("No argument given for option\n");
                     break;
                 case '?':
                     curl_global_cleanup();
@@ -331,8 +368,8 @@ int main(int argc, char* argv[])
             curl_global_cleanup();
             exit(EXIT_SUCCESS);
         }
-        cmd_args_ui(server_id, book_id, first_chap, last_chap, one_big_dir);
+        int exit_status = cmd_args_ui(server_id, book_id, first_chap, last_chap, one_directory, enable_logs);
+        curl_global_cleanup();
+        exit(exit_status);
     }
-    curl_global_cleanup();
-    exit(EXIT_SUCCESS);
 }

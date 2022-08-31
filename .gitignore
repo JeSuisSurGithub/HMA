@@ -1,8 +1,8 @@
+/.cache/
 /.vscode/
+/.xmake/
 /build/
-/package/
-/Doxyfile
+/include/hmcdcore/hmcdcore_config.h
+/src/hmcd-cli/hmcd-cli_config.h
+/compile_commands.json
 /wrapper.sh
-/include/hmcdcore/hmcdcore_version.h
-/src/hmcd-cli/hmcd-cli_version.h
-/build-package.sh

@@ -1,91 +1,32 @@
 #ifndef HMCD_H
 #define HMCD_H
 
-/**
- * @file include/hmcdcore/hmcd.h
- * @brief Downloads HI3 manhuas
- * @details @verbatim
- * The url of a page uses the following scheme:
- * [XXXXXXXX]/comic/book/[BOOK_ID]/[CHAPTER]/[PAGE].jpg
- * Where:
- *      XXXXXXXX is the cdn, it can be either
- *          "https://d2tpbmzklky1cl.cloudfront.net/manga/static" (global)
- *          OR
- *          "https://comicstatic.bh3.com/new_static_v2" (china)
- *      BOOK_ID is an 4 digit integer starting from 1001(and growing up) indicating the book
- *      CHAPTER is a non zero padded integer starting at 1 indicating the chapter
- *      PAGE is zero padded 4 digit integer starting at 0001
- * They will be then downloaded using the following scheme:
- * [OUT_DIR]_[BOOK_ID]/Chapter[CHAPTER]/[CHAPTER][PAGE].jpg
- * Where:
- *      OUT_DIR is either "./GBBook" or "./CNBook"
- *      BOOK_ID is an 4 digit integer starting from 1001(and growing up) indicating the book
- *      CHAPTER is a zero padded 2 digit integer starting at 1 indicating the chapter
- *      CHAPTER is reused again in the page file name for having all pages in one directory
- *          without having the page names non conflicting
- *      PAGE is zero padded 2 digit integer starting
- * @endverbatim
-*/
-
 #ifdef __cplusplus
     extern "C" {
 #endif
 
-// Other headers
-#include "dir_scan_util.h"
-#include "hmcdcore_version.h"
+#include "hmcdcore_config.h"
 
-// Non-std libraries
 #include <curl/curl.h>
 
-// Unicode output
-#ifdef _WIN32
-    #include <windows.h>
-#endif
-
-// Standard
-#include <assert.h>
+#include <errno.h>
+#include <stdarg.h>
 #include <stdbool.h>
 #include <stdio.h>
+#include <stdint.h>
 #include <stdlib.h>
 #include <string.h>
-#include <time.h>
 
-// Constants
+#ifdef _WIN32
+    #include <windows.h>
+#else
+    #include <sys/stat.h>
+#endif
 
-/**
- * @brief https certificate url
-*/
-static const char* HMCD_CURL_HTTPS_CERT_URL = "https://curl.se/ca/cacert.pem";
-
-/**
- * @brief Number of books available on the global server last checked: 27/09/2021
-*/
-static const unsigned int HMCD_GLB_BOOK_COUNT = 22;
-
-/**
- * @brief Number of books available on the chinese server last checked: 27/09/2021
-*/
-static const unsigned int HMCD_CN_BOOK_COUNT = 23;
-
-/**
- * @brief Global server designation
-*/
-static const char* HMCD_GLB_NAME = "global";
-
-/**
- * @brief Chinese server designation
-*/
-static const char* HMCD_CN_NAME = "china";
-
-/**
- * @brief Width of the progress bar in characters
-*/
 #define PROGRESS_BAR_WIDTH 30
 
-/**
- * @brief Server designation helper
-*/
+typedef uint32_t HMCD_u32;
+
 typedef enum _HMCD_SERVER_ID
 {
     HMCD_NONE = 0,
@@ -93,40 +34,50 @@ typedef enum _HMCD_SERVER_ID
     HMCD_GLOBAL = 2
 }HMCD_SERVER_ID;
 
-// Structs
-
-/**
- * @brief Structure representing a book
-*/
 typedef struct _hmcd_book
 {
-    unsigned int book_id;   //!< ID of the book starting at 1001
-    const char* book_name;  //!< Name of the book, may be unicode
+    HMCD_u32 book_id;
+    const char* book_name;
 }hmcd_book;
 
-/**
- * @brief Structure representing a server
-*/
 typedef struct _hmcd_server
 {
-    unsigned int book_count;    //!< Number of books available on this server
-    HMCD_SERVER_ID server_id;   //!< Server identifier indicated by the HMCD_SERVER_ID enum
-    const char* base_url;       //!< Base url for books (not ending in /)
-    char* out_dir;              //!< Default output directory
-    hmcd_book books[];           //!< Array of books available
+    HMCD_SERVER_ID server_id;
+    const char* name;
+    const char* base_url;
+    HMCD_u32 book_count;
+    hmcd_book books[];
 }hmcd_server;
 
+typedef struct _hmcd_context
+{
+    bool enable_logs;
+    char* output_dir;
+    const hmcd_server* server;
+    CURL* curl_handle;
+}hmcd_context;
 
-/**
- * @brief Global server information
- * @details Contains information needed about global server
-*/
+typedef enum _HMCD_ERROR
+{
+    HMCD_SUCCESS = 0,
+    HMCD_UNDEFINED_ERROR = 1,
+    HMCD_ERROR_FAILED_CURL_INIT = 2,
+    HMCD_ERROR_FAILED_FOPEN = 2,
+    HMCD_ERROR_FAILED_CURL_PERFORM = 3,
+    HMCD_ERROR_FAILED_BOOK_OUT_OF_RANGE = 4
+}HMCD_ERROR;
+
+static const char* HMCD_CURL_HTTPS_CERT_URL = "https://curl.se/ca/cacert.pem";
+static const char* HMCD_GLB_NAME = "global";
+static const char* HMCD_CN_NAME = "china";
+static const char* HMCD_CERTIFICATE_PATH = "cacert.pem";
+
 static const hmcd_server HMCD_GLB_SERVER =
 {
-    HMCD_GLB_BOOK_COUNT,
     HMCD_GLOBAL,
+    "global",
     "https://d2tpbmzklky1cl.cloudfront.net/manga/static/comic/book",
-    "./GBBook",
+    22,
     {
         {1001, "Ai-Chan Facts"         },
         {1002, "Gratitude Arc"         },
@@ -153,16 +104,12 @@ static const hmcd_server HMCD_GLB_SERVER =
     }
 };
 
-/**
- * @brief China server information
- * @details Contains information needed about china server
-*/
 static const hmcd_server HMCD_CN_SERVER =
 {
-    HMCD_CN_BOOK_COUNT,
     HMCD_CHINA,
+    "china",
     "https://comicstatic.bh3.com/new_static_v2/comic/book",
-    "./CNBook",
+    23,
     {
         {1001, u8"逃离长空篇"},
         {1002, u8"樱花追忆篇"},
@@ -190,56 +137,17 @@ static const hmcd_server HMCD_CN_SERVER =
     }
 };
 
-/**
- * @brief Internal global variable
-*/
-extern bool g_hmcd_enable_logs;
+void* _hmcd_malloc(size_t size);
+char* _hmcd_strdup();
+void _hmcd_log(bool enable_logs, const char* str);
+void _hmcd_logf(bool enable_logs, char* fmt, ...);
+void _hmcd_mkdir(const char* path, mode_t mode);
 
-/**
- * @brief Enable logs to stdout
- * @param enable True to enable
-*/
-void hmcd_enable_logs(bool enable);
+HMCD_ERROR hmcd_init_context(hmcd_context** pcontext, bool enable_logs, const char* output_dir, const hmcd_server* server);
+void hmcd_destroy_context(hmcd_context* context);
 
-/**
- * @brief Check if logs are enabled
- * @return True if enabled
-*/
-bool hmcd_enabled_logs();
+HMCD_ERROR hmcd_get_chap_cnt(hmcd_context* context, HMCD_u32* ret_chap_count, HMCD_u32 book_index);
 
-/**
- * @brief Get server designation
- * @param server_id Numerical server designation
- * @return Designation string, free must not be called, NULL if unknown
-*/
-const char* hmcd_get_server_name(HMCD_SERVER_ID server_id);
-
-/**
- * @brief Gets https certificate
- * @param curl_handle Curl handle to set SSL certificate for
- * @param certificate_path Certificate destination
- * @return return < 0 means error, return >= success
-*/
-int _hmcd_set_https_cert(CURL* curl_handle, const char* certificate_path);
-
-/**
- * @brief Returns directory size
- * @param dir_name Directory path
- * @return Total size
-*/
-unsigned long long int hmcd_get_dir_size(const char* dir_name);
-
-/**
- * @brief Get number of chapter
- * @param target_server Server to get from
- * @param book_index index of target_server->books
- * @return Number of chapters, 0 on error
-*/
-unsigned int hmcd_get_chap_cnt(const hmcd_server* target_server, unsigned int book_index);
-
-/**
- * @brief Progress bar for curl
-*/
 int _hmcd_curl_progress_callback(
     void *clientp,
     curl_off_t dltotal,
@@ -247,21 +155,12 @@ int _hmcd_curl_progress_callback(
     curl_off_t ultotal,
     curl_off_t ulnow);
 
-/**
- * @brief Downloads manhua
- * @param target_server Server to download from
- * @param book_index index of target_server->books
- * @param first_chap First chapter to download
- * @param last_chap Last chapter to download, no checks are performed on the validity
- * @param one_big_dir On true, downloads all files to one directory
- * @return Zero on success, non zero on fail
-*/
-int hmcd_dl_book(
-    const hmcd_server* target_server,
-    unsigned int book_index,
-    unsigned int first_chap,
-    unsigned int last_chap,
-    bool one_big_dir);
+HMCD_ERROR hmcd_dl_book(
+    hmcd_context* context,
+    HMCD_u32 book_index,
+    HMCD_u32 first_chap,
+    HMCD_u32 last_chap,
+    bool one_directory);
 
 #ifdef __cplusplus
     }

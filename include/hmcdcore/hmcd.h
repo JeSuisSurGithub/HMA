@@ -1,3 +1,21 @@
+/**
+ * Honkai Manhua C Downloader (HMCD)
+ * Copyright (C) 2022 JeFaisDesSpaghettis
+ *
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with this program.  If not, see <https://www.gnu.org/licenses/>.
+ */
+
 #ifndef HMCD_H
 #define HMCD_H
 
@@ -62,9 +80,9 @@ typedef enum _HMCD_ERROR
     HMCD_SUCCESS = 0,
     HMCD_UNDEFINED_ERROR = 1,
     HMCD_ERROR_FAILED_CURL_INIT = 2,
-    HMCD_ERROR_FAILED_FOPEN = 2,
-    HMCD_ERROR_FAILED_CURL_PERFORM = 3,
-    HMCD_ERROR_FAILED_BOOK_OUT_OF_RANGE = 4
+    HMCD_ERROR_FAILED_FOPEN = 3,
+    HMCD_ERROR_FAILED_CURL_PERFORM = 4,
+    HMCD_ERROR_FAILED_BOOK_OUT_OF_RANGE = 5
 }HMCD_ERROR;
 
 static const char* HMCD_CURL_HTTPS_CERT_URL = "https://curl.se/ca/cacert.pem";

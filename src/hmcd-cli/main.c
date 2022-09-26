@@ -1,3 +1,21 @@
+/**
+ * Honkai Manhua C Downloader (HMCD)
+ * Copyright (C) 2022 JeFaisDesSpaghettis
+ *
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with this program.  If not, see <https://www.gnu.org/licenses/>.
+ */
+
 #include "hmcd-cli_config.h"
 
 #include <hmcdcore/hmcd.h>
@@ -46,7 +64,7 @@ void print_version()
 {
     printf("HMCDCORE: v%i.%i.%i\n", HMCDCORE_VERSION_MAJOR, HMCDCORE_VERSION_MINOR, HMCDCORE_VERSION_PATCH);
     printf("HMCD-CLI: v%i.%i.%i\n", HMCD_CLI_VERSION_MAJOR, HMCD_CLI_VERSION_MINOR, HMCD_CLI_VERSION_PATCH);
-    printf("This program is licensed under the Apache 2.0 License, for more information see LICENSE.md\n");
+    printf("This program is licensed under GPL-3.0, see gpl-3.0.md\n");
     printf("This program uses libcURL and Mozilla's certificate store (cacert.pem), see https://curl.se/docs/copyright.html and https://curl.se/docs/caextract.html\n");
 }
 

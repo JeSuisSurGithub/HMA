@@ -9,7 +9,7 @@ target("hma-cli")
         "main.c")
     add_includedirs(ROOT_DIR .. "include")
     add_deps("hma_static", "hma_shared")
-    add_linkdirs(ROOT_DIR .. "build")
+    -- add_linkdirs(ROOT_DIR .. "build")
     add_links("curl", "hma")
     add_installfiles(
         ROOT_DIR .. "LICENSE.md",

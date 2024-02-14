@@ -1,7 +1,7 @@
 set_xmakever("2.2.5")
 
 set_project("HMCD")
-set_version("3.0.0")
+set_version("3.0.1")
 set_languages("c11")
 
 add_requires("curl", {configs = {binaryonly = true}})

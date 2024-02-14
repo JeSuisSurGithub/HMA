@@ -23,7 +23,7 @@
     extern "C" {
 #endif
 
-#include "hmcdcore_config.h"
+#include "hmcd_config.h"
 
 #include <curl/curl.h>
 
@@ -43,54 +43,54 @@
 
 #define PROGRESS_BAR_WIDTH 30
 
-typedef uint32_t HMCD_u32;
+typedef uint32_t hmcd_u32;
 
-typedef enum _HMCD_SERVER_ID
+typedef enum HMCD_SRV_ID_
 {
     HMCD_NONE = 0,
     HMCD_CHINA = 1,
     HMCD_GLOBAL = 2
-}HMCD_SERVER_ID;
+}HMCD_SRV_ID;
 
-typedef struct _hmcd_book
+typedef struct hmcd_book_
 {
-    HMCD_u32 book_id;
+    hmcd_u32 book_id;
     const char* book_name;
 }hmcd_book;
 
-typedef struct _hmcd_server
+typedef struct hmcd_srv_
 {
-    HMCD_SERVER_ID server_id;
+    HMCD_SRV_ID server_id;
     const char* name;
     const char* base_url;
-    HMCD_u32 book_count;
+    hmcd_u32 book_count;
     hmcd_book books[];
-}hmcd_server;
+}hmcd_srv;
 
-typedef struct _hmcd_context
+typedef struct _hmcd_ctx
 {
     bool enable_logs;
     char* output_dir;
-    const hmcd_server* server;
+    const hmcd_srv* server;
     CURL* curl_handle;
-}hmcd_context;
+}hmcd_ctx;
 
-typedef enum _HMCD_ERROR
+typedef enum HMCD_ERR_
 {
     HMCD_SUCCESS = 0,
     HMCD_UNDEFINED_ERROR = 1,
-    HMCD_ERROR_FAILED_CURL_INIT = 2,
-    HMCD_ERROR_FAILED_FOPEN = 3,
-    HMCD_ERROR_FAILED_CURL_PERFORM = 4,
-    HMCD_ERROR_FAILED_BOOK_OUT_OF_RANGE = 5
-}HMCD_ERROR;
+    HMCD_ERR_FAILED_CURL_INIT = 2,
+    HMCD_ERR_FAILED_FOPEN = 3,
+    HMCD_ERR_FAILED_CURL_PERFORM = 4,
+    HMCD_ERR_FAILED_BOOK_OUT_OF_RANGE = 5
+}HMCD_ERR;
 
 static const char* HMCD_CURL_HTTPS_CERT_URL = "https://curl.se/ca/cacert.pem";
 static const char* HMCD_GLB_NAME = "global";
 static const char* HMCD_CN_NAME = "china";
 static const char* HMCD_CERTIFICATE_PATH = "cacert.pem";
 
-static const hmcd_server HMCD_GLB_SERVER =
+static const hmcd_srv HMCD_GLB_SERVER =
 {
     HMCD_GLOBAL,
     "global",
@@ -122,7 +122,7 @@ static const hmcd_server HMCD_GLB_SERVER =
     }
 };
 
-static const hmcd_server HMCD_CN_SERVER =
+static const hmcd_srv HMCD_CN_SERVER =
 {
     HMCD_CHINA,
     "china",
@@ -155,29 +155,29 @@ static const hmcd_server HMCD_CN_SERVER =
     }
 };
 
-void* _hmcd_malloc(size_t size);
-char* _hmcd_strdup();
-void _hmcd_log(bool enable_logs, const char* str);
-void _hmcd_logf(bool enable_logs, char* fmt, ...);
-void _hmcd_mkdir(const char* path, mode_t mode);
+void* hmcd_malloc_(size_t size);
+char* hmcd_strdup_(const char* str);
+void hmcd_log_(bool enable_logs, const char* str);
+void hmcd_logf_(bool enable_logs, char* fmt, ...);
+void hmcd_mkdir_(const char* path, mode_t mode);
 
-HMCD_ERROR hmcd_init_context(hmcd_context** pcontext, bool enable_logs, const char* output_dir, const hmcd_server* server);
-void hmcd_destroy_context(hmcd_context* context);
+HMCD_ERR hmcd_init_ctx(hmcd_ctx** pcontext, bool enable_logs, const char* output_dir, const hmcd_srv* server);
+void hmcd_free_ctx(hmcd_ctx* context);
 
-HMCD_ERROR hmcd_get_chap_cnt(hmcd_context* context, HMCD_u32* ret_chap_count, HMCD_u32 book_index);
+HMCD_ERR hmcd_get_chap_cnt(hmcd_ctx* context, hmcd_u32* ret_chap_count, hmcd_u32 book_index);
 
-int _hmcd_curl_progress_callback(
+int hmcd_curl_progress_callback_(
     void *clientp,
     curl_off_t dltotal,
     curl_off_t dlnow,
     curl_off_t ultotal,
     curl_off_t ulnow);
 
-HMCD_ERROR hmcd_dl_book(
-    hmcd_context* context,
-    HMCD_u32 book_index,
-    HMCD_u32 first_chap,
-    HMCD_u32 last_chap,
+HMCD_ERR hmcd_dl_book(
+    hmcd_ctx* context,
+    hmcd_u32 book_index,
+    hmcd_u32 first_chap,
+    hmcd_u32 last_chap,
     bool one_directory);
 
 #ifdef __cplusplus

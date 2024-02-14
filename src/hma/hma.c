@@ -1,6 +1,6 @@
 /**
- * Honkai Manhua C Downloader (HMCD)
- * Copyright (C) 2022 JeFaisDesSpaghettis
+ * Honkai Manhua Archiver (HMA)
+ * Copyright (C) 2022 JeSuis
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -16,32 +16,32 @@
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-#include <hmcd/hmcd.h>
+#include <hma/hma.h>
 
-void* hmcd_malloc_(size_t size)
+void* hma_malloc_(size_t size)
 {
     void* ptr = malloc(size);
     if (ptr == NULL)
     {
-        fputs("hmcd_malloc_(): Out of memory\n", stderr);
+        fputs("hma_malloc_(): Out of memory\n", stderr);
         abort();
     }
     return ptr;
 }
 
-char* hmcd_strdup_(const char* str)
+char* hma_strdup_(const char* str)
 {
-    char* new_str = hmcd_malloc_(strlen(str) + 1);
+    char* new_str = hma_malloc_(strlen(str) + 1);
     strcpy(new_str, str);
     return new_str;
 }
 
-void hmcd_log_(bool enable_logs, const char* str)
+void hma_log_(bool enable_logs, const char* str)
 {
     if (enable_logs) { puts(str); }
 }
 
-void hmcd_logf_(bool enable_logs, char* fmt, ...)
+void hma_logf_(bool enable_logs, char* fmt, ...)
 {
     if (enable_logs)
     {
@@ -52,7 +52,7 @@ void hmcd_logf_(bool enable_logs, char* fmt, ...)
     }
 }
 
-void hmcd_mkdir_(const char* path, mode_t mode)
+void hma_mkdir_(const char* path, mode_t mode)
 {
     int result;
     #ifdef _WIN32
@@ -62,26 +62,26 @@ void hmcd_mkdir_(const char* path, mode_t mode)
     #endif
     if (result != 0 && errno != EEXIST)
     {
-        fprintf(stderr, "hmcd_mkdir_(): Cannot create %s\n", path);
+        fprintf(stderr, "hma_mkdir_(): Cannot create %s\n", path);
         abort();
     }
 }
 
-HMCD_ERR hmcd_init_ctx(hmcd_ctx** pctx, bool enable_logs, const char* output_dir, const hmcd_srv* server)
+HMA_ERR hma_init_ctx(hma_ctx** pctx, bool enable_logs, const char* output_dir, const hma_srv* server)
 {
-    HMCD_ERR error = HMCD_UNDEFINED_ERROR;
+    HMA_ERR error = HMA_UNDEFINED_ERROR;
 
-    (*pctx) = hmcd_malloc_(sizeof(hmcd_ctx));
-    hmcd_ctx* ctx = (*pctx);
+    (*pctx) = hma_malloc_(sizeof(hma_ctx));
+    hma_ctx* ctx = (*pctx);
     ctx->enable_logs = enable_logs;
-    ctx->output_dir = hmcd_strdup_(output_dir);
+    ctx->output_dir = hma_strdup_(output_dir);
     ctx->server = server;
     ctx->curl_handle = curl_easy_init();
     if (!ctx->curl_handle)
     {
         fprintf(stderr, "%s(): curl_easy_init() failed\n", __func__);
-        error = HMCD_ERR_FAILED_CURL_INIT;
-        goto hmcd_init_ctx_exit1;
+        error = HMA_ERR_FAILED_CURL_INIT;
+        goto hma_init_ctx_exit1;
     }
     curl_easy_setopt(ctx->curl_handle, CURLOPT_VERBOSE, 0L);
     curl_easy_setopt(ctx->curl_handle, CURLOPT_WRITEFUNCTION, fwrite);
@@ -89,25 +89,25 @@ HMCD_ERR hmcd_init_ctx(hmcd_ctx** pctx, bool enable_logs, const char* output_dir
     FILE* cert_file;
     // Check for certificate
     {
-        if ((cert_file = fopen(HMCD_CERTIFICATE_PATH, "r")) != NULL)
+        if ((cert_file = fopen(HMA_CERTIFICATE_PATH, "r")) != NULL)
         {
             fclose(cert_file);
-            curl_easy_setopt(ctx->curl_handle, CURLOPT_CAINFO, HMCD_CERTIFICATE_PATH);
-            hmcd_log_(ctx->enable_logs, "Certificate found\n");
-            return HMCD_SUCCESS;
+            curl_easy_setopt(ctx->curl_handle, CURLOPT_CAINFO, HMA_CERTIFICATE_PATH);
+            hma_log_(ctx->enable_logs, "Certificate found\n");
+            return HMA_SUCCESS;
         }
         else
         {
-            hmcd_logf_(ctx->enable_logs, "Certificate not found, downloading from %s\n", HMCD_CURL_HTTPS_CERT_URL);
-            cert_file = fopen(HMCD_CERTIFICATE_PATH, "wb+");
+            hma_logf_(ctx->enable_logs, "Certificate not found, downloading from %s\n", HMA_CURL_HTTPS_CERT_URL);
+            cert_file = fopen(HMA_CERTIFICATE_PATH, "wb+");
             if (!cert_file)
             {
                 fprintf(stderr, "%s(): fopen failed\n", __func__);
-                error = HMCD_ERR_FAILED_FOPEN;
-                goto hmcd_init_ctx_exit2;
+                error = HMA_ERR_FAILED_FOPEN;
+                goto hma_init_ctx_exit2;
             }
             curl_easy_setopt(ctx->curl_handle, CURLOPT_SSL_VERIFYPEER, 0L);
-            curl_easy_setopt(ctx->curl_handle, CURLOPT_URL, HMCD_CURL_HTTPS_CERT_URL);
+            curl_easy_setopt(ctx->curl_handle, CURLOPT_URL, HMA_CURL_HTTPS_CERT_URL);
             curl_easy_setopt(ctx->curl_handle, CURLOPT_WRITEDATA, cert_file);
             curl_easy_setopt(ctx->curl_handle, CURLOPT_NOBODY, 0L);
             curl_easy_setopt(ctx->curl_handle, CURLOPT_NOPROGRESS, 1L);
@@ -116,56 +116,56 @@ HMCD_ERR hmcd_init_ctx(hmcd_ctx** pctx, bool enable_logs, const char* output_dir
             if ((err_code = curl_easy_perform(ctx->curl_handle)) != CURLE_OK)
             {
                 fprintf(stderr, "%s(): curl_easy_perform failed (%s)\n", __func__, curl_easy_strerror(err_code));
-                error = HMCD_ERR_FAILED_CURL_PERFORM;
-                goto hmcd_init_ctx_exit3;
+                error = HMA_ERR_FAILED_CURL_PERFORM;
+                goto hma_init_ctx_exit3;
             }
             fclose(cert_file);
-            hmcd_logf_(ctx->enable_logs, "Successfully downloaded %s from %s\n", HMCD_CERTIFICATE_PATH, HMCD_CURL_HTTPS_CERT_URL);
-            curl_easy_setopt(ctx->curl_handle, CURLOPT_CAINFO, HMCD_CERTIFICATE_PATH);
+            hma_logf_(ctx->enable_logs, "Successfully downloaded %s from %s\n", HMA_CERTIFICATE_PATH, HMA_CURL_HTTPS_CERT_URL);
+            curl_easy_setopt(ctx->curl_handle, CURLOPT_CAINFO, HMA_CERTIFICATE_PATH);
             curl_easy_setopt(ctx->curl_handle, CURLOPT_SSL_VERIFYPEER, 1L);
-            return HMCD_SUCCESS;
+            return HMA_SUCCESS;
         }
     }
-    hmcd_init_ctx_exit3:
+    hma_init_ctx_exit3:
         fclose(cert_file);
-    hmcd_init_ctx_exit2:
+    hma_init_ctx_exit2:
         curl_easy_cleanup(ctx->curl_handle);
-    hmcd_init_ctx_exit1:
+    hma_init_ctx_exit1:
         free(ctx->output_dir);
         free(ctx);
     return error;
 }
 
-void hmcd_free_ctx(hmcd_ctx* ctx)
+void hma_free_ctx(hma_ctx* ctx)
 {
     curl_easy_cleanup(ctx->curl_handle);
     free(ctx->output_dir);
     free(ctx);
 }
 
-HMCD_ERR hmcd_get_chap_cnt(hmcd_ctx* ctx, hmcd_u32* ret_chap_count, hmcd_u32 book_index)
+HMA_ERR hma_get_chap_cnt(hma_ctx* ctx, hma_u32* ret_chap_count, hma_u32 book_index)
 {
     if (book_index > ctx->server->book_count)
     {
-        return HMCD_ERR_FAILED_BOOK_OUT_OF_RANGE;
+        return HMA_ERR_FAILED_BOOK_OUT_OF_RANGE;
     }
-    HMCD_ERR error;
+    HMA_ERR error;
 
-    hmcd_u32 book_id = ctx->server->books[book_index].book_id;
+    hma_u32 book_id = ctx->server->books[book_index].book_id;
     const char* book_name = ctx->server->books[book_index].book_name;
     const char* server_name = ctx->server->name;
     const char* base_url = ctx->server->base_url;
     CURL* curl_handle = ctx->curl_handle;
 
-    hmcd_logf_(ctx->enable_logs, "Getting chapter count of %s (%u %s)\n", book_name, book_id, server_name);
+    hma_logf_(ctx->enable_logs, "Getting chapter count of %s (%u %s)\n", book_name, book_id, server_name);
     curl_easy_setopt(ctx->curl_handle, CURLOPT_WRITEFUNCTION, NULL);
     curl_easy_setopt(ctx->curl_handle, CURLOPT_NOBODY, 1L);
 
     // base_url + / + book_id + / + chap_count + / + "0001.jpg" + NULL
-    char* first_page_url = hmcd_malloc_(strlen(base_url) + 1 + 4 + 1 + 2 + 1 + 8 + 1);
+    char* first_page_url = hma_malloc_(strlen(base_url) + 1 + 4 + 1 + 2 + 1 + 8 + 1);
 
     // Check if first page (0001.jpg) exist for every chapter
-    for (hmcd_u32 chap_count = 1; ; chap_count++)
+    for (hma_u32 chap_count = 1; ; chap_count++)
     {
         sprintf(first_page_url, "%s/%04u/%u/0001.jpg", base_url, book_id, chap_count);
         curl_easy_setopt(curl_handle, CURLOPT_URL, first_page_url);
@@ -173,33 +173,33 @@ HMCD_ERR hmcd_get_chap_cnt(hmcd_ctx* ctx, hmcd_u32* ret_chap_count, hmcd_u32 boo
         if (err_code == CURLE_HTTP_RETURNED_ERROR)
         {
             *ret_chap_count = chap_count;
-            hmcd_logf_(ctx->enable_logs, "Chapter %u XX\n", chap_count);
-            hmcd_logf_(ctx->enable_logs, "%s (%u %s) has %u chapters\n", book_name, book_id, server_name, (*ret_chap_count) - 1);
+            hma_logf_(ctx->enable_logs, "Chapter %u XX\n", chap_count);
+            hma_logf_(ctx->enable_logs, "%s (%u %s) has %u chapters\n", book_name, book_id, server_name, (*ret_chap_count) - 1);
             free(first_page_url);
-            return HMCD_SUCCESS;
+            return HMA_SUCCESS;
         }
-        else if (err_code == CURLE_OK) { hmcd_logf_(ctx->enable_logs, "Chapter %u OK\n", chap_count); }
+        else if (err_code == CURLE_OK) { hma_logf_(ctx->enable_logs, "Chapter %u OK\n", chap_count); }
         else
         {
             fprintf(stderr, "%s(): curl_easy_perform failed (%s)\n", __func__, curl_easy_strerror(err_code));
-            error = HMCD_ERR_FAILED_CURL_PERFORM;
-            goto hmcd_get_chap_cnt_exit1;
+            error = HMA_ERR_FAILED_CURL_PERFORM;
+            goto hma_get_chap_cnt_exit1;
         }
     }
-    hmcd_get_chap_cnt_exit1:
+    hma_get_chap_cnt_exit1:
         free(first_page_url);
     return error;
 }
 
 
-int hmcd_curl_progress_callback_(
+int hma_curl_progress_callback_(
     void *clientp,
     curl_off_t dltotal,
     curl_off_t dlnow,
     curl_off_t ultotal,
     curl_off_t ulnow)
 {
-    hmcd_ctx* ctx = (hmcd_ctx*)clientp;
+    hma_ctx* ctx = (hma_ctx*)clientp;
     if (ctx->enable_logs)
     {
         if (dltotal == 0 || dlnow == 0)
@@ -215,27 +215,27 @@ int hmcd_curl_progress_callback_(
     return 0;
 }
 
-HMCD_ERR hmcd_dl_book(
-    hmcd_ctx* ctx,
-    hmcd_u32 book_index,
-    hmcd_u32 first_chap,
-    hmcd_u32 last_chap,
+HMA_ERR hma_dl_book(
+    hma_ctx* ctx,
+    hma_u32 book_index,
+    hma_u32 first_chap,
+    hma_u32 last_chap,
     bool one_directory)
 {
     if (book_index > ctx->server->book_count)
     {
-        return HMCD_ERR_FAILED_BOOK_OUT_OF_RANGE;
+        return HMA_ERR_FAILED_BOOK_OUT_OF_RANGE;
     }
-    HMCD_ERR error = HMCD_UNDEFINED_ERROR;
+    HMA_ERR error = HMA_UNDEFINED_ERROR;
 
     const char* output_dir = ctx->output_dir;
     const char* server_name = ctx->server->name;
     const char* base_url = ctx->server->base_url;
-    hmcd_u32 book_id = ctx->server->books[book_index].book_id;
+    hma_u32 book_id = ctx->server->books[book_index].book_id;
     const char* book_name = ctx->server->books[book_index].book_name;
     CURL* curl_handle = ctx->curl_handle;
 
-    hmcd_logf_(ctx->enable_logs, "Downloading %s (%u %s chapter %u to %u)...\n",
+    hma_logf_(ctx->enable_logs, "Downloading %s (%u %s chapter %u to %u)...\n",
         book_name,
         book_id,
         server_name,
@@ -245,48 +245,48 @@ HMCD_ERR hmcd_dl_book(
     char* book_dirpath;
     if (one_directory)
     {
-        book_dirpath = hmcd_strdup_(output_dir);
-        hmcd_mkdir_(book_dirpath, 0755);
+        book_dirpath = hma_strdup_(output_dir);
+        hma_mkdir_(book_dirpath, 0755);
     }
     else
     {
         // output_dir + / + server_name + / + book_id + NULL
-        book_dirpath = hmcd_malloc_(strlen(output_dir) + 1 + strlen(server_name) + 1 + 4 + 1);
+        book_dirpath = hma_malloc_(strlen(output_dir) + 1 + strlen(server_name) + 1 + 4 + 1);
         sprintf(book_dirpath, "%s", output_dir);
-        hmcd_mkdir_(book_dirpath, 0755);
+        hma_mkdir_(book_dirpath, 0755);
         sprintf(book_dirpath, "%s/%s", output_dir, server_name);
-        hmcd_mkdir_(book_dirpath, 0755);
+        hma_mkdir_(book_dirpath, 0755);
         sprintf(book_dirpath, "%s/%s/%04u", output_dir, server_name, book_id);
-        hmcd_mkdir_(book_dirpath, 0755);
+        hma_mkdir_(book_dirpath, 0755);
     }
 
     char* chap_dirpath;
     // base_url + / + book_id + / chap_count + / + page_count + ".jpg" + NULL
-    char* page_url = hmcd_malloc_(strlen(base_url) + 1 + 4 + 1 + 2 + 1 + 4 + 4 + 1);
+    char* page_url = hma_malloc_(strlen(base_url) + 1 + 4 + 1 + 2 + 1 + 4 + 4 + 1);
     char* page_filepath;
     if (one_directory)
     {
-        chap_dirpath = hmcd_strdup_(book_dirpath);
+        chap_dirpath = hma_strdup_(book_dirpath);
         // chap_dirpath + / + server_name + _ + book_id + _ + chap_count + page_count + ".jpg" + NUL
-        page_filepath = hmcd_malloc_((strlen(book_dirpath)) + strlen(server_name) + 1 + 4 + 1 + 2 + 2 + 4 + 1);
+        page_filepath = hma_malloc_((strlen(book_dirpath)) + strlen(server_name) + 1 + 4 + 1 + 2 + 2 + 4 + 1);
     }
     else
     {
         // book_dirpath + / + chap_count + NULL
-        chap_dirpath = hmcd_malloc_(strlen(book_dirpath) + 1 + 2 + 1);
+        chap_dirpath = hma_malloc_(strlen(book_dirpath) + 1 + 2 + 1);
         // chap_dirpath + / + chap_count + page_count + ".jpg" + NULL
-        page_filepath = hmcd_malloc_((strlen(book_dirpath) + 1 + 2) + 1 + 2 + 2 + 4 + 1);
+        page_filepath = hma_malloc_((strlen(book_dirpath) + 1 + 2) + 1 + 2 + 2 + 4 + 1);
     }
 
-    for (hmcd_u32 chap_count = first_chap; chap_count <= last_chap; chap_count++)
+    for (hma_u32 chap_count = first_chap; chap_count <= last_chap; chap_count++)
     {
         if (!one_directory)
         {
             sprintf(chap_dirpath, "%s/%02u", book_dirpath, chap_count);
-            hmcd_mkdir_(chap_dirpath, 0755);
+            hma_mkdir_(chap_dirpath, 0755);
         }
-        hmcd_logf_(ctx->enable_logs, "Downloading chapter %u...\n", chap_count);
-        for (hmcd_u32 page_count = 1; ; page_count++)
+        hma_logf_(ctx->enable_logs, "Downloading chapter %u...\n", chap_count);
+        for (hma_u32 page_count = 1; ; page_count++)
         {
             sprintf(page_url, "%s/%04u/%u/%04u.jpg", base_url, book_id, chap_count, page_count);
 
@@ -300,8 +300,8 @@ HMCD_ERR hmcd_dl_book(
             CURLcode err_code = curl_easy_perform(curl_handle);
             if (err_code == CURLE_HTTP_RETURNED_ERROR)
             {
-                hmcd_logf_(ctx->enable_logs, "%s => %s XX\n", page_url, page_filepath);
-                hmcd_logf_(ctx->enable_logs, "Downloaded chapter %u (%u pages)\n", chap_count, page_count);
+                hma_logf_(ctx->enable_logs, "%s => %s XX\n", page_url, page_filepath);
+                hma_logf_(ctx->enable_logs, "Downloaded chapter %u (%u pages)\n", chap_count, page_count);
                 break;
             }
             else if (err_code == CURLE_OK)
@@ -318,46 +318,46 @@ HMCD_ERR hmcd_dl_book(
                 if (!page_file)
                 {
                     fprintf(stderr, "%s(): fopen failed\n", __func__);
-                    error = HMCD_ERR_FAILED_FOPEN;
-                    goto hmcd_dl_book_exit1;
+                    error = HMA_ERR_FAILED_FOPEN;
+                    goto hma_dl_book_exit1;
                 }
                 curl_easy_setopt(curl_handle, CURLOPT_URL, page_url);
                 curl_easy_setopt(curl_handle, CURLOPT_HEADER, 0L);
                 curl_easy_setopt(curl_handle, CURLOPT_NOBODY, 0L);
                 curl_easy_setopt(curl_handle, CURLOPT_WRITEFUNCTION, fwrite);
                 curl_easy_setopt(curl_handle, CURLOPT_NOPROGRESS, 0L);
-                curl_easy_setopt(curl_handle, CURLOPT_XFERINFOFUNCTION, hmcd_curl_progress_callback_);
+                curl_easy_setopt(curl_handle, CURLOPT_XFERINFOFUNCTION, hma_curl_progress_callback_);
                 curl_easy_setopt(curl_handle, CURLOPT_XFERINFODATA, ctx);
 	            curl_easy_setopt(curl_handle, CURLOPT_WRITEDATA, page_file);
 
                 err_code = curl_easy_perform(curl_handle);
-                hmcd_log_(ctx->enable_logs, "\n");
+                hma_log_(ctx->enable_logs, "\n");
                 if (err_code != CURLE_OK)
                 {
                     fprintf(stderr, "%s(): curl_easy_perform failed (%s)\n", __func__, curl_easy_strerror(err_code));
                     fclose(page_file);
-                    error = HMCD_ERR_FAILED_CURL_PERFORM;
-                    goto hmcd_dl_book_exit1;
+                    error = HMA_ERR_FAILED_CURL_PERFORM;
+                    goto hma_dl_book_exit1;
                 }
                 fclose(page_file);
-                hmcd_logf_(ctx->enable_logs, "%s => %s OK\n", page_url, page_filepath);
+                hma_logf_(ctx->enable_logs, "%s => %s OK\n", page_url, page_filepath);
             }
             else
             {
                 fprintf(stderr, "%s(): curl_easy_perform failed (%s)\n", __func__, curl_easy_strerror(err_code));
-                error = HMCD_ERR_FAILED_CURL_PERFORM;
-                goto hmcd_dl_book_exit1;
+                error = HMA_ERR_FAILED_CURL_PERFORM;
+                goto hma_dl_book_exit1;
             }
         }
     }
-    hmcd_logf_(ctx->enable_logs, "Downloaded %s (%u %s chapter %u to %u)\n",
+    hma_logf_(ctx->enable_logs, "Downloaded %s (%u %s chapter %u to %u)\n",
         book_name,
         book_id,
         server_name,
         first_chap,
         last_chap);
-    error = HMCD_SUCCESS;
-    hmcd_dl_book_exit1:
+    error = HMA_SUCCESS;
+    hma_dl_book_exit1:
         free(book_dirpath);
         free(chap_dirpath);
         free(page_url);

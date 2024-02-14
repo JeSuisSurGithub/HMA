@@ -1,6 +1,6 @@
 /**
- * Honkai Manhua C Downloader (HMCD)
- * Copyright (C) 2022 JeFaisDesSpaghettis
+ * Honkai Manhua Archiver (HMA)
+ * Copyright (C) 2022 JeSuis
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -16,9 +16,9 @@
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-#include "hmcd-cli_config.h"
+#include "hma-cli_config.h"
 
-#include <hmcd/hmcd.h>
+#include <hma/hma.h>
 
 #include <getopt.h>
 #include <stdlib.h>
@@ -57,13 +57,13 @@ void print_help(const char* argv_0)
     printf("\t-l, --last[int]\t\t Last chapter to download, optional\n");
     printf("\t-n, --quiet\t\t No output messages\n");
     printf("\t-o, --onedirectory\t All pages in one directory\n");
-    printf("Get more help or report issues at https://github.com/JeFaisDesSpaghettis/HMCD\n");
+    printf("Get more help or report issues at https://github.com/JeSuisSurGithub/HMA\n");
 }
 
 void print_version()
 {
-    printf("HMCD: v%i.%i.%i\n", HMCD_VERSION_MAJOR, HMCD_VERSION_MINOR, HMCD_VERSION_PATCH);
-    printf("HMCD-CLI: v%i.%i.%i\n", HMCD_CLI_VERSION_MAJOR, HMCD_CLI_VERSION_MINOR, HMCD_CLI_VERSION_PATCH);
+    printf("HMA: v%i.%i.%i\n", HMA_VERSION_MAJOR, HMA_VERSION_MINOR, HMA_VERSION_PATCH);
+    printf("HMA-CLI: v%i.%i.%i\n", HMA_CLI_VERSION_MAJOR, HMA_CLI_VERSION_MINOR, HMA_CLI_VERSION_PATCH);
     printf("This program is licensed under GPL-3.0, see gpl-3.0.md\n");
     printf("This program uses libcURL and Mozilla's certificate store (cacert.pem), see https://curl.se/docs/copyright.html and https://curl.se/docs/caextract.html\n");
 }
@@ -75,24 +75,24 @@ int phone_style_ui()
     bool quit = false;
 
     unsigned int one_directory = false;
-    HMCD_SRV_ID server_id = HMCD_NONE;
+    HMA_SRV_ID server_id = HMA_NONE;
     unsigned int book_index = 0;
     unsigned int first_chap = 0;
     unsigned int last_chap = 0;
     unsigned int chap_count = 0;
-    hmcd_ctx* ctx = NULL;
-    if (hmcd_init_ctx(
+    hma_ctx* ctx = NULL;
+    if (hma_init_ctx(
         &ctx,
         true,
-        "hmcdoutput",
-        NULL) != HMCD_SUCCESS)
+        "hmaoutput",
+        NULL) != HMA_SUCCESS)
     {
-        fprintf(stderr, "hmcd_init_ctx() failed\n");
+        fprintf(stderr, "hma_init_ctx() failed\n");
         return INIT_FAIL;
     }
 
-    printf("Welcome to HMCD's menu\n");
-    printf("Get more help or report issues at https://github.com/JeFaisDesSpaghettis/HMCD\n");
+    printf("Welcome to HMA's menu\n");
+    printf("Get more help or report issues at https://github.com/JeSuisSurGithub/HMA\n");
 
     MENU_JUMP_TABLE jump_index = SELECT_DOWNLOAD_MODE;
     while (!quit)
@@ -128,8 +128,8 @@ int phone_style_ui()
                 fgets(input_buf, 32, stdin);
                 sscanf(input_buf, "%u", &server_id);
 
-                if (server_id == HMCD_CHINA) { ctx->server = &HMCD_CN_SERVER; }
-                else if (server_id == HMCD_GLOBAL) { ctx->server = &HMCD_GLB_SERVER; }
+                if (server_id == HMA_CHINA) { ctx->server = &HMA_CN_SERVER; }
+                else if (server_id == HMA_GLOBAL) { ctx->server = &HMA_GLB_SERVER; }
                 else
                 {
                     fprintf(stderr, "Invalid server\n");
@@ -159,9 +159,9 @@ int phone_style_ui()
             case SELECT_RANGE:
                 first_chap = 0;
                 last_chap = 0;
-                if (hmcd_get_chap_cnt(ctx, &chap_count, book_index) != HMCD_SUCCESS)
+                if (hma_get_chap_cnt(ctx, &chap_count, book_index) != HMA_SUCCESS)
                 {
-                    fprintf(stderr, "hmcd_get_chap_cnt() failed\n");
+                    fprintf(stderr, "hma_get_chap_cnt() failed\n");
                     exit_status = GET_CHAP_CNT_FAIL;
                     quit = true;
                     break;
@@ -197,9 +197,9 @@ int phone_style_ui()
 
                 /* NO BREAK */
             case DOWNLOAD:
-                if (hmcd_dl_book(ctx, book_index, first_chap, last_chap, (bool)one_directory) != HMCD_SUCCESS)
+                if (hma_dl_book(ctx, book_index, first_chap, last_chap, (bool)one_directory) != HMA_SUCCESS)
                 {
-                    fprintf(stderr, "hmcd_dl_book() failed\n");
+                    fprintf(stderr, "hma_dl_book() failed\n");
                     exit_status = DL_BOOK_FAIL;
                     quit = true;
                     break;
@@ -220,37 +220,37 @@ int phone_style_ui()
                 break;
         }
     }
-    hmcd_free_ctx(ctx);
+    hma_free_ctx(ctx);
     return exit_status;
 }
 
 int cmd_args_ui(
-    HMCD_SRV_ID server_id,
+    HMA_SRV_ID server_id,
     unsigned int book_id,
     unsigned int first_chap,
     unsigned int last_chap,
     bool one_directory,
     bool enable_logs)
 {
-    const hmcd_srv* target_server = NULL;
+    const hma_srv* target_server = NULL;
 
     // Check server
-    if (server_id == HMCD_CHINA) target_server = &HMCD_CN_SERVER;
-    else if (server_id == HMCD_GLOBAL) target_server = &HMCD_GLB_SERVER;
+    if (server_id == HMA_CHINA) target_server = &HMA_CN_SERVER;
+    else if (server_id == HMA_GLOBAL) target_server = &HMA_GLB_SERVER;
     else
     {
         fprintf(stderr, "Invalid server, CHINA = 1, GLOBAL = 2\n");
         return WRONG_SERVER;
     }
 
-    hmcd_ctx* ctx = NULL;
-    if (hmcd_init_ctx(
+    hma_ctx* ctx = NULL;
+    if (hma_init_ctx(
         &ctx,
         enable_logs,
-        "hmcdoutput",
-        target_server) != HMCD_SUCCESS)
+        "hmaoutput",
+        target_server) != HMA_SUCCESS)
     {
-        fprintf(stderr, "hmcd_init_ctx() failed\n");
+        fprintf(stderr, "hma_init_ctx() failed\n");
         return INIT_FAIL;
     }
 
@@ -267,17 +267,17 @@ int cmd_args_ui(
     }
     if (book_id_is_valid == false)
     {
-        hmcd_free_ctx(ctx);
+        hma_free_ctx(ctx);
         fprintf(stderr, "Invalid book ID\n");
         return WRONG_BOOK;
     }
 
     // Check chapters
     unsigned int chap_count;
-    if (hmcd_get_chap_cnt(ctx, &chap_count, book_index) != HMCD_SUCCESS)
+    if (hma_get_chap_cnt(ctx, &chap_count, book_index) != HMA_SUCCESS)
     {
-        hmcd_free_ctx(ctx);
-        fprintf(stderr, "hmcd_get_chap_cnt() failed\n");
+        hma_free_ctx(ctx);
+        fprintf(stderr, "hma_get_chap_cnt() failed\n");
         return GET_CHAP_CNT_FAIL;
     }
 
@@ -291,15 +291,15 @@ int cmd_args_ui(
     if ((first_chap <= last_chap) && (last_chap <= (chap_count - 1)
         && last_chap >= 1) && (first_chap >= 1 || first_chap <= (chap_count - 1)))
     {
-        if (hmcd_dl_book(ctx, book_index, first_chap, last_chap, one_directory) != HMCD_SUCCESS)
+        if (hma_dl_book(ctx, book_index, first_chap, last_chap, one_directory) != HMA_SUCCESS)
         {
-            hmcd_free_ctx(ctx);
-            fprintf(stderr, "hmcd_dl_book() failed\n");
+            hma_free_ctx(ctx);
+            fprintf(stderr, "hma_dl_book() failed\n");
             return DL_BOOK_FAIL;
         }
     }
     else { printf("Invalid range\n"); }
-    hmcd_free_ctx(ctx);
+    hma_free_ctx(ctx);
     return EXIT_SUCCESS;
 }
 

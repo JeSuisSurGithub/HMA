@@ -1,21 +1,21 @@
-# HI3-Manhua-C-Downloader
-HMCD is a C program to download manhuas from the official HI3 COMIC, chinese site (https://comic.bh3.com/) and international site (https://manga.honkaiimpact3.com/).
+# HI3-Manhua-Archiver
+HMA is a C program to download manhuas from the official HI3 COMIC, chinese site (https://comic.bh3.com/) and international site (https://manga.honkaiimpact3.com/).
 
 ## How to get it
-Just go [there](https://github.com/JeFaisDesSpaghettis/HMCD/releases) or build it yourself.
+Just go [there](https://github.com/JeSuisSurGithub/HMA/releases) or build it yourself.
 
 ## Build
 To build you'll [git](https://git-scm.com/) [xmake](https://xmake.io/) and [curl](https://curl.se/) development package.<br/>
 Then run these commands:<br/>
-&nbsp;&nbsp;&nbsp;&nbsp;`git clone https://github.com/JeFaitDesSpaghettis/HMCD`<br/>
-&nbsp;&nbsp;&nbsp;&nbsp;`cd HMCD`<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;`git clone https://github.com/JeSuisSurGithub/HMA`<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;`cd HMA`<br/>
 &nbsp;&nbsp;&nbsp;&nbsp;`xmake f -m release --toolchain=gcc"`<br/>
 &nbsp;&nbsp;&nbsp;&nbsp;`xmake -w -j $(nproc)`<br/>
 &nbsp;&nbsp;&nbsp;&nbsp;`sudo xmake install` (optional)<br/>
 &nbsp;&nbsp;&nbsp;&nbsp;`sudo xmake uninstall` (to uninstall)<br/>
 
 ## Usage
-`Usage : hmcd-cli [OPTIONS]`<br/>
+`Usage : hma-cli [OPTIONS]`<br/>
 &nbsp;&nbsp;&nbsp;&nbsp;`NO ARGS                 Launches guided mode`<br/>
 &nbsp;&nbsp;&nbsp;&nbsp;`-h, --help              Prints out this help`<br/>
 &nbsp;&nbsp;&nbsp;&nbsp;`-s, --server[int]       1 = MAINLAND CHINA, 2 = GLOBAL`<br/>
@@ -39,6 +39,6 @@ Where:<br/>
 + `PAGE` is zero padded 4 digit integer starting at 0001<br/>
 
 Each page downloaded is saved using one of the following path format depending on options passed in the command line:<br/>
-`hmcdoutput/[SERVER_NAME]/[BOOK_ID]/[CHAPTER]/[CHAPTER+PAGE].jpg`<br/>
+`hmaoutput/[SERVER_NAME]/[BOOK_ID]/[CHAPTER]/[CHAPTER+PAGE].jpg`<br/>
 or<br/>
-`hmcdoutput/[SERVER_NAME]_[BOOK_ID]_[CHAPTER+PAGE].jpg`<br/>
+`hmaoutput/[SERVER_NAME]_[BOOK_ID]_[CHAPTER+PAGE].jpg`<br/>

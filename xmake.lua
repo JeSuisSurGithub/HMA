@@ -1,6 +1,6 @@
 set_xmakever("2.2.5")
 
-set_project("HMCD")
+set_project("HMA")
 set_version("3.0.1")
 set_languages("c11")
 
@@ -18,4 +18,4 @@ if is_plat("window") then
 else
     ROOT_DIR = path.absolute(".") .. "/"
 end
-includes("src/hmcd-cli")
+includes("src/hma-cli")

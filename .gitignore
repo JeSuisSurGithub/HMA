@@ -2,7 +2,7 @@
 /.vscode/
 /.xmake/
 /build/
-/include/hmcdcore/hmcdcore_config.h
-/src/hmcd-cli/hmcd-cli_config.h
+/include/hma/hma_config.h
+/src/hma-cli/hma-cli_config.h
 /compile_commands.json
 /wrapper.sh

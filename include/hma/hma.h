@@ -94,7 +94,7 @@ static const hma_srv HMA_GLB_SERVER =
 {
     HMA_GLOBAL,
     "global",
-    "https://d2tpbmzklky1cl.cloudfront.net/manga/static/comic/book",
+    "https://act-webstatic.hoyoverse.com/manga/static/comic/book",
     22,
     {
         {1001, "Ai-Chan Facts"         },
@@ -126,7 +126,7 @@ static const hma_srv HMA_CN_SERVER =
 {
     HMA_CHINA,
     "china",
-    "https://comicstatic.bh3.com/new_static_v2/comic/book",
+    "https://act-webstatic.mihoyo.com/new_static_v2/comic/book",
     23,
     {
         {1001, u8"逃离长空篇"},

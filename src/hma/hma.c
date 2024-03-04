@@ -267,8 +267,8 @@ HMA_ERR hma_dl_book(
     if (one_directory)
     {
         chap_dirpath = hma_strdup_(book_dirpath);
-        // chap_dirpath + / + server_name + _ + book_id + _ + chap_count + page_count + ".jpg" + NUL
-        page_filepath = hma_malloc_((strlen(book_dirpath)) + strlen(server_name) + 1 + 4 + 1 + 2 + 2 + 4 + 1);
+        // chap_dirpath + / + server_name + _ + book_id + _ + chap_count + page_count + ".jpg" + NULL
+        page_filepath = hma_malloc_(strlen(chap_dirpath) + 1 + strlen(server_name) + 1 + 4 + 1 + 2 + 2 + 4 + 1);
     }
     else
     {

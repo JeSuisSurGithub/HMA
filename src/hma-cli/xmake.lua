@@ -1,7 +1,7 @@
 includes("../hma")
 
 target("hma-cli")
-    set_version("3.0.1")
+    set_version("3.1.0")
     set_kind("binary")
     set_configdir(".")
     add_configfiles("hma-cli_config.h.in")

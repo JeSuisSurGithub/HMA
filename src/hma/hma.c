@@ -18,23 +18,73 @@
 
 #include <hma/hma.h>
 
-void* hma_malloc_(size_t size)
-{
-    void* ptr = malloc(size);
-    if (ptr == NULL)
-    {
-        fputs("hma_malloc_(): Out of memory\n", stderr);
-        abort();
-    }
-    return ptr;
-}
+const char* HMA_CURL_HTTPS_CERT_URL = "https://curl.se/ca/cacert.pem";
+const char* HMA_CERTIFICATE_PATH = "cacert.pem";
 
-char* hma_strdup_(const char* str)
+const hma_srv HMA_GLB_SERVER =
 {
-    char* new_str = hma_malloc_(strlen(str) + 1);
-    strcpy(new_str, str);
-    return new_str;
-}
+    HMA_GLOBAL,
+    "global",
+    "https://act-webstatic.hoyoverse.com/manga/static/comic/book",
+    22,
+    {
+        {1001, "Ai-Chan Facts"         },
+        {1002, "Gratitude Arc"         },
+        {1003, "AE Invasion"           },
+        {1004, "Azure Waters"          },
+        {1005, "Second Eruption"       },
+        {1006, "Gemina: Tales"         },
+        {1007, "World Serpent"         },
+        {1008, "Kiana Plays Honkai"    },
+        {1009, "London Holiday"        },
+        {1010, "Moon Shadow"           },
+        {1011, "Elan Palatinus"        },
+        {1012, "SpringFest"            },
+        {1013, "ELF"                   },
+        {1014, "Second Key"            },
+        {1015, "Escape From Nagazora"  },
+        {1016, "St. Freya High"        },
+        {1017, "Gemina: Invasion"      },
+        {1018, "Divine Key"            },
+        {1019, "Cooking With Valkyries"},
+        {1020, "Empyrean Blade"        },
+        {1021, "Alien Space"           },
+        {1022, "Spring Festival Trip"  }
+    }
+};
+
+const hma_srv HMA_CN_SERVER =
+{
+    HMA_CHINA,
+    "china",
+    "https://act-webstatic.mihoyo.com/new_static_v2/comic/book",
+    23,
+    {
+        {1001, "逃离长空篇"},
+        {1002, "樱花追忆篇"},
+        {1004, "绀海篇"},
+        {1005, "绯樱篇"},
+        {1006, "逆熵入侵篇"},
+        {1007, "恩返篇"},
+        {1008, "月影篇"},
+        {1009, "紫鸢篇"},
+        {1010, "神之键秘话"},
+        {1011, "玩崩坏3的琪亚娜"},
+        {1012, "第二次崩坏"},
+        {1013, "女武神的餐桌"},
+        {1014, "夏日回忆-预告篇"},
+        {1015, "双子：起源"},
+        {1016, "双子：入侵"},
+        {1017, "蛇之篇"},
+        {1018, "雾都假日"},
+        {1019, "年岁"},
+        {1020, "武装人偶"},
+        {1021, "传承"},
+        {1022, "云墨剑心"},
+        {1023, "异乡"},
+        {1024, "新春旅行"}
+    }
+};
 
 void hma_log_(bool enable_logs, const char* str)
 {
@@ -71,10 +121,10 @@ HMA_ERR hma_init_ctx(hma_ctx** pctx, bool enable_logs, const char* output_dir, c
 {
     HMA_ERR error = HMA_UNDEFINED_ERROR;
 
-    (*pctx) = hma_malloc_(sizeof(hma_ctx));
+    (*pctx) = malloc(sizeof(hma_ctx));
     hma_ctx* ctx = (*pctx);
     ctx->enable_logs = enable_logs;
-    ctx->output_dir = hma_strdup_(output_dir);
+    ctx->output_dir = strdup(output_dir);
     ctx->server = server;
     ctx->curl_handle = curl_easy_init();
     if (!ctx->curl_handle)
@@ -162,7 +212,7 @@ HMA_ERR hma_get_chap_cnt(hma_ctx* ctx, hma_u32* ret_chap_count, hma_u32 book_ind
     curl_easy_setopt(ctx->curl_handle, CURLOPT_NOBODY, 1L);
 
     // base_url + / + book_id + / + chap_count + / + "0001.jpg" + NULL
-    char* first_page_url = hma_malloc_(strlen(base_url) + 1 + 4 + 1 + 2 + 1 + 8 + 1);
+    char* first_page_url = malloc(strlen(base_url) + 1 + 4 + 1 + 2 + 1 + 8 + 1);
 
     // Check if first page (0001.jpg) exist for every chapter
     for (hma_u32 chap_count = 1; ; chap_count++)
@@ -196,8 +246,8 @@ int hma_curl_progress_callback_(
     void *clientp,
     curl_off_t dltotal,
     curl_off_t dlnow,
-    curl_off_t ultotal,
-    curl_off_t ulnow)
+    curl_off_t,
+    curl_off_t)
 {
     hma_ctx* ctx = (hma_ctx*)clientp;
     if (ctx->enable_logs)
@@ -245,13 +295,13 @@ HMA_ERR hma_dl_book(
     char* book_dirpath;
     if (one_directory)
     {
-        book_dirpath = hma_strdup_(output_dir);
+        book_dirpath = strdup(output_dir);
         hma_mkdir_(book_dirpath, 0755);
     }
     else
     {
         // output_dir + / + server_name + / + book_id + NULL
-        book_dirpath = hma_malloc_(strlen(output_dir) + 1 + strlen(server_name) + 1 + 4 + 1);
+        book_dirpath = malloc(strlen(output_dir) + 1 + strlen(server_name) + 1 + 4 + 1);
         sprintf(book_dirpath, "%s", output_dir);
         hma_mkdir_(book_dirpath, 0755);
         sprintf(book_dirpath, "%s/%s", output_dir, server_name);
@@ -262,20 +312,20 @@ HMA_ERR hma_dl_book(
 
     char* chap_dirpath;
     // base_url + / + book_id + / chap_count + / + page_count + ".jpg" + NULL
-    char* page_url = hma_malloc_(strlen(base_url) + 1 + 4 + 1 + 2 + 1 + 4 + 4 + 1);
+    char* page_url = malloc(strlen(base_url) + 1 + 4 + 1 + 2 + 1 + 4 + 4 + 1);
     char* page_filepath;
     if (one_directory)
     {
-        chap_dirpath = hma_strdup_(book_dirpath);
+        chap_dirpath = strdup(book_dirpath);
         // chap_dirpath + / + server_name + _ + book_id + _ + chap_count + page_count + ".jpg" + NULL
-        page_filepath = hma_malloc_(strlen(chap_dirpath) + 1 + strlen(server_name) + 1 + 4 + 1 + 2 + 2 + 4 + 1);
+        page_filepath = malloc(strlen(chap_dirpath) + 1 + strlen(server_name) + 1 + 4 + 1 + 2 + 2 + 4 + 1);
     }
     else
     {
         // book_dirpath + / + chap_count + NULL
-        chap_dirpath = hma_malloc_(strlen(book_dirpath) + 1 + 2 + 1);
+        chap_dirpath = malloc(strlen(book_dirpath) + 1 + 2 + 1);
         // chap_dirpath + / + chap_count + page_count + ".jpg" + NULL
-        page_filepath = hma_malloc_((strlen(book_dirpath) + 1 + 2) + 1 + 2 + 2 + 4 + 1);
+        page_filepath = malloc((strlen(book_dirpath) + 1 + 2) + 1 + 2 + 2 + 4 + 1);
     }
 
     for (hma_u32 chap_count = first_chap; chap_count <= last_chap; chap_count++)

@@ -41,9 +41,9 @@
     #include <sys/stat.h>
 #endif
 
-#define PROGRESS_BAR_WIDTH 30
-
 typedef uint32_t hma_u32;
+
+constexpr hma_u32 PROGRESS_BAR_WIDTH = 30;
 
 typedef enum HMA_SRV_ID_
 {
@@ -85,78 +85,12 @@ typedef enum HMA_ERR_
     HMA_ERR_FAILED_BOOK_OUT_OF_RANGE = 5
 }HMA_ERR;
 
-static const char* HMA_CURL_HTTPS_CERT_URL = "https://curl.se/ca/cacert.pem";
-static const char* HMA_GLB_NAME = "global";
-static const char* HMA_CN_NAME = "china";
-static const char* HMA_CERTIFICATE_PATH = "cacert.pem";
+extern const char* HMA_CURL_HTTPS_CERT_URL;
+extern const char* HMA_CERTIFICATE_PATH;
 
-static const hma_srv HMA_GLB_SERVER =
-{
-    HMA_GLOBAL,
-    "global",
-    "https://act-webstatic.hoyoverse.com/manga/static/comic/book",
-    22,
-    {
-        {1001, "Ai-Chan Facts"         },
-        {1002, "Gratitude Arc"         },
-        {1003, "AE Invasion"           },
-        {1004, "Azure Waters"          },
-        {1005, "Second Eruption"       },
-        {1006, "Gemina: Tales"         },
-        {1007, "World Serpent"         },
-        {1008, "Kiana Plays Honkai"    },
-        {1009, "London Holiday"        },
-        {1010, "Moon Shadow"           },
-        {1011, "Elan Palatinus"        },
-        {1012, "SpringFest"            },
-        {1013, "ELF"                   },
-        {1014, "Second Key"            },
-        {1015, "Escape From Nagazora"  },
-        {1016, "St. Freya High"        },
-        {1017, "Gemina: Invasion"      },
-        {1018, "Divine Key"            },
-        {1019, "Cooking With Valkyries"},
-        {1020, "Empyrean Blade"        },
-        {1021, "Alien Space"           },
-        {1022, "Spring Festival Trip"  }
-    }
-};
+extern const hma_srv HMA_GLB_SERVER;
+extern const hma_srv HMA_CN_SERVER;
 
-static const hma_srv HMA_CN_SERVER =
-{
-    HMA_CHINA,
-    "china",
-    "https://act-webstatic.mihoyo.com/new_static_v2/comic/book",
-    23,
-    {
-        {1001, u8"逃离长空篇"},
-        {1002, u8"樱花追忆篇"},
-        {1004, u8"绀海篇"},
-        {1005, u8"绯樱篇"},
-        {1006, u8"逆熵入侵篇"},
-        {1007, u8"恩返篇"},
-        {1008, u8"月影篇"},
-        {1009, u8"紫鸢篇"},
-        {1010, u8"神之键秘话"},
-        {1011, u8"玩崩坏3的琪亚娜"},
-        {1012, u8"第二次崩坏"},
-        {1013, u8"女武神的餐桌"},
-        {1014, u8"夏日回忆-预告篇"},
-        {1015, u8"双子：起源"},
-        {1016, u8"双子：入侵"},
-        {1017, u8"蛇之篇"},
-        {1018, u8"雾都假日"},
-        {1019, u8"年岁"},
-        {1020, u8"武装人偶"},
-        {1021, u8"传承"},
-        {1022, u8"云墨剑心"},
-        {1023, u8"异乡"},
-        {1024, u8"新春旅行"}
-    }
-};
-
-void* hma_malloc_(size_t size);
-char* hma_strdup_(const char* str);
 void hma_log_(bool enable_logs, const char* str);
 void hma_logf_(bool enable_logs, char* fmt, ...);
 void hma_mkdir_(const char* path, mode_t mode);
@@ -170,8 +104,8 @@ int hma_curl_progress_callback_(
     void *clientp,
     curl_off_t dltotal,
     curl_off_t dlnow,
-    curl_off_t ultotal,
-    curl_off_t ulnow);
+    curl_off_t,
+    curl_off_t);
 
 HMA_ERR hma_dl_book(
     hma_ctx* context,

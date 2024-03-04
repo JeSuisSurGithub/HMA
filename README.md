@@ -31,9 +31,9 @@ The url of a page uses the following format:<br/>
 Where:<br/>
 
 * `CDN_BASE_URL` is the CDN's base url(duh), it can be either<br/>
-    `https://d2tpbmzklky1cl.cloudfront.net/manga/static` (global)<br/>
+    `https://act-webstatic.hoyoverse.com/manga/static` (global)<br/>
     or<br/>
-    `https://comicstatic.bh3.com/new_static_v2` (china)<br/>
+    `https://act-webstatic.mihoyo.com/new_static_v2` (china)<br/>
 + `BOOK_ID` is an 4 digit integer starting from 1001(and growing up)<br/>
 * `CHAPTER` is a non zero padded integer starting at 1<br/>
 + `PAGE` is zero padded 4 digit integer starting at 0001<br/>

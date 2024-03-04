@@ -1,8 +1,8 @@
 set_xmakever("2.2.5")
 
 set_project("HMA")
-set_version("3.0.1")
-set_languages("c11")
+set_version("3.1.0")
+set_languages("clatest")
 
 add_requires("curl", {configs = {binaryonly = true}})
 

@@ -8,7 +8,7 @@ add_requires("curl", {configs = {binaryonly = true}})
 
 set_warnings("everything")
 if is_mode("release") then
-    add_cflags("-O3", "-DNDEBUG")
+    add_cflags("-Ofast", "-march=native", "-flto", "-DNDEBUG")
 elseif is_mode("debug") then
     add_cflags("-Og", "-g3")
 end

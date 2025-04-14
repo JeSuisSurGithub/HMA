@@ -18,6 +18,10 @@
 
 #include <hma/hma.h>
 
+#include <errno.h>
+#include <stdlib.h>
+#include <string.h>
+
 const char* HMA_CURL_HTTPS_CERT_URL = "https://curl.se/ca/cacert.pem";
 const char* HMA_CERTIFICATE_PATH = "cacert.pem";
 

@@ -25,7 +25,7 @@ Then run these commands:<br/>
 &nbsp;&nbsp;&nbsp;&nbsp;`-n, --quiet             No output messages, optional`<br/>
 &nbsp;&nbsp;&nbsp;&nbsp;`-o, --onedirectory      All pages in one directory, optional`<br/>
 
-## Explanation
+## Workings
 The url of a page uses the following format:<br/>
 `[CDN_BASE_URL]/comic/book/[BOOK_ID]/[CHAPTER]/[PAGE].jpg`<br/>
 Where:<br/>
